@@ -1,6 +1,6 @@
 # Epic 2.2 — config_version 与原子 Reload
 
-> 状态：todo ｜ Stage 2 ｜ 关联需求：F-011（P0）、F-009 部分 ｜ 粗估：4 人日
+> 状态：done ｜ Stage 2 ｜ 关联需求：F-011（P0）、F-009 部分 ｜ 粗估：4 人日
 
 ## 目标与价值
 

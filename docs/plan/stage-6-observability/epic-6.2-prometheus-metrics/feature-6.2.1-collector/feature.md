@@ -1,6 +1,6 @@
 # Feature 6.2.1 — collector 与宿主接入
 
-> 状态：todo ｜ Epic 6.2 ｜ 粗估：3.5 人日
+> 状态：done ｜ Epic 6.2 ｜ 粗估：3.5 人日
 
 ## 目标
 

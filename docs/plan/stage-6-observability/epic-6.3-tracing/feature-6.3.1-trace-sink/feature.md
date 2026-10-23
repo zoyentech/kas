@@ -1,6 +1,6 @@
 # Feature 6.3.1 — TraceSink 与字段
 
-> 状态：todo ｜ Epic 6.3 ｜ 粗估：2 人日
+> 状态：done ｜ Epic 6.3 ｜ 粗估：2 人日
 
 ## 目标
 

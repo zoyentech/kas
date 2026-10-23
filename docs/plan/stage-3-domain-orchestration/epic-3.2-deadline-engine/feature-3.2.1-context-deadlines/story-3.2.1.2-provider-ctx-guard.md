@@ -1,6 +1,6 @@
 # Story 3.2.1.2 — provider ctx 合规防护
 
-> 状态：todo ｜ 作为 SDK，我希望 provider（含 Jev HTTP）绝不能耗掉超过阶段预算的时间，以便补检/余量不被吃光。
+> 状态：done ｜ 作为 SDK，我希望 provider（含 Jev HTTP）绝不能耗掉超过阶段预算的时间，以便补检/余量不被吃光。
 
 ## 前置依赖
 

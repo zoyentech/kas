@@ -1,6 +1,6 @@
 # Story 6.3.1.1 — trace 实现
 
-> 状态：todo ǀ 作为排障工程师，我希望 trace 能定位每次 fallback 与 timeout 的版本链路，且绝不携带敏感内容。
+> 状态：done ǀ 作为排障工程师，我希望 trace 能定位每次 fallback 与 timeout 的版本链路，且绝不携带敏感内容。
 
 ## 前置依赖
 

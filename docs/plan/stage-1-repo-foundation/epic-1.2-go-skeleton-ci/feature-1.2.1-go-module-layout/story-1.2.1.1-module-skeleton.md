@@ -1,6 +1,6 @@
 # Story 1.2.1.1 — module 骨架
 
-> 状态：todo ｜ 作为 SDK 开发者，我希望 module 与目录骨架先行确定，以便各 Stage 并行开发不撞结构。
+> 状态：done ｜ 作为 SDK 开发者，我希望 module 与目录骨架先行确定，以便各 Stage 并行开发不撞结构。
 
 ## 前置依赖
 

@@ -1,6 +1,6 @@
 # Feature 1.2.1 — module 与包结构
 
-> 状态：todo ｜ Epic 1.2 ｜ 粗估：1 人日
+> 状态：done ｜ Epic 1.2 ｜ 粗估：1 人日
 
 ## 目标
 

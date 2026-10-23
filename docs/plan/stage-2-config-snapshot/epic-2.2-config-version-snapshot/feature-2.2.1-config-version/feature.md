@@ -1,6 +1,6 @@
 # Feature 2.2.1 — 脱敏 config_version
 
-> 状态：todo ｜ Epic 2.2 ｜ 粗估：1.5 人日
+> 状态：done ｜ Epic 2.2 ｜ 粗估：1.5 人日
 
 ## 目标
 

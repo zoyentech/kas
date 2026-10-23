@@ -1,6 +1,6 @@
 # Story 2.2.1.1 — 规范化与版本哈希
 
-> 状态：todo ｜ 作为运维，我希望 config_version 只随真实配置变化而变化，以便 trace/缓存/Reload 都以它对齐。
+> 状态：done ｜ 作为运维，我希望 config_version 只随真实配置变化而变化，以便 trace/缓存/Reload 都以它对齐。
 
 ## 前置依赖
 

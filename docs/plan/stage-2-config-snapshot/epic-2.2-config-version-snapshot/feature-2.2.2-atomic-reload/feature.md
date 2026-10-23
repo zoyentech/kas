@@ -1,6 +1,6 @@
 # Feature 2.2.2 — 原子 Reload 与 snapshot
 
-> 状态：todo ｜ Epic 2.2 ｜ 粗估：2.5 人日
+> 状态：done ｜ Epic 2.2 ｜ 粗估：2.5 人日
 
 ## 目标
 

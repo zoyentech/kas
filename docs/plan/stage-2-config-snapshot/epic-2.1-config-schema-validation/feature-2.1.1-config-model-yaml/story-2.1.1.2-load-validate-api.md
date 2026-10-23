@@ -1,6 +1,6 @@
 # Story 2.1.1.2 — Load/Validate API
 
-> 状态：todo ｜ 作为宿主开发者，我希望 LoadConfig/LoadConfigFile/ValidateConfig 行为与 docs/03 §1 一致，以便嵌入即用。
+> 状态：done ｜ 作为宿主开发者，我希望 LoadConfig/LoadConfigFile/ValidateConfig 行为与 docs/03 §1 一致，以便嵌入即用。
 
 ## 前置依赖
 

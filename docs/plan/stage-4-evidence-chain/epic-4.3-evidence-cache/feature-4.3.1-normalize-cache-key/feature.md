@@ -1,6 +1,6 @@
 # Feature 4.3.1 — 规范化与 cache key
 
-> 状态：todo ｜ Epic 4.3 ｜ 粗估：2 人日
+> 状态：done ｜ Epic 4.3 ｜ 粗估：2 人日
 
 ## 目标
 

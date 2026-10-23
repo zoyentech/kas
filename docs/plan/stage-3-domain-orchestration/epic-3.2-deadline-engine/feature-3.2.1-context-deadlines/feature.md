@@ -1,6 +1,6 @@
 # Feature 3.2.1 — context deadline 规则
 
-> 状态：todo ｜ Epic 3.2 ｜ 粗估：3 人日
+> 状态：done ｜ Epic 3.2 ｜ 粗估：3 人日
 
 ## 目标
 
