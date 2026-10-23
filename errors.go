@@ -1,13 +1,17 @@
 package kas
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/kas-runtime/kas/internal/config"
+)
 
 // 哨兵错误（docs/design/03 §6）：至少区分配置无效、请求无效、超时、
 // Evidence/决策不可用、provider 契约违规与 SDK 已关闭。错误原文不直接
 // 返回用户；错误信息含字段路径，不含 secret、问题正文与身份明文。
 var (
 	// ErrInvalidConfig 表示配置解析或启动校验失败（含 Reload 时的新配置）。
-	ErrInvalidConfig = errors.New("kas: invalid config")
+	ErrInvalidConfig = config.ErrInvalidConfig
 	// ErrInvalidRequest 表示请求参数不满足前置条件（如空问题、缺 principal）。
 	ErrInvalidRequest = errors.New("kas: invalid request")
 	// ErrDeadlineExceeded 表示请求在 root/阶段 deadline 内未完成。
@@ -21,6 +25,6 @@ var (
 	ErrProviderContract = errors.New("kas: provider contract violation")
 	// ErrClosed 表示 Close 之后调用 Answer/Reload 等方法。
 	ErrClosed = errors.New("kas: client closed")
+	// errNotImplemented 是未落地阶段的内部哨兵（不进入公共契约）。
+	errNotImplemented = errors.New("kas: not implemented in current stage")
 )
-
-// TODO(S3): 错误分类与 wrap 语义在 Story 3.1.1.2 细化（errors.Is/As 可判定）。
