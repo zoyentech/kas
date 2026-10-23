@@ -97,12 +97,12 @@ func NewEngine(m *runtime.Manager, bus *obs.Bus, ev domain.EvidenceProvider, dec
 	return e
 }
 
-// NewTraceID 生成 16 hex 随机 trace ID。
+// NewTraceID 生成 128bit 随机 hex（32 字符）trace ID。
 func NewTraceID() string {
-	var b [8]byte
+	var b [16]byte
 	if _, err := rand.Read(b[:]); err != nil {
 		// 加密源失败时退化为时间戳：trace ID 仅是关联键，不承担安全语义
-		return hex.EncodeToString([]byte(time.Now().Format("150405.000000000")))[:16]
+		return hex.EncodeToString([]byte(time.Now().Format("150405.000000000000")))[:32]
 	}
 	return hex.EncodeToString(b[:])
 }

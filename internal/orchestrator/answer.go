@@ -253,6 +253,13 @@ func (e *Engine) decide(ctx context.Context, st *state) error {
 		return err
 	}
 	st.decision = dec
+	// F-009：决策版本链进 trace（provider/model/model_version/候选数/action）
+	e.Bus.Emit(obs.DecisionTraceEvent{
+		Meta: withAt(st.meta, e.Clock.Now()), Provider: dec.Provider,
+		Model: dec.Model, ModelVersion: dec.ModelVersion,
+		FallbackRoute: dec.Provider, CandidateCount: len(st.evidence.Evidence),
+		Action: string(dec.Action), ReasonCode: dec.ReasonCode, Confidence: dec.Confidence,
+	})
 	return nil
 }
 

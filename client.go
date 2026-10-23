@@ -6,6 +6,8 @@ import (
 	"io"
 	"sync/atomic"
 
+	"github.com/prometheus/client_golang/prometheus"
+
 	"github.com/kas-runtime/kas/internal/cache"
 	"github.com/kas-runtime/kas/internal/decision/dcache"
 	"github.com/kas-runtime/kas/internal/decision/fallback"
@@ -13,16 +15,18 @@ import (
 	"github.com/kas-runtime/kas/internal/decision/rules"
 	"github.com/kas-runtime/kas/internal/domain"
 	"github.com/kas-runtime/kas/internal/obs"
+	"github.com/kas-runtime/kas/internal/obs/health"
+	"github.com/kas-runtime/kas/internal/obs/metrics"
+	"github.com/kas-runtime/kas/internal/obs/trace"
 	"github.com/kas-runtime/kas/internal/orchestrator"
 	"github.com/kas-runtime/kas/internal/runtime"
 )
 
 // Dependencies 是宿主/装配层注入的运行依赖。EvidenceProvider 必需；
-// DecisionProvider 可选（缺失时降级链落到确定性规则，S5）；
-// Cache 可选（缺省且配置启用缓存时用内置 MemCache）；
-// PermissionChecker 可选（O-7：nil = 不做权限过滤，生产部署应注入宿主
-// 判定函数或声明式映射）；HealthChecks/TraceSink 可选（S6）。
-// 宿主传入且共享的资源（HTTP client、registry 等）归宿主管理。
+// DecisionProvider 可选（缺失时按配置装配降级链）；Cache 可选（缺省且
+// 配置启用时用内置 MemCache）；PermissionChecker 可选（O-7）；
+// HealthChecks/TraceSink 可选。宿主传入且共享的资源（HTTP client、
+// registry 等）归宿主管理。
 type Dependencies struct {
 	EvidenceProvider  EvidenceProvider
 	DecisionProvider  DecisionProvider
@@ -32,17 +36,27 @@ type Dependencies struct {
 	TraceSink         TraceSink
 }
 
-// Option 定制 New 的装配行为（S6 增加 metrics Registerer、TraceSink 等）。
+// Option 定制 New 的装配行为。
 type Option func(*options)
 
-type options struct{}
+type options struct {
+	registerer prometheus.Registerer
+}
+
+// WithPrometheusRegisterer 注入宿主 Prometheus Registerer（F-006；D-3）。
+// KAS 注册自有 collector、不开 /metrics listener；Close 时注销。
+func WithPrometheusRegisterer(reg prometheus.Registerer) Option {
+	return func(o *options) { o.registerer = reg }
+}
 
 // Client 是 KAS SDK 入口。方法并发安全；请求间无会话持久状态（F-012）。
 type Client struct {
-	manager *runtime.Manager
-	engine  *orchestrator.Engine
-	bus     *obs.Bus
-	closed  atomic.Bool
+	manager   *runtime.Manager
+	engine    *orchestrator.Engine
+	bus       *obs.Bus
+	deps      Dependencies
+	collector *metrics.Collector
+	closed    atomic.Bool
 }
 
 // New 同步校验配置与必要依赖后装配 Client：构建初始 Runtime Snapshot 并
@@ -77,7 +91,6 @@ func New(cfg Config, deps Dependencies, opts ...Option) (*Client, error) {
 	engine.Perm = deps.PermissionChecker
 
 	// 决策链（F-007/F-008）：宿主未注入 DecisionProvider 时按配置装配
-	// Jev（env 注入）→ 确定性规则 → 受约束决策缓存（顺序固定，docs/04 §3）
 	if engine.Decision == nil {
 		chain, err := buildDecisionChain(cfg, bus)
 		if err != nil {
@@ -85,7 +98,26 @@ func New(cfg Config, deps Dependencies, opts ...Option) (*Client, error) {
 		}
 		engine.Decision = chain
 	}
-	return &Client{manager: mgr, engine: engine, bus: bus}, nil
+
+	c := &Client{manager: mgr, engine: engine, bus: bus, deps: deps}
+
+	// 可观测接线（S6）：metrics（宿主 Registerer）+ trace（白名单脱敏）
+	if cfg.Metrics.Enabled {
+		col := metrics.New(cfg.Metrics)
+		if err := col.RegisterTo(o.registerer); err != nil {
+			return nil, fmt.Errorf("%w: %v", ErrInvalidConfig, err)
+		}
+		bus.Subscribe(col)
+		c.collector = col
+	}
+	if cfg.Tracing.Enabled {
+		sink := deps.TraceSink
+		if sink == nil {
+			sink = trace.NoopSink{}
+		}
+		bus.Subscribe(trace.NewAdapter(sink, trace.NewRedactor(cfg.Tracing.Include)))
+	}
+	return c, nil
 }
 
 // Answer 执行一次问答编排（初判→检索→决策→补检→组装）。请求开始读取
@@ -101,14 +133,23 @@ func (c *Client) Answer(ctx context.Context, req Request) (Response, error) {
 	return resp, nil
 }
 
-// Health 聚合组件健康；使用短独立 timeout，不执行用户查询或模型生成。
+// Health 聚合组件健康（F-005）：并发探测、每组件短独立 check_timeout、
+// 不执行用户查询或模型生成、不访问 Evidence cache。探测频率归宿主控制。
 func (c *Client) Health(ctx context.Context) HealthReport {
 	if c.closed.Load() {
 		return HealthReport{Status: domain.StatusNotReady, Components: map[string]ComponentHealth{
 			"client": {Status: domain.ComponentNotReady, Detail: "client closed"},
-		}}
+		}, CheckedAt: orchestrator.SystemClock{}.Now()}
 	}
-	return HealthReport{Status: domain.StatusHealthy, CheckedAt: orchestrator.SystemClock{}.Now()} // TODO(S6): Story 6.1.1.1 聚合实现
+	snap := c.manager.Current()
+	if snap == nil {
+		return HealthReport{Status: domain.StatusNotReady, CheckedAt: orchestrator.SystemClock{}.Now()}
+	}
+	return health.Probe(ctx, snap.Config().Health, health.Deps{
+		Evidence: c.deps.EvidenceProvider,
+		Decision: c.engine.Decision,
+		Extra:    c.deps.HealthChecks,
+	}, c.bus)
 }
 
 // Reload 依次解析、Validate、准备候选 runtime、计算脱敏 config_version
@@ -127,10 +168,15 @@ func (c *Client) Reload(ctx context.Context, r io.Reader) (string, error) {
 // ConfigVersion 返回当前运行快照的 config_version（诊断用途）。
 func (c *Client) ConfigVersion() string { return c.manager.Version() }
 
-// Close 停止新请求并关闭 SDK 自有资源；幂等。在途请求自然完成或由其
-// ctx 取消。宿主传入且共享的资源归宿主管理（docs/design/03 §6）。
+// Close 停止新请求并关闭 SDK 自有资源；幂等。注销自有 metrics collector；
+// 在途请求自然完成或由其 ctx 取消。宿主传入且共享的资源归宿主管理
+// （docs/design/03 §6）。
 func (c *Client) Close() error {
-	c.closed.Store(true)
+	if c.closed.CompareAndSwap(false, true) {
+		if c.collector != nil {
+			c.collector.Unregister()
+		}
+	}
 	return nil
 }
 

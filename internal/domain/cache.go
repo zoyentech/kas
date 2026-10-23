@@ -33,9 +33,9 @@ type EvidenceCache interface {
 // TraceEvent 是一次请求内的 trace 记录。字段受 include 白名单约束；
 // question 正文、Evidence 正文、身份明文、secret 禁止进入（S6 细化）。
 type TraceEvent struct {
-	TraceID       string
-	ConfigVersion string
-	Fields        map[string]string // 白名单字段；值须脱敏
+	TraceID       string            `json:"trace_id"`
+	ConfigVersion string            `json:"config_version"`
+	Fields        map[string]string `json:"fields"` // 白名单字段；值须脱敏
 }
 
 // TraceSink 由宿主注入；KAS 不落盘、不外发 trace。
