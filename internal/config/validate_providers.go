@@ -194,6 +194,16 @@ func ruleDecisionRules(cfg Config) []Violation {
 		if r.Name == "" {
 			vs = append(vs, newViolation(path+".name", "不能为空"))
 		}
+		if !KnownRuleConditions[r.When] {
+			vs = append(vs, newViolation(path+".when", "未知条件 %q（已知: %s/%s）", r.When, CondValidEvidenceZero, CondConfidenceBelowThreshold))
+		}
+		if r.When == CondConfidenceBelowThreshold {
+			if r.Threshold == nil {
+				vs = append(vs, newViolation(path+".threshold", "条件 %s 必须配置阈值", CondConfidenceBelowThreshold))
+			} else if *r.Threshold < 0 || *r.Threshold > 1 {
+				vs = append(vs, newViolation(path+".threshold", "阈值 %v 超出 [0,1]", *r.Threshold))
+			}
+		}
 		if seen[r.Name] {
 			vs = append(vs, newViolation(path+".name", "规则名重复: %s", r.Name))
 		}

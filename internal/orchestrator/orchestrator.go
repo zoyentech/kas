@@ -51,7 +51,8 @@ type PreliminaryJudge interface {
 // AssembleInput 是回答组装输入（reserve 阶段）。
 type AssembleInput struct {
 	Request       domain.Request
-	Evidence      domain.EvidenceResult
+	Evidence      domain.EvidenceResult // 最终有效证据（首轮 + 补检重滤后合并）
+	Groups        []domain.CandidateGroup
 	Decision      domain.Decision
 	Degraded      bool
 	Reasons       []string
@@ -88,10 +89,10 @@ func NewEngine(m *runtime.Manager, bus *obs.Bus, ev domain.EvidenceProvider, dec
 		Bus:         bus,
 		Clock:       SystemClock{},
 		Preliminary: DefaultPreliminary{},
-		Assembler:   DefaultAssembler{},
-		Evidence:    ev,
-		Decision:    dec,
-		TraceID:     NewTraceID,
+		// Assembler 留 nil：reserve 阶段按请求快照构建 Builder（引用安全闸）
+		Evidence: ev,
+		Decision: dec,
+		TraceID:  NewTraceID,
 	}
 	return e
 }

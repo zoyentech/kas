@@ -9,6 +9,7 @@
 | 模块 | 版本 | License | 用途（决策） |
 |---|---|---|---|
 | gopkg.in/yaml.v3 | v3.0.1 | MIT & Apache-2.0（双许可） | 配置严格解析（D-2） |
+| golang.org/x/text | v0.21.0 | BSD-3-Clause | NFKC 规范化（S4 cache，ADR-0002 修订：新增 D-2 关联依赖） |
 
 ## 直接依赖（计划中，按 Stage 引入）
 

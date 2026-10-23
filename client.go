@@ -7,6 +7,10 @@ import (
 	"sync/atomic"
 
 	"github.com/kas-runtime/kas/internal/cache"
+	"github.com/kas-runtime/kas/internal/decision/dcache"
+	"github.com/kas-runtime/kas/internal/decision/fallback"
+	"github.com/kas-runtime/kas/internal/decision/jev"
+	"github.com/kas-runtime/kas/internal/decision/rules"
 	"github.com/kas-runtime/kas/internal/domain"
 	"github.com/kas-runtime/kas/internal/obs"
 	"github.com/kas-runtime/kas/internal/orchestrator"
@@ -71,6 +75,16 @@ func New(cfg Config, deps Dependencies, opts ...Option) (*Client, error) {
 		)
 	}
 	engine.Perm = deps.PermissionChecker
+
+	// 决策链（F-007/F-008）：宿主未注入 DecisionProvider 时按配置装配
+	// Jev（env 注入）→ 确定性规则 → 受约束决策缓存（顺序固定，docs/04 §3）
+	if engine.Decision == nil {
+		chain, err := buildDecisionChain(cfg, bus)
+		if err != nil {
+			return nil, err
+		}
+		engine.Decision = chain
+	}
 	return &Client{manager: mgr, engine: engine, bus: bus}, nil
 }
 
@@ -118,4 +132,38 @@ func (c *Client) ConfigVersion() string { return c.manager.Version() }
 func (c *Client) Close() error {
 	c.closed.Store(true)
 	return nil
+}
+
+// buildDecisionChain 装配降级链（Story 5.3.1.1 / 5.3.2.1 T3）。
+func buildDecisionChain(cfg Config, bus *obs.Bus) (domain.DecisionProvider, error) {
+	guard, err := rules.New(cfg.Decision.Fallback.Rules)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %v", ErrInvalidConfig, err)
+	}
+	rulesProv, err := rules.NewProvider(cfg.Decision.Fallback.Rules)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %v", ErrInvalidConfig, err)
+	}
+	var stages []fallback.Stage
+	if cfg.Decision.Provider == "jev" {
+		jc, err := jev.LoadConfig(cfg.Decision.Jev, cfg.Timeouts.Rejudge.Std())
+		if err != nil {
+			return nil, err
+		}
+		stages = append(stages, fallback.Stage{Route: fallback.RouteJev, Provider: jev.New(jc)})
+	}
+	stages = append(stages, fallback.Stage{Route: fallback.RouteRules, Provider: rulesProv})
+	var dcacheProv *dcache.Provider
+	if cfg.Decision.Fallback.Cache.Enabled {
+		dcacheProv = dcache.NewProvider(
+			cfg.Decision.Fallback.Cache.MaxEntries,
+			cfg.Decision.Fallback.Cache.TTL.Std(),
+		)
+		stages = append(stages, fallback.Stage{Route: fallback.RouteCache, Provider: dcacheProv})
+	}
+	chain := fallback.New(stages, bus, guard)
+	if dcacheProv != nil {
+		chain.CacheWriter = dcacheProv // Jev 成功决策回填（正向决策；禁写终态）
+	}
+	return chain, nil
 }

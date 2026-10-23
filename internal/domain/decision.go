@@ -21,6 +21,12 @@ type DecisionInput struct {
 	ValidAt       time.Time
 	ConfigVersion string
 	ModelHint     string
+	// TraceID 事件关联键（fallback/trace 事件；不参与决策语义）。
+	TraceID string
+	// ScopeFingerprint 与 KnowledgeCorpusGen 是决策缓存 key 维度
+	//（docs/design/04 §3：绑定 principal scope 与知识代次）。
+	ScopeFingerprint   string
+	KnowledgeCorpusGen string
 }
 
 // Decision 是决策 provider 的输出。每个 TargetGroupID 必须来自输入
@@ -35,6 +41,9 @@ type Decision struct {
 	Model          string
 	ModelVersion   string
 	Degraded       bool
+	// AnswerText 是上游生成的回答草稿文本（KAS 不生成文本，只做组装与
+	// 引用校验；docs/01 §1 范围边界）。经引用安全闸后进入 Response.Answer。
+	AnswerText string
 }
 
 // DecisionProvider 将候选组映射为有限 action；Jev 私有协议只存在于

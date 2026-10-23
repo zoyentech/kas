@@ -99,9 +99,12 @@ type EvidenceCacheConfig struct {
 
 // DecisionConfig 是决策链配置（provider、Jev 参数与降级链）。
 type DecisionConfig struct {
-	Provider string         `yaml:"provider" json:"provider"`
-	Jev      JevConfig      `yaml:"jev" json:"jev"`
-	Fallback FallbackConfig `yaml:"fallback" json:"fallback"`
+	Provider string    `yaml:"provider" json:"provider"`
+	Jev      JevConfig `yaml:"jev" json:"jev"`
+	// AttributeAllowlist 是 CandidateGroup.Attributes 的白名单；
+	// 空表 = 剔除全部属性（最严格，防高基数/敏感渗漏）。
+	AttributeAllowlist []string       `yaml:"attribute_allowlist,omitempty" json:"attribute_allowlist,omitempty"`
+	Fallback           FallbackConfig `yaml:"fallback" json:"fallback"`
 }
 
 // JevConfig 是 Jev adapter 参数。密钥只含环境变量引用名，绝无明文。
@@ -134,6 +137,24 @@ type RuleConfig struct {
 	Name   string `yaml:"name" json:"name"`
 	When   string `yaml:"when" json:"when"`
 	Action string `yaml:"action" json:"action"`
+	// Threshold 条件参数（如置信度阈值，∈[0,1]）；
+	// decision_confidence_below_threshold 条件必填。
+	Threshold *float64 `yaml:"threshold,omitempty" json:"threshold,omitempty"`
+}
+
+// 内置规则条件名（docs/02 rules 样例；rules 引擎按注册表解析，
+// 未知条件名在配置校验期拒绝）。
+const (
+	// CondValidEvidenceZero：全部候选组合计有效证据数为 0。
+	CondValidEvidenceZero = "valid_evidence_count_equals_zero"
+	// CondConfidenceBelowThreshold：上游决策置信度低于阈值（需 Threshold）。
+	CondConfidenceBelowThreshold = "decision_confidence_below_threshold"
+)
+
+// KnownRuleConditions 是已知规则条件集（配置校验用）。
+var KnownRuleConditions = map[string]bool{
+	CondValidEvidenceZero:        true,
+	CondConfidenceBelowThreshold: true,
 }
 
 // DecisionCacheConfig 是受约束决策缓存配置。

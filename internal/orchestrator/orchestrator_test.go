@@ -162,10 +162,11 @@ func sampleRequest() domain.Request {
 // TestAnswerHappyPathStagesInOrder 五阶段按序执行、每阶段拿到独立派生 ctx、
 // 单请求全程 config_version 恒定（Story 3.3.1.1 骨架端到端）。
 func TestAnswerHappyPathStagesInOrder(t *testing.T) {
+	validUntil := time.Now().Add(time.Hour)
 	ev := &fakeEvidence{result: domain.EvidenceResult{Evidence: []domain.Evidence{
-		{ID: "e1", SourceID: "doc-1", Score: 0.9},
+		{ID: "e1", SourceID: "doc-1", Score: 0.9, ValidUntil: &validUntil},
 	}}}
-	dec := &fakeDecision{dec: domain.Decision{Action: domain.ActionAnswer, Confidence: 0.8}}
+	dec := &fakeDecision{dec: domain.Decision{Action: domain.ActionAnswer, Confidence: 0.8, TargetGroupIDs: []string{"g1"}, AnswerText: "回答正文"}}
 	rec := &recorder{}
 	e := newEngine(t, ev, dec, rec)
 

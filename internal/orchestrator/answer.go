@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/kas-runtime/kas/internal/deadline"
+	"github.com/kas-runtime/kas/internal/decision"
 	"github.com/kas-runtime/kas/internal/domain"
 	"github.com/kas-runtime/kas/internal/evidence"
 	"github.com/kas-runtime/kas/internal/obs"
@@ -238,10 +239,13 @@ func (e *Engine) decide(ctx context.Context, st *state) error {
 	}
 	dec, err := deadline.Call(StageRejudge, ctx, e.Clock.Now(), func(ctx context.Context) (domain.Decision, error) {
 		return e.Decision.Decide(ctx, domain.DecisionInput{
-			Question:      st.req.Question,
-			Groups:        candidateGroups(st),
-			ValidAt:       e.Clock.Now(),
-			ConfigVersion: st.snap.Version(),
+			Question:           st.req.Question,
+			Groups:             candidateGroups(st),
+			ValidAt:            e.Clock.Now(),
+			ConfigVersion:      st.snap.Version(),
+			TraceID:            st.trace,
+			ScopeFingerprint:   st.req.Principal.ScopeFingerprint,
+			KnowledgeCorpusGen: st.req.Knowledge.CorpusGeneration,
 		})
 	})
 	if err != nil {
@@ -252,9 +256,11 @@ func (e *Engine) decide(ctx context.Context, st *state) error {
 	return nil
 }
 
-// candidateGroups 由 Evidence 结果构造候选组（S4 候选组装逻辑替换）。
+// candidateGroups 由（合并后的最终）Evidence 构造候选组（v1.2 简化为单组；
+// S4 属性白名单经 decision.FilterAttributes 应用）。
 func candidateGroups(st *state) []domain.CandidateGroup {
 	ev := st.evidence.Evidence
+	ev = append(append([]domain.Evidence(nil), ev...), st.supplement.Evidence...)
 	if len(ev) == 0 {
 		return nil
 	}
@@ -264,7 +270,7 @@ func candidateGroups(st *state) []domain.CandidateGroup {
 			EvidenceID: item.ID, SourceID: item.SourceID, ContentVersion: item.ContentVersion,
 		})
 	}
-	return []domain.CandidateGroup{g}
+	return decision.FilterAttributes([]domain.CandidateGroup{g}, st.snap.Config().Decision.AttributeAllowlist)
 }
 
 // assembleReserve 执行 reserve 阶段（组装）。
@@ -275,9 +281,19 @@ func (e *Engine) assembleReserve(root *deadline.Root, st *state) (domain.Respons
 	stageCtx, cancel := root.Stage(StageReserve, e.Clock.Now(), st.snap.Budget().Reserve.Std())
 	defer cancel()
 	start := e.Clock.Now()
-	resp, err := e.Assembler.Assemble(stageCtx, AssembleInput{
+	// 最终有效证据 = 首轮 + 补检（补检结果已经 CachedProvider 重新过滤）
+	final := st.evidence
+	final.Evidence = append(append([]domain.Evidence(nil), st.evidence.Evidence...), st.supplement.Evidence...)
+	groups := candidateGroups(st)
+	// 组装器按请求快照配置构建（Reload 后新请求即用新策略）
+	assembler := e.Assembler
+	if assembler == nil {
+		assembler = NewBuilder(st.snap.Config().Answer)
+	}
+	resp, err := assembler.Assemble(stageCtx, AssembleInput{
 		Request:       st.req,
-		Evidence:      st.evidence,
+		Evidence:      final,
+		Groups:        groups,
 		Decision:      st.decision,
 		Degraded:      st.degraded,
 		Reasons:       st.reasons,
@@ -304,7 +320,11 @@ func (e *Engine) assembleDegraded(root *deadline.Root, st *state, reason string)
 	st.degraded = true
 	st.reasons = append(st.reasons, reason)
 	st.decision = domain.Decision{}
-	return e.Assembler.Assemble(context.WithoutCancel(root.Ctx()), AssembleInput{
+	assembler := e.Assembler
+	if assembler == nil {
+		assembler = NewBuilder(st.snap.Config().Answer)
+	}
+	return assembler.Assemble(context.WithoutCancel(root.Ctx()), AssembleInput{
 		Request:       st.req,
 		Evidence:      st.evidence,
 		Degraded:      true,

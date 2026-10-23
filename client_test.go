@@ -48,6 +48,8 @@ tracing: {enabled: false}
 
 func mustClient(t *testing.T) *kas.Client {
 	t.Helper()
+	t.Setenv("KAS_JEV_ENDPOINT", "http://jev.invalid")
+	t.Setenv("KAS_JEV_API_KEY", "test-key-value")
 	cfg, err := kas.LoadConfig(strings.NewReader(validYAML))
 	if err != nil {
 		t.Fatalf("加载基线配置失败: %v", err)
@@ -63,6 +65,8 @@ func mustClient(t *testing.T) *kas.Client {
 // TestNewRequiresEvidenceProvider 缺必需依赖报 ErrInvalidConfig
 // （Story 2.2.2.1 T2）。
 func TestNewRequiresEvidenceProvider(t *testing.T) {
+	t.Setenv("KAS_JEV_ENDPOINT", "http://jev.invalid")
+	t.Setenv("KAS_JEV_API_KEY", "test-key-value")
 	cfg, _ := kas.LoadConfig(strings.NewReader(validYAML))
 	_, err := kas.New(cfg, kas.Dependencies{})
 	if err == nil || !errors.Is(err, kas.ErrInvalidConfig) {
@@ -80,6 +84,8 @@ func TestNewRejectsInvalidConfig(t *testing.T) {
 		t.Fatal("配置本身非法，LoadConfig 应先失败")
 	}
 	// 直接构造非法 Config 绕过 Load 的校验，验证 New 兜底
+	t.Setenv("KAS_JEV_ENDPOINT", "http://jev.invalid")
+	t.Setenv("KAS_JEV_API_KEY", "test-key-value")
 	var broken kas.Config
 	if _, err := kas.New(broken, kas.Dependencies{EvidenceProvider: stubEvidenceProvider{}}); err == nil {
 		t.Fatal("New 必须拒绝非法配置（双重防线）")
@@ -88,6 +94,8 @@ func TestNewRejectsInvalidConfig(t *testing.T) {
 
 // TestReloadAtomicity 通过公共 API：失败保持旧版本、成功返回新版本（F-011）。
 func TestReloadAtomicity(t *testing.T) {
+	t.Setenv("KAS_JEV_ENDPOINT", "http://jev.invalid")
+	t.Setenv("KAS_JEV_API_KEY", "test-key-value")
 	c := mustClient(t)
 	v0 := c.ConfigVersion()
 
@@ -118,6 +126,8 @@ func TestReloadAtomicity(t *testing.T) {
 
 // TestClosedClient Close 后 Answer/Reload 返回 ErrClosed。
 func TestClosedClient(t *testing.T) {
+	t.Setenv("KAS_JEV_ENDPOINT", "http://jev.invalid")
+	t.Setenv("KAS_JEV_API_KEY", "test-key-value")
 	cfg, _ := kas.LoadConfig(strings.NewReader(validYAML))
 	c, err := kas.New(cfg, kas.Dependencies{EvidenceProvider: stubEvidenceProvider{}})
 	if err != nil {
