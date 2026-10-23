@@ -1,0 +1,75 @@
+# CI 质量门禁（Story 1.2.2.1）：build/test matrix、lint 门禁、覆盖率阈值。
+# main 分支保护要求全部 job 为必需检查（Story DoD）。
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    name: build+test (${{ matrix.os }}, go ${{ matrix.go }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      # D-1：CI 矩阵跑最近两个大版本（1.25 稳定 + 1.26 当前，随版本演进更新）。
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        go: ['1.25.x', '1.26.x']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+          cache: true
+      - name: Build
+        run: make build
+      - name: Vet
+        run: go vet ./...
+      - name: Test (race)
+        run: make test-race
+
+  lint:
+    name: lint + fmt-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.x'
+          cache: true
+      - name: golangci-lint（版本锁定）
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.61.0
+          args: --timeout=5m
+      - name: fmt-check
+        run: |
+          go install mvdan.cc/gofumpt@v0.7.0
+          test -z "$(gofumpt -l -extra .)" || { echo "以下文件未通过 gofumpt："; gofumpt -l -extra .; exit 1; }
+
+  coverage:
+    name: coverage (threshold)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.x'
+          cache: true
+      - name: Test with coverage
+        run: make cover COVER_THRESHOLD=60
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.out
+          retention-days: 30

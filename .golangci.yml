@@ -1,0 +1,38 @@
+# golangci-lint 配置（Story 1.2.1.2）。CI 与本地共用本文件；版本由
+# .github/workflows/ci.yml 固定（Makefile GOLANGCI_VERSION）。
+run:
+  timeout: 5m
+  tests: true
+
+output:
+  sort-results: true
+
+linters:
+  enable:
+    - errcheck      # 未检查的 error
+    - govet         # go vet 全集
+    - staticcheck   # 静态检查（含 SA/ST/QF）
+    - ineffassign   # 无效赋值
+    - unused        # 未使用符号
+    - misspell      # 拼写
+    - gocritic      # 风格与性能反模式
+    - revive        # 导出符号注释、命名等
+    - copyloopvar   # 循环变量拷贝（Go1.22+ 不再需要）
+
+linters-settings:
+  revive:
+    rules:
+      - name: exported
+        arguments:
+          - disableStutteringCheck # 包名 kas 前缀（KASClient 等）属领域命名，不算 stutter
+
+issues:
+  # 每条豁免必须写明理由（Story 验收标准）。
+  exclude-rules:
+    # 测试文件允许使用 gosec 低危项与较长函数
+    - path: _test\.go
+      linters:
+        - gocritic
+      # 理由：测试中构造表格用例的重复模式会触发 gocritic 建议，降低可读性。
+  max-issues-per-linter: 0
+  max-same-issues: 0
