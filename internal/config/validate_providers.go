@@ -104,6 +104,10 @@ func ruleValidityPolicy(cfg Config) []Violation {
 		vs = append(vs, newViolation("evidence.validity.default_max_age",
 			"require_validity_policy_for_each_source=true 时必须提供至少一个来源策略"))
 	}
+	if v.FailClosedOnUnknownValidity == nil || !*v.FailClosedOnUnknownValidity {
+		vs = append(vs, newViolation("evidence.validity.fail_closed_on_unknown_validity",
+			"必须显式为 true（v1.2 fail-closed 安全不变量；有效期未知一律过滤，无放开路径）"))
+	}
 	for source, age := range v.DefaultMaxAge {
 		if source == "" {
 			vs = append(vs, newViolation("evidence.validity.default_max_age", "存在空来源 key"))

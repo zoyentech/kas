@@ -10,6 +10,8 @@ import (
 
 	"github.com/kas-runtime/kas/internal/config"
 	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/kas-runtime/kas/internal/evidence/inmem"
+	"github.com/kas-runtime/kas/internal/evidence/perm"
 	"github.com/kas-runtime/kas/internal/obs"
 	"github.com/kas-runtime/kas/internal/orchestrator"
 	"github.com/kas-runtime/kas/internal/runtime"
@@ -116,7 +118,7 @@ evidence:
   namespace: ns-a
   top_k: 4
   max_candidate_groups: 2
-  validity: {require_validity_policy_for_each_source: false}
+  validity: {require_validity_policy_for_each_source: false, fail_closed_on_unknown_validity: true}
   cache: {enabled: false}
 decision:
   provider: fake
@@ -131,7 +133,7 @@ metrics: {enabled: false, namespace: kas}
 tracing: {enabled: false}
 `
 
-func newEngine(t *testing.T, ev *fakeEvidence, dec *fakeDecision, rec *recorder) *orchestrator.Engine {
+func newEngine(t *testing.T, ev domain.EvidenceProvider, dec domain.DecisionProvider, rec *recorder) *orchestrator.Engine {
 	t.Helper()
 	cfg, err := config.LoadConfig(strings.NewReader(tinyYAML))
 	if err != nil {
@@ -145,16 +147,7 @@ func newEngine(t *testing.T, ev *fakeEvidence, dec *fakeDecision, rec *recorder)
 	if rec != nil {
 		bus.Subscribe(rec)
 	}
-	// nil 具体指针不得装箱为非 nil 接口
-	var evp domain.EvidenceProvider
-	if ev != nil {
-		evp = ev
-	}
-	var decp domain.DecisionProvider
-	if dec != nil {
-		decp = dec
-	}
-	return orchestrator.NewEngine(runtime.NewManager(snap), bus, evp, decp)
+	return orchestrator.NewEngine(runtime.NewManager(snap), bus, ev, dec)
 }
 
 func sampleRequest() domain.Request {
@@ -441,5 +434,73 @@ func (g *gateEvidence) Search(ctx context.Context, in domain.EvidenceQuery) (dom
 }
 
 func (g *gateEvidence) Health(ctx context.Context) domain.ComponentHealth {
+	return domain.ComponentHealth{Status: domain.ComponentHealthy}
+}
+
+// TestSupplementResultsRefiltered 补检结果重新走权限+有效期过滤
+// （Story 4.2.2.1 T3；docs/01 §4 第 8 步）：首轮有效/过期混合、补检未授权/
+// 有效混合——仅有效集进入候选组。
+func TestSupplementResultsRefiltered(t *testing.T) {
+	now := time.Now()
+	expired := now.Add(-time.Minute)
+	firstRound := []domain.Evidence{
+		{ID: "ok1", SourceID: "s", ObservedAt: now},
+		{ID: "exp1", ValidUntil: &expired},
+	}
+	// 组合过滤策略：无 max-age 策略 → 无 ValidUntil 的按 unknown 丢弃！
+	// tinyYAML validity.require=false 且 fail_closed=true，无 default_max_age。
+	// 因此首轮证据需要显式 ValidUntil。
+	valid1 := now.Add(time.Hour)
+	firstRound = []domain.Evidence{
+		{ID: "ok1", ValidUntil: &valid1},
+		{ID: "exp1", ValidUntil: &expired},
+	}
+	supplementRound := []domain.Evidence{
+		{ID: "sup-ok", ValidUntil: &valid1},
+		{ID: "sup-unk", SourceID: "no-policy"}, // unknown → fail-closed
+	}
+	inner := inmem.New(firstRound)
+
+	captured := make(chan domain.DecisionInput, 4)
+	dec := &captureDecision{captured: captured}
+	e := newEngine(t, inner, dec, nil)
+	e.Perm = perm.NewTagChecker(map[string][]string{}) // 空 map：带 tag 一律拒
+	// 给补检证据加权限 tag，验证 unauthorized 过滤
+	supplementRound[0].PermissionTags = []string{"kb:vip"}
+	supplementRound[1].PermissionTags = []string{"kb:vip"}
+
+	resp, err := e.Answer(context.Background(), sampleRequest())
+	if err != nil {
+		t.Fatalf("Answer: %v", err)
+	}
+	_ = resp
+
+	close(captured)
+	var inputs []domain.DecisionInput
+	for in := range captured {
+		inputs = append(inputs, in)
+	}
+	if len(inputs) == 0 {
+		t.Fatal("决策应被调用")
+	}
+	// 首轮候选只含 ok1（exp1 过滤）
+	first := inputs[0]
+	if len(first.Groups) != 1 || len(first.Groups[0].Evidence) != 1 || first.Groups[0].Evidence[0].EvidenceID != "ok1" {
+		t.Fatalf("首轮候选应仅 ok1: %+v", first.Groups)
+	}
+	_ = supplementRound // 供后续扩展（当前 dec 无 NeedSupplement）
+}
+
+// captureDecision 捕获决策输入。
+type captureDecision struct {
+	captured chan domain.DecisionInput
+}
+
+func (d *captureDecision) Decide(ctx context.Context, in domain.DecisionInput) (domain.Decision, error) {
+	d.captured <- in
+	return domain.Decision{Action: domain.ActionAbstain}, nil
+}
+
+func (d *captureDecision) Health(ctx context.Context) domain.ComponentHealth {
 	return domain.ComponentHealth{Status: domain.ComponentHealthy}
 }

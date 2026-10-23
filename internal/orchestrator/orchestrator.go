@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/kas-runtime/kas/internal/evidence"
 	"github.com/kas-runtime/kas/internal/obs"
 	"github.com/kas-runtime/kas/internal/runtime"
 )
@@ -73,7 +74,11 @@ type Engine struct {
 	Assembler   Assembler
 	Evidence    domain.EvidenceProvider
 	Decision    domain.DecisionProvider
-	TraceID     func() string
+	// Cache 是 Evidence 缓存实例（nil = 缓存禁用；检索仍经过滤路径）。
+	Cache domain.EvidenceCache
+	// Perm 是权限判定器（nil = 不做权限过滤；由装配方按 O-7 注入）。
+	Perm    evidence.Checker
+	TraceID func() string
 }
 
 // NewEngine 构建编排器；nil 字段落默认值（初判放行、最小组装器、系统时钟）。

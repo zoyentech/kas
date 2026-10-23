@@ -76,8 +76,10 @@ type ValidityConfig struct {
 	DefaultMaxAge map[string]Duration `yaml:"default_max_age" json:"default_max_age"`
 	// ExcludeFutureDated 丢弃 ValidFrom 晚于当前时刻的 Evidence。
 	ExcludeFutureDated bool `yaml:"exclude_future_dated" json:"exclude_future_dated"`
-	// FailClosedOnUnknownValidity 有效期未知且无来源策略时丢弃（不进答案/缓存）。
-	FailClosedOnUnknownValidity bool `yaml:"fail_closed_on_unknown_validity" json:"fail_closed_on_unknown_validity"`
+	// FailClosedOnUnknownValidity 有效期未知且无来源策略时丢弃（不进答案/
+	// 缓存）。必须显式配置为 true（指针区分"未配置"与 false；v1.2 无
+	// 放开路径，配置 false 被校验拒绝——fail-closed 是安全不变量）。
+	FailClosedOnUnknownValidity *bool `yaml:"fail_closed_on_unknown_validity" json:"fail_closed_on_unknown_validity"`
 }
 
 // EvidenceCacheConfig 是 Evidence 缓存配置（F-004；docs/design/04 §2）。

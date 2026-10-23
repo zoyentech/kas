@@ -8,6 +8,8 @@ import (
 
 // TestExampleYAMLFieldMapping 固化 docs/02 示例 → Config 结构的逐字段映射
 // （Story 2.1.1.1 T1：非严格解析后与预期结构逐字段相等）。
+func boolPtr(b bool) *bool { return &b }
+
 func TestExampleYAMLFieldMapping(t *testing.T) {
 	got := mustLoadExample(t)
 
@@ -28,7 +30,7 @@ func TestExampleYAMLFieldMapping(t *testing.T) {
 					"service_notice": D(24 * time.Hour),
 				},
 				ExcludeFutureDated:          true,
-				FailClosedOnUnknownValidity: true,
+				FailClosedOnUnknownValidity: boolPtr(true),
 			},
 			Cache: EvidenceCacheConfig{
 				Enabled: true, Implementation: "memory",

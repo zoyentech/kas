@@ -1,6 +1,10 @@
 package kas
 
-import "github.com/kas-runtime/kas/internal/domain"
+import (
+	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/kas-runtime/kas/internal/evidence"
+	"github.com/kas-runtime/kas/internal/evidence/perm"
+)
 
 // 本文件集中定义根包公共类型别名（D-7：实现全部在 internal/；类型唯一
 // 权威定义在 internal/domain，别名保持公共 API 面稳定）。
@@ -115,3 +119,16 @@ type (
 	// TraceSink 由宿主注入。
 	TraceSink = domain.TraceSink
 )
+
+// —— 权限判定（O-7 双模式）——
+
+// PermissionChecker 判定单条 Evidence 对当前 principal scope 是否可用；
+// 未授权 Evidence 以 unauthorized 原因过滤（F-003/F-010）。
+// 默认声明式实现见 internal/evidence/perm.TagChecker（scope fingerprint →
+// 允许的 PermissionTags 集合）；宿主亦可注入判定函数（evidence.FuncChecker）。
+type PermissionChecker = evidence.Checker
+
+// NewTagChecker 由 scope fingerprint → 允许 tags 映射构建声明式权限判定器。
+func NewTagChecker(allowed map[string][]string) PermissionChecker {
+	return perm.NewTagChecker(allowed)
+}

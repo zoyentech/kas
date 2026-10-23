@@ -6,6 +6,7 @@ import (
 	"io"
 	"sync/atomic"
 
+	"github.com/kas-runtime/kas/internal/cache"
 	"github.com/kas-runtime/kas/internal/domain"
 	"github.com/kas-runtime/kas/internal/obs"
 	"github.com/kas-runtime/kas/internal/orchestrator"
@@ -14,14 +15,17 @@ import (
 
 // Dependencies 是宿主/装配层注入的运行依赖。EvidenceProvider 必需；
 // DecisionProvider 可选（缺失时降级链落到确定性规则，S5）；
-// Cache/HealthChecks/TraceSink 可选（缺省用 KAS 默认实现或空实现）。
+// Cache 可选（缺省且配置启用缓存时用内置 MemCache）；
+// PermissionChecker 可选（O-7：nil = 不做权限过滤，生产部署应注入宿主
+// 判定函数或声明式映射）；HealthChecks/TraceSink 可选（S6）。
 // 宿主传入且共享的资源（HTTP client、registry 等）归宿主管理。
 type Dependencies struct {
-	EvidenceProvider EvidenceProvider
-	DecisionProvider DecisionProvider
-	Cache            EvidenceCache
-	HealthChecks     HealthChecks
-	TraceSink        TraceSink
+	EvidenceProvider  EvidenceProvider
+	DecisionProvider  DecisionProvider
+	Cache             EvidenceCache
+	PermissionChecker PermissionChecker
+	HealthChecks      HealthChecks
+	TraceSink         TraceSink
 }
 
 // Option 定制 New 的装配行为（S6 增加 metrics Registerer、TraceSink 等）。
@@ -55,6 +59,18 @@ func New(cfg Config, deps Dependencies, opts ...Option) (*Client, error) {
 	bus := obs.NewBus()
 	mgr := runtime.NewManager(snap)
 	engine := orchestrator.NewEngine(mgr, bus, deps.EvidenceProvider, deps.DecisionProvider)
+
+	// Evidence 缓存：宿主未注入且配置启用时使用内置有界内存缓存
+	engine.Cache = deps.Cache
+	if engine.Cache == nil && cfg.Evidence.Cache.Enabled {
+		engine.Cache = cache.NewMemCache(
+			cfg.Evidence.Cache.MaxEntries,
+			cfg.Evidence.Cache.MaxBytes,
+			cfg.Evidence.Cache.MaxItemBytes,
+			bus,
+		)
+	}
+	engine.Perm = deps.PermissionChecker
 	return &Client{manager: mgr, engine: engine, bus: bus}, nil
 }
 

@@ -31,7 +31,7 @@ evidence:
   namespace: support-public
   top_k: 8
   max_candidate_groups: 4
-  validity: {require_validity_policy_for_each_source: true, default_max_age: {product_manual: 720h}}
+  validity: {require_validity_policy_for_each_source: true, default_max_age: {product_manual: 720h}, fail_closed_on_unknown_validity: true}
   cache: {enabled: false}
 decision:
   provider: jev

@@ -8,6 +8,7 @@ import (
 
 	"github.com/kas-runtime/kas/internal/deadline"
 	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/kas-runtime/kas/internal/evidence"
 	"github.com/kas-runtime/kas/internal/obs"
 	"github.com/kas-runtime/kas/internal/runtime"
 )
@@ -187,7 +188,10 @@ func (e *Engine) runStage(root *deadline.Root, st *state, name string, budget ti
 // StageOutcome 是阶段执行结果占位（S4/S5 扩展具体产物）。
 type StageOutcome struct{}
 
-// searchEvidence 执行 Evidence 检索（首轮与补检共用；deadline.Guard 包装）。
+// searchEvidence 执行 Evidence 检索（首轮与补检共用）：统一经 CachedProvider
+// 缓存读写路径（docs/design/01 §4 第 5 步；第 8 步补检结果同样经该路径
+// 重新权限+有效期过滤，过滤路径唯一不绕过）。deadline.Call 包装保证
+// provider 违约也不越过阶段预算。
 func (e *Engine) searchEvidence(ctx context.Context, st *state, supplement bool) error {
 	if e.Evidence == nil {
 		return errors.New("kas: evidence provider 未注入")
@@ -196,15 +200,21 @@ func (e *Engine) searchEvidence(ctx context.Context, st *state, supplement bool)
 	if supplement {
 		stage = StageSupplement
 	}
+	snapCfg := st.snap.Config()
+	provider := evidence.NewCachedProvider(e.Evidence, e.Cache, snapCfg.Evidence, e.Perm, e.Bus)
+	provider.Clock = e.Clock.Now
+	query := domain.EvidenceQuery{
+		Question:         st.req.Question,
+		Namespace:        st.req.Knowledge.Namespace,
+		CorpusGeneration: st.req.Knowledge.CorpusGeneration,
+		TopK:             snapCfg.Evidence.TopK,
+		ValidAt:          e.Clock.Now(),
+		Scope:            st.req.Principal,
+		ConfigVersion:    st.snap.Version(),
+		TraceID:          st.trace,
+	}
 	res, err := deadline.Call(stage, ctx, e.Clock.Now(), func(ctx context.Context) (domain.EvidenceResult, error) {
-		return e.Evidence.Search(ctx, domain.EvidenceQuery{
-			// TODO(S4): Question 先经 cache 层规范化再入查询
-			Question:         st.req.Question,
-			Namespace:        st.req.Knowledge.Namespace,
-			CorpusGeneration: st.req.Knowledge.CorpusGeneration,
-			TopK:             st.snap.Config().Evidence.TopK,
-			ValidAt:          e.Clock.Now(),
-		})
+		return provider.Search(ctx, query)
 	})
 	if err != nil {
 		e.emitProviderError(stage, "search", err, st)

@@ -28,14 +28,21 @@ type EvidenceRef struct {
 	ContentVersion string
 }
 
-// EvidenceQuery 是检索请求参数。Question 已由调用方规范化（S4 cache 层）；
-// TopK/Namespace 来自快照配置；ValidAt 用于有效期判定。
+// EvidenceQuery 是检索请求参数。Question 已由 cache 层规范化（S4）；
+// TopK/Namespace 来自快照配置；ValidAt 用于有效期判定；Scope 与
+// ConfigVersion 由编排器自请求与快照注入（缓存 key 维度与复核依赖）。
 type EvidenceQuery struct {
 	Question         string
 	Namespace        string
 	CorpusGeneration string
 	TopK             int
 	ValidAt          time.Time
+	// Scope 当前请求的可信 principal scope（缓存 key 维度 + 复核输入）。
+	Scope PrincipalScope
+	// ConfigVersion 请求固定的配置版本（缓存 key 维度）。
+	ConfigVersion string
+	// TraceID 关联事件（缓存/过滤计数事件；不作为 key 维度）。
+	TraceID string
 }
 
 // EvidenceResult 是检索结果集：Evidence 列表 + 来源/授权元数据快照。
