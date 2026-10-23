@@ -31,7 +31,9 @@
 
 | 包 | 职责 |
 |---|---|
-| `internal/config` | 配置类型、YAML 严格解析、启动校验、config_version、原子 Reload |
+| `internal/config` | 配置类型、YAML 严格解析、启动校验、config_version |
+| `internal/domain` | 全部公共领域类型与哨兵错误的唯一权威定义（根包以别名暴露） |
+| `internal/runtime` | Runtime Manager：不可变快照构建与原子替换（Reload 五步流程） |
 | `internal/orchestrator` | 请求编排、逐阶段 deadline、事件总线、Client 生命周期 |
 | `internal/evidence` | EvidenceProvider 适配、有效期/权限过滤 |
 | `internal/decision` | DecisionProvider、规则引擎、Jev adapter、降级链 |
@@ -39,7 +41,8 @@
 | `internal/obs` | Health 聚合、Prometheus collector、TraceSink |
 | `internal/contract` | EvidenceProvider/DecisionProvider/Cache 接口合规契约套件（实现方一行接入自测） |
 | `internal/testutil` | fake clock、临时配置构造器、goleak 挂载等测试工具（仅测试引用） |
-| `acceptance/` | GoldenSet 用例 schema、样本、runner 与验收矩阵（Stage 7） |
+| `acceptance/` | GoldenSet 用例 schema/样本/冻结件、runner 与评分器、19 行验收矩阵、泄漏审计（Stage 7） |
+| `examples/` | 最小可运行嵌入示例（CI 编译验证） |
 
 ## 测试约定
 

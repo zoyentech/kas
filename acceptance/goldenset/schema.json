@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "KAS GoldenSet 用例 schema（docs/design/05 §1）",
+  "type": "object",
+  "required": ["case_id", "risk", "question", "principal_scope", "knowledge_namespace", "corpus_generation", "valid_at", "expected_action", "must_abstain"],
+  "properties": {
+    "case_id": {"type": "string", "pattern": "^golden-[0-9]{4,}$"},
+    "risk": {"enum": ["p0", "p1", "p2"]},
+    "question": {"type": "string", "minLength": 1},
+    "principal_scope": {"type": "string"},
+    "knowledge_namespace": {"type": "string"},
+    "corpus_generation": {"type": "string"},
+    "valid_at": {"type": "string", "format": "date-time"},
+    "expected_action": {"enum": ["answer", "ask_clarification", "abstain"]},
+    "expected_evidence_ids": {"type": "array", "items": {"type": "string"}},
+    "forbidden_evidence_ids": {"type": "array", "items": {"type": "string"}},
+    "expected_answer_facts": {"type": "array", "items": {"type": "string"}},
+    "must_abstain": {"type": "boolean"},
+    "tags": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

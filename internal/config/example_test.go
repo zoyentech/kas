@@ -10,6 +10,8 @@ import (
 // （Story 2.1.1.1 T1：非严格解析后与预期结构逐字段相等）。
 func boolPtr(b bool) *bool { return &b }
 
+func floatPtr(f float64) *float64 { return &f }
+
 func TestExampleYAMLFieldMapping(t *testing.T) {
 	got := mustLoadExample(t)
 
@@ -54,7 +56,7 @@ func TestExampleYAMLFieldMapping(t *testing.T) {
 				Order: []string{"jev", "deterministic_rules", "decision_cache", "abstain"},
 				Rules: []RuleConfig{
 					{Name: "no_valid_evidence", When: "valid_evidence_count_equals_zero", Action: "abstain"},
-					{Name: "low_confidence", When: "decision_confidence_below_threshold", Action: "ask_clarification"},
+					{Name: "low_confidence", When: "decision_confidence_below_threshold", Action: "ask_clarification", Threshold: floatPtr(0.6)},
 				},
 				Cache: DecisionCacheConfig{
 					Enabled: true, TTL: D(30 * time.Second), MaxEntries: 500,

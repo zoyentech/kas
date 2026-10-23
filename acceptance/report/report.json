@@ -1,0 +1,37 @@
+{
+  "all": {
+    "Count": 102,
+    "RecallAt5": 1,
+    "PrecisionAt5": 1,
+    "MRR": 1,
+    "NDCG": 1,
+    "FactSupport": 1,
+    "AbstainAccuracy": 1,
+    "MedianMS": 0.022,
+    "P95MS": 0.034,
+    "P99MS": 0.12711999999999993,
+    "P0Violations": 0
+  },
+  "count": 102,
+  "failed": 0,
+  "goldenset_version": "c8e22185131f0e918e3a1484414e8ebc082efe31a2fe76f3720945f34547e309",
+  "p0": {
+    "Count": 30,
+    "RecallAt5": 1,
+    "PrecisionAt5": 1,
+    "MRR": 1,
+    "NDCG": 1,
+    "FactSupport": 1,
+    "AbstainAccuracy": 1,
+    "MedianMS": 0,
+    "P95MS": 0,
+    "P99MS": 0,
+    "P0Violations": 0
+  },
+  "thresholds": {
+    "abstain": 0.95,
+    "fact_support": 0.95,
+    "recall_all": 0.9,
+    "recall_p0": 0.95
+  }
+}

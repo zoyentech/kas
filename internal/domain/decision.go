@@ -44,6 +44,9 @@ type Decision struct {
 	// AnswerText 是上游生成的回答草稿文本（KAS 不生成文本，只做组装与
 	// 引用校验；docs/01 §1 范围边界）。经引用安全闸后进入 Response.Answer。
 	AnswerText string
+	// Degradation 是降级链汇聚的受控 reason code（失败各级原因，进
+	// Response.Degradation；docs/04 §3 reason 贯通）。
+	Degradation []string
 }
 
 // DecisionProvider 将候选组映射为有限 action；Jev 私有协议只存在于

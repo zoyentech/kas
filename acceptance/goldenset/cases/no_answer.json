@@ -1,0 +1,182 @@
+[
+  {
+    "case_id": "golden-3000",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "abstain",
+    "expected_answer_facts": [],
+    "knowledge_namespace": "support-public",
+    "must_abstain": true,
+    "principal_scope": "scope-common",
+    "question": "服务支持火星部署吗？",
+    "risk": "p1",
+    "tags": [
+      "no_answer"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-3001",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "abstain",
+    "expected_answer_facts": [],
+    "knowledge_namespace": "support-public",
+    "must_abstain": true,
+    "principal_scope": "scope-common",
+    "question": "能让服务回到过去吗？",
+    "risk": "p1",
+    "tags": [
+      "no_answer"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-3002",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "abstain",
+    "expected_answer_facts": [],
+    "knowledge_namespace": "support-public",
+    "must_abstain": true,
+    "principal_scope": "scope-common",
+    "question": "支持用意念配置吗？",
+    "risk": "p1",
+    "tags": [
+      "no_answer"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-3003",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "abstain",
+    "expected_answer_facts": [],
+    "knowledge_namespace": "support-public",
+    "must_abstain": true,
+    "principal_scope": "scope-common",
+    "question": "服务能煮咖啡吗？",
+    "risk": "p1",
+    "tags": [
+      "no_answer"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-3004",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "abstain",
+    "expected_answer_facts": [],
+    "knowledge_namespace": "support-public",
+    "must_abstain": true,
+    "principal_scope": "scope-common",
+    "question": "支持隐身模式吗？",
+    "risk": "p1",
+    "tags": [
+      "no_answer"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-3005",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "abstain",
+    "expected_answer_facts": [],
+    "knowledge_namespace": "support-public",
+    "must_abstain": true,
+    "principal_scope": "scope-common",
+    "question": "能把超时设成昨天吗？",
+    "risk": "p1",
+    "tags": [
+      "no_answer"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-3006",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "abstain",
+    "expected_answer_facts": [],
+    "knowledge_namespace": "support-public",
+    "must_abstain": true,
+    "principal_scope": "scope-common",
+    "question": "支持用摩斯电码提问吗？",
+    "risk": "p1",
+    "tags": [
+      "no_answer"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-3007",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "abstain",
+    "expected_answer_facts": [],
+    "knowledge_namespace": "support-public",
+    "must_abstain": true,
+    "principal_scope": "scope-common",
+    "question": "服务会读心术吗？",
+    "risk": "p1",
+    "tags": [
+      "no_answer"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-3008",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "abstain",
+    "expected_answer_facts": [],
+    "knowledge_namespace": "support-public",
+    "must_abstain": true,
+    "principal_scope": "scope-common",
+    "question": "支持超光速响应吗？",
+    "risk": "p1",
+    "tags": [
+      "no_answer"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-3009",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "abstain",
+    "expected_answer_facts": [],
+    "knowledge_namespace": "support-public",
+    "must_abstain": true,
+    "principal_scope": "scope-common",
+    "question": "能让答案自动变成对的吗？",
+    "risk": "p1",
+    "tags": [
+      "no_answer"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-3010",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "abstain",
+    "expected_answer_facts": [],
+    "knowledge_namespace": "support-public",
+    "must_abstain": true,
+    "principal_scope": "scope-common",
+    "question": "服务支持火星部署吗？",
+    "risk": "p1",
+    "tags": [
+      "no_answer"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-3011",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "abstain",
+    "expected_answer_facts": [],
+    "knowledge_namespace": "support-public",
+    "must_abstain": true,
+    "principal_scope": "scope-common",
+    "question": "能让服务回到过去吗？",
+    "risk": "p1",
+    "tags": [
+      "no_answer"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  }
+]

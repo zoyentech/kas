@@ -1,0 +1,386 @@
+[
+  {
+    "case_id": "golden-4000",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "第 0 号公告当前版本内容"
+    ],
+    "expected_evidence_ids": [
+      "notice-0#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "notice-expired-0#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "第 0 号公告的当前有效内容是什么？",
+    "risk": "p0",
+    "tags": [
+      "freshness",
+      "freshness"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-4001",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "第 1 号公告当前版本内容"
+    ],
+    "expected_evidence_ids": [
+      "notice-1#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "notice-expired-1#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "第 1 号公告的当前有效内容是什么？",
+    "risk": "p0",
+    "tags": [
+      "freshness",
+      "freshness"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-4002",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "第 2 号公告当前版本内容"
+    ],
+    "expected_evidence_ids": [
+      "notice-2#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "notice-expired-2#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "第 2 号公告的当前有效内容是什么？",
+    "risk": "p0",
+    "tags": [
+      "freshness",
+      "freshness"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-4003",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "第 3 号公告当前版本内容"
+    ],
+    "expected_evidence_ids": [
+      "notice-3#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "notice-expired-3#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "第 3 号公告的当前有效内容是什么？",
+    "risk": "p0",
+    "tags": [
+      "freshness",
+      "freshness"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-4004",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "第 4 号公告当前版本内容"
+    ],
+    "expected_evidence_ids": [
+      "notice-4#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "notice-expired-4#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "第 4 号公告的当前有效内容是什么？",
+    "risk": "p0",
+    "tags": [
+      "freshness",
+      "freshness"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-4005",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "第 5 号公告当前版本内容"
+    ],
+    "expected_evidence_ids": [
+      "notice-5#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "notice-expired-5#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "第 5 号公告的当前有效内容是什么？",
+    "risk": "p0",
+    "tags": [
+      "freshness",
+      "freshness"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-4006",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "第 6 号公告当前版本内容"
+    ],
+    "expected_evidence_ids": [
+      "notice-6#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "notice-expired-6#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "第 6 号公告的当前有效内容是什么？",
+    "risk": "p0",
+    "tags": [
+      "freshness",
+      "freshness"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-4007",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "第 7 号公告当前版本内容"
+    ],
+    "expected_evidence_ids": [
+      "notice-7#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "notice-expired-7#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "第 7 号公告的当前有效内容是什么？",
+    "risk": "p0",
+    "tags": [
+      "freshness",
+      "freshness"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-4008",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "第 8 号公告当前版本内容"
+    ],
+    "expected_evidence_ids": [
+      "notice-8#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "notice-expired-8#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "第 8 号公告的当前有效内容是什么？",
+    "risk": "p0",
+    "tags": [
+      "freshness",
+      "freshness"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-4009",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "第 9 号公告当前版本内容"
+    ],
+    "expected_evidence_ids": [
+      "notice-9#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "notice-expired-9#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "第 9 号公告的当前有效内容是什么？",
+    "risk": "p0",
+    "tags": [
+      "freshness",
+      "freshness"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-4010",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "第 10 号公告当前版本内容"
+    ],
+    "expected_evidence_ids": [
+      "notice-10#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "notice-expired-10#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "第 10 号公告的当前有效内容是什么？",
+    "risk": "p0",
+    "tags": [
+      "freshness",
+      "freshness"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-4011",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "第 11 号公告当前版本内容"
+    ],
+    "expected_evidence_ids": [
+      "notice-11#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "notice-expired-11#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "第 11 号公告的当前有效内容是什么？",
+    "risk": "p0",
+    "tags": [
+      "freshness",
+      "freshness"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-4012",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "第 12 号公告当前版本内容"
+    ],
+    "expected_evidence_ids": [
+      "notice-12#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "notice-expired-12#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "第 12 号公告的当前有效内容是什么？",
+    "risk": "p0",
+    "tags": [
+      "freshness",
+      "freshness"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-4013",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "第 13 号公告当前版本内容"
+    ],
+    "expected_evidence_ids": [
+      "notice-13#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "notice-expired-13#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "第 13 号公告的当前有效内容是什么？",
+    "risk": "p0",
+    "tags": [
+      "freshness",
+      "freshness"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-4014",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "第 14 号公告当前版本内容"
+    ],
+    "expected_evidence_ids": [
+      "notice-14#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "notice-expired-14#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "第 14 号公告的当前有效内容是什么？",
+    "risk": "p0",
+    "tags": [
+      "freshness",
+      "freshness"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-4015",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "第 15 号公告当前版本内容"
+    ],
+    "expected_evidence_ids": [
+      "notice-15#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "notice-expired-15#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "第 15 号公告的当前有效内容是什么？",
+    "risk": "p0",
+    "tags": [
+      "freshness",
+      "freshness"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  }
+]

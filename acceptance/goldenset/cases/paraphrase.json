@@ -1,0 +1,322 @@
+[
+  {
+    "case_id": "golden-2000",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "在配置文件的 timeouts 节设置"
+    ],
+    "expected_evidence_ids": [
+      "doc-200#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "怎么给服务设置超时？",
+    "risk": "p2",
+    "tags": [
+      "paraphrase"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-2001",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "在配置文件的 timeouts 节设置"
+    ],
+    "expected_evidence_ids": [
+      "doc-200#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "如何配置服务的超时时间？",
+    "risk": "p2",
+    "tags": [
+      "paraphrase"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-2002",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "在配置文件的 timeouts 节设置"
+    ],
+    "expected_evidence_ids": [
+      "doc-200#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "超时时间在哪里设置？",
+    "risk": "p2",
+    "tags": [
+      "paraphrase"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-2003",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "在配置文件的 timeouts 节设置"
+    ],
+    "expected_evidence_ids": [
+      "doc-200#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "服务超时如何调整？",
+    "risk": "p2",
+    "tags": [
+      "paraphrase"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-2004",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "在配置文件的 timeouts 节设置"
+    ],
+    "expected_evidence_ids": [
+      "doc-200#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "设置超时的方法是什么？",
+    "risk": "p2",
+    "tags": [
+      "paraphrase"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-2005",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "在配置文件的 timeouts 节设置"
+    ],
+    "expected_evidence_ids": [
+      "doc-200#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "请问超时怎么配？",
+    "risk": "p2",
+    "tags": [
+      "paraphrase"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-2006",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "在配置文件的 timeouts 节设置"
+    ],
+    "expected_evidence_ids": [
+      "doc-200#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "超时参数怎么改？",
+    "risk": "p2",
+    "tags": [
+      "paraphrase"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-2007",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "在配置文件的 timeouts 节设置"
+    ],
+    "expected_evidence_ids": [
+      "doc-200#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "哪里修改服务超时？",
+    "risk": "p2",
+    "tags": [
+      "paraphrase"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-2008",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "在配置文件的 timeouts 节设置"
+    ],
+    "expected_evidence_ids": [
+      "doc-200#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "调整超时时间的步骤？",
+    "risk": "p2",
+    "tags": [
+      "paraphrase"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-2009",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "在配置文件的 timeouts 节设置"
+    ],
+    "expected_evidence_ids": [
+      "doc-200#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "超时配置的入口？",
+    "risk": "p2",
+    "tags": [
+      "paraphrase"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-2010",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "在配置文件的 timeouts 节设置"
+    ],
+    "expected_evidence_ids": [
+      "doc-200#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "改变超时怎么做？",
+    "risk": "p2",
+    "tags": [
+      "paraphrase"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-2011",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "在配置文件的 timeouts 节设置"
+    ],
+    "expected_evidence_ids": [
+      "doc-200#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "服务超时设定方法？",
+    "risk": "p2",
+    "tags": [
+      "paraphrase"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-2012",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "在配置文件的 timeouts 节设置"
+    ],
+    "expected_evidence_ids": [
+      "doc-200#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "怎么给服务设置超时？",
+    "risk": "p2",
+    "tags": [
+      "paraphrase"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-2013",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "在配置文件的 timeouts 节设置"
+    ],
+    "expected_evidence_ids": [
+      "doc-200#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "如何配置服务的超时时间？",
+    "risk": "p2",
+    "tags": [
+      "paraphrase"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-2014",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "在配置文件的 timeouts 节设置"
+    ],
+    "expected_evidence_ids": [
+      "doc-200#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "超时时间在哪里设置？",
+    "risk": "p2",
+    "tags": [
+      "paraphrase"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-2015",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "在配置文件的 timeouts 节设置"
+    ],
+    "expected_evidence_ids": [
+      "doc-200#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "服务超时如何调整？",
+    "risk": "p2",
+    "tags": [
+      "paraphrase"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  }
+]

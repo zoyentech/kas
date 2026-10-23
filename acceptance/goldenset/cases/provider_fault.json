@@ -1,0 +1,202 @@
+[
+  {
+    "case_id": "golden-6000",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "按降级链处理"
+    ],
+    "expected_evidence_ids": [
+      "doc-runbook-0#seg-3"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "故障演练问题 0：服务的降级行为？",
+    "risk": "p1",
+    "tags": [
+      "provider_fault"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-6001",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "按降级链处理"
+    ],
+    "expected_evidence_ids": [
+      "doc-runbook-1#seg-3"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "故障演练问题 1：服务的降级行为？",
+    "risk": "p1",
+    "tags": [
+      "provider_fault"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-6002",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "按降级链处理"
+    ],
+    "expected_evidence_ids": [
+      "doc-runbook-2#seg-3"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "故障演练问题 2：服务的降级行为？",
+    "risk": "p1",
+    "tags": [
+      "provider_fault"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-6003",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "按降级链处理"
+    ],
+    "expected_evidence_ids": [
+      "doc-runbook-3#seg-3"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "故障演练问题 3：服务的降级行为？",
+    "risk": "p1",
+    "tags": [
+      "provider_fault"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-6004",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "按降级链处理"
+    ],
+    "expected_evidence_ids": [
+      "doc-runbook-4#seg-3"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "故障演练问题 4：服务的降级行为？",
+    "risk": "p1",
+    "tags": [
+      "provider_fault"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-6005",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "按降级链处理"
+    ],
+    "expected_evidence_ids": [
+      "doc-runbook-5#seg-3"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "故障演练问题 5：服务的降级行为？",
+    "risk": "p1",
+    "tags": [
+      "provider_fault"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-6006",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "按降级链处理"
+    ],
+    "expected_evidence_ids": [
+      "doc-runbook-6#seg-3"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "故障演练问题 6：服务的降级行为？",
+    "risk": "p1",
+    "tags": [
+      "provider_fault"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-6007",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "按降级链处理"
+    ],
+    "expected_evidence_ids": [
+      "doc-runbook-7#seg-3"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "故障演练问题 7：服务的降级行为？",
+    "risk": "p1",
+    "tags": [
+      "provider_fault"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-6008",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "按降级链处理"
+    ],
+    "expected_evidence_ids": [
+      "doc-runbook-8#seg-3"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "故障演练问题 8：服务的降级行为？",
+    "risk": "p1",
+    "tags": [
+      "provider_fault"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-6009",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "按降级链处理"
+    ],
+    "expected_evidence_ids": [
+      "doc-runbook-9#seg-3"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "故障演练问题 9：服务的降级行为？",
+    "risk": "p1",
+    "tags": [
+      "provider_fault"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  }
+]

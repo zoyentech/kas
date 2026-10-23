@@ -253,6 +253,12 @@ func (e *Engine) decide(ctx context.Context, st *state) error {
 		return err
 	}
 	st.decision = dec
+	if dec.Degraded {
+		st.degraded = true
+		for _, r := range dec.Degradation {
+			st.reasons = appendUnique(st.reasons, r)
+		}
+	}
 	// F-009：决策版本链进 trace（provider/model/model_version/候选数/action）
 	e.Bus.Emit(obs.DecisionTraceEvent{
 		Meta: withAt(st.meta, e.Clock.Now()), Provider: dec.Provider,
@@ -387,6 +393,15 @@ func outcomeOf(resp domain.Response, err error) string {
 	default:
 		return "error"
 	}
+}
+
+func appendUnique(list []string, s string) []string {
+	for _, v := range list {
+		if v == s {
+			return list
+		}
+	}
+	return append(list, s)
 }
 
 func withAt(m obs.Meta, at time.Time) obs.Meta {

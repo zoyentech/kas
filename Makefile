@@ -10,7 +10,7 @@ COVER_THRESHOLD ?= 60
 GOLANGCI_VERSION ?= v1.61.0
 GOFUMPT_VERSION ?= v0.7.0
 
-.PHONY: help build test test-race lint cover fmt fmt-check tidy verify clean
+.PHONY: help build test test-race lint cover fmt fmt-check tidy verify clean acceptance goldenset-freeze audit-deps
 
 help: ## 列出可用目标
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
@@ -54,6 +54,20 @@ tidy: ## go mod tidy
 	$(GO) mod tidy
 
 verify: build vet fmt-check test-race ## 本地全量门禁（与 CI 等价子集）
+
+acceptance: ## 跑 GoldenSet 验收（runner + 门槛判定 + 矩阵套件 + 审计）
+	$(GO) run ./acceptance/cmd/runner -cases acceptance/goldenset/cases -out acceptance/report
+	$(GO) test -race -count=1 -timeout 600s ./acceptance/...
+
+goldenset-freeze: ## 重新冻结 GoldenSet 内容 hash（P0 变更需重跑并评审）
+	$(GO) run ./acceptance/cmd/freeze
+
+audit-deps: ## 依赖漏洞与 license 审计（govulncheck 未装时提示）
+	@if command -v govulncheck >/dev/null 2>&1; then \
+		govulncheck ./... ; \
+	else \
+		echo "govulncheck 未安装：go install golang.org/x/vuln/cmd/govulncheck@latest；license 清单见 docs/dependency-license-baseline.md"; \
+	fi
 
 clean: ## 清理构建产物
 	rm -f coverage.out

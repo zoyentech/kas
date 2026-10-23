@@ -56,6 +56,26 @@ jobs:
           go install mvdan.cc/gofumpt@v0.7.0
           test -z "$(gofumpt -l -extra .)" || { echo "以下文件未通过 gofumpt："; gofumpt -l -extra .; exit 1; }
 
+  acceptance:
+    name: goldenset acceptance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.x'
+          cache: true
+      - name: Matrix + audit suites (race)
+        run: go test -race -count=1 -timeout 900s ./acceptance/...
+      - name: GoldenSet runner (thresholds)
+        run: go run ./acceptance/cmd/runner -cases acceptance/goldenset/cases -out acceptance/report
+      - name: Upload acceptance report
+        uses: actions/upload-artifact@v4
+        with:
+          name: acceptance-report
+          path: acceptance/report/
+          retention-days: 90
+
   coverage:
     name: coverage (threshold)
     runs-on: ubuntu-latest

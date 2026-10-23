@@ -1,0 +1,202 @@
+[
+  {
+    "case_id": "golden-7000",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "配置切换后行为一致"
+    ],
+    "expected_evidence_ids": [
+      "doc-cfg-0#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "配置切换演练问题 0",
+    "risk": "p1",
+    "tags": [
+      "config_switch"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-7001",
+    "corpus_generation": "corpus-2026-11",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "配置切换后行为一致"
+    ],
+    "expected_evidence_ids": [
+      "doc-cfg-1#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "配置切换演练问题 1",
+    "risk": "p1",
+    "tags": [
+      "config_switch"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-7002",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "配置切换后行为一致"
+    ],
+    "expected_evidence_ids": [
+      "doc-cfg-2#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "配置切换演练问题 2",
+    "risk": "p1",
+    "tags": [
+      "config_switch"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-7003",
+    "corpus_generation": "corpus-2026-11",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "配置切换后行为一致"
+    ],
+    "expected_evidence_ids": [
+      "doc-cfg-3#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "配置切换演练问题 3",
+    "risk": "p1",
+    "tags": [
+      "config_switch"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-7004",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "配置切换后行为一致"
+    ],
+    "expected_evidence_ids": [
+      "doc-cfg-4#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "配置切换演练问题 4",
+    "risk": "p1",
+    "tags": [
+      "config_switch"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-7005",
+    "corpus_generation": "corpus-2026-11",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "配置切换后行为一致"
+    ],
+    "expected_evidence_ids": [
+      "doc-cfg-5#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "配置切换演练问题 5",
+    "risk": "p1",
+    "tags": [
+      "config_switch"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-7006",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "配置切换后行为一致"
+    ],
+    "expected_evidence_ids": [
+      "doc-cfg-6#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "配置切换演练问题 6",
+    "risk": "p1",
+    "tags": [
+      "config_switch"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-7007",
+    "corpus_generation": "corpus-2026-11",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "配置切换后行为一致"
+    ],
+    "expected_evidence_ids": [
+      "doc-cfg-7#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "配置切换演练问题 7",
+    "risk": "p1",
+    "tags": [
+      "config_switch"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-7008",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "配置切换后行为一致"
+    ],
+    "expected_evidence_ids": [
+      "doc-cfg-8#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "配置切换演练问题 8",
+    "risk": "p1",
+    "tags": [
+      "config_switch"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-7009",
+    "corpus_generation": "corpus-2026-11",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "配置切换后行为一致"
+    ],
+    "expected_evidence_ids": [
+      "doc-cfg-9#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "配置切换演练问题 9",
+    "risk": "p1",
+    "tags": [
+      "config_switch"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  }
+]

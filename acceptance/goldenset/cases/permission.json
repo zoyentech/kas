@@ -1,0 +1,296 @@
+[
+  {
+    "case_id": "golden-5000",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "abstain",
+    "expected_answer_facts": [],
+    "expected_evidence_ids": null,
+    "forbidden_evidence_ids": [
+      "kb-internal-0#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": true,
+    "principal_scope": "scope-guest",
+    "question": "内部知识库第 0 条的内容？",
+    "risk": "p0",
+    "tags": [
+      "permission",
+      "permission"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-5001",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [],
+    "expected_evidence_ids": [
+      "kb-internal-1#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "kb-locked-1#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-internal",
+    "question": "内部知识库第 1 条的内容？",
+    "risk": "p0",
+    "tags": [
+      "permission",
+      "permission"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-5002",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "abstain",
+    "expected_answer_facts": [],
+    "expected_evidence_ids": null,
+    "forbidden_evidence_ids": [
+      "kb-internal-2#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": true,
+    "principal_scope": "scope-guest",
+    "question": "内部知识库第 2 条的内容？",
+    "risk": "p0",
+    "tags": [
+      "permission",
+      "permission"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-5003",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [],
+    "expected_evidence_ids": [
+      "kb-internal-3#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "kb-locked-3#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-internal",
+    "question": "内部知识库第 3 条的内容？",
+    "risk": "p0",
+    "tags": [
+      "permission",
+      "permission"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-5004",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "abstain",
+    "expected_answer_facts": [],
+    "expected_evidence_ids": null,
+    "forbidden_evidence_ids": [
+      "kb-internal-4#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": true,
+    "principal_scope": "scope-guest",
+    "question": "内部知识库第 4 条的内容？",
+    "risk": "p0",
+    "tags": [
+      "permission",
+      "permission"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-5005",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [],
+    "expected_evidence_ids": [
+      "kb-internal-5#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "kb-locked-5#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-internal",
+    "question": "内部知识库第 5 条的内容？",
+    "risk": "p0",
+    "tags": [
+      "permission",
+      "permission"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-5006",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "abstain",
+    "expected_answer_facts": [],
+    "expected_evidence_ids": null,
+    "forbidden_evidence_ids": [
+      "kb-internal-6#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": true,
+    "principal_scope": "scope-guest",
+    "question": "内部知识库第 6 条的内容？",
+    "risk": "p0",
+    "tags": [
+      "permission",
+      "permission"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-5007",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [],
+    "expected_evidence_ids": [
+      "kb-internal-7#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "kb-locked-7#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-internal",
+    "question": "内部知识库第 7 条的内容？",
+    "risk": "p0",
+    "tags": [
+      "permission",
+      "permission"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-5008",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "abstain",
+    "expected_answer_facts": [],
+    "expected_evidence_ids": null,
+    "forbidden_evidence_ids": [
+      "kb-internal-8#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": true,
+    "principal_scope": "scope-guest",
+    "question": "内部知识库第 8 条的内容？",
+    "risk": "p0",
+    "tags": [
+      "permission",
+      "permission"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-5009",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [],
+    "expected_evidence_ids": [
+      "kb-internal-9#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "kb-locked-9#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-internal",
+    "question": "内部知识库第 9 条的内容？",
+    "risk": "p0",
+    "tags": [
+      "permission",
+      "permission"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-5010",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "abstain",
+    "expected_answer_facts": [],
+    "expected_evidence_ids": null,
+    "forbidden_evidence_ids": [
+      "kb-internal-10#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": true,
+    "principal_scope": "scope-guest",
+    "question": "内部知识库第 10 条的内容？",
+    "risk": "p0",
+    "tags": [
+      "permission",
+      "permission"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-5011",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [],
+    "expected_evidence_ids": [
+      "kb-internal-11#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "kb-locked-11#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-internal",
+    "question": "内部知识库第 11 条的内容？",
+    "risk": "p0",
+    "tags": [
+      "permission",
+      "permission"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-5012",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "abstain",
+    "expected_answer_facts": [],
+    "expected_evidence_ids": null,
+    "forbidden_evidence_ids": [
+      "kb-internal-12#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": true,
+    "principal_scope": "scope-guest",
+    "question": "内部知识库第 12 条的内容？",
+    "risk": "p0",
+    "tags": [
+      "permission",
+      "permission"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-5013",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [],
+    "expected_evidence_ids": [
+      "kb-internal-13#seg-1"
+    ],
+    "forbidden_evidence_ids": [
+      "kb-locked-13#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-internal",
+    "question": "内部知识库第 13 条的内容？",
+    "risk": "p0",
+    "tags": [
+      "permission",
+      "permission"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  }
+]

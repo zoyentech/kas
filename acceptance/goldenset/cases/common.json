@@ -1,0 +1,554 @@
+[
+  {
+    "case_id": "golden-1000",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 0 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-100#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-0#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 0 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1001",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 1 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-101#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-1#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 1 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1002",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 2 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-102#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-2#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 2 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1003",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 3 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-103#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-3#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 3 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1004",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 4 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-104#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-4#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 4 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1005",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 5 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-105#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-5#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 5 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1006",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 6 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-106#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-6#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 6 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1007",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 7 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-107#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-7#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 7 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1008",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 8 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-108#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-8#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 8 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1009",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 9 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-109#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-9#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 9 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1010",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 10 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-110#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-10#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 10 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1011",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 11 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-111#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-11#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 11 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1012",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 12 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-112#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-12#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 12 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1013",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 13 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-113#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-13#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 13 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1014",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 14 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-114#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-14#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 14 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1015",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 15 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-115#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-15#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 15 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1016",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 16 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-116#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-16#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 16 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1017",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 17 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-117#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-17#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 17 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1018",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 18 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-118#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-18#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 18 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1019",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 19 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-119#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-19#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 19 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1020",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 20 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-120#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-20#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 20 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1021",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 21 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-121#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-21#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 21 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1022",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 22 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-122#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-22#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 22 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  },
+  {
+    "case_id": "golden-1023",
+    "corpus_generation": "corpus-2026-10",
+    "expected_action": "answer",
+    "expected_answer_facts": [
+      "支持配置文件 23 号方案与环境变量"
+    ],
+    "expected_evidence_ids": [
+      "doc-123#seg-2"
+    ],
+    "forbidden_evidence_ids": [
+      "doc-obsolete-23#seg-1"
+    ],
+    "knowledge_namespace": "support-public",
+    "must_abstain": false,
+    "principal_scope": "scope-common",
+    "question": "产品手册第 23 章支持哪些配置方式？",
+    "risk": "p2",
+    "tags": [
+      "common"
+    ],
+    "valid_at": "2026-10-23T00:00:00Z"
+  }
+]

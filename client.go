@@ -90,14 +90,13 @@ func New(cfg Config, deps Dependencies, opts ...Option) (*Client, error) {
 	}
 	engine.Perm = deps.PermissionChecker
 
-	// 决策链（F-007/F-008）：宿主未注入 DecisionProvider 时按配置装配
-	if engine.Decision == nil {
-		chain, err := buildDecisionChain(cfg, bus)
-		if err != nil {
-			return nil, err
-		}
-		engine.Decision = chain
+	// 决策链（F-007/F-008）：宿主注入的 DecisionProvider 作为首选级
+	//（Jev 角色）；未注入时按配置构建 Jev 客户端。降级链与护栏始终生效。
+	chain, err := buildDecisionChain(cfg, bus, deps.DecisionProvider)
+	if err != nil {
+		return nil, err
 	}
+	engine.Decision = chain
 
 	c := &Client{manager: mgr, engine: engine, bus: bus, deps: deps}
 
@@ -180,8 +179,9 @@ func (c *Client) Close() error {
 	return nil
 }
 
-// buildDecisionChain 装配降级链（Story 5.3.1.1 / 5.3.2.1 T3）。
-func buildDecisionChain(cfg Config, bus *obs.Bus) (domain.DecisionProvider, error) {
+// buildDecisionChain 装配降级链（Story 5.3.1.1 / 5.3.2.1 T3）；
+// primary 非空时作为 Jev 角色首选级（宿主自定义决策器同样获得降级保护）。
+func buildDecisionChain(cfg Config, bus *obs.Bus, primary domain.DecisionProvider) (domain.DecisionProvider, error) {
 	guard, err := rules.New(cfg.Decision.Fallback.Rules)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %v", ErrInvalidConfig, err)
@@ -191,7 +191,9 @@ func buildDecisionChain(cfg Config, bus *obs.Bus) (domain.DecisionProvider, erro
 		return nil, fmt.Errorf("%w: %v", ErrInvalidConfig, err)
 	}
 	var stages []fallback.Stage
-	if cfg.Decision.Provider == "jev" {
+	if primary != nil {
+		stages = append(stages, fallback.Stage{Route: fallback.RouteJev, Provider: primary})
+	} else if cfg.Decision.Provider == "jev" {
 		jc, err := jev.LoadConfig(cfg.Decision.Jev, cfg.Timeouts.Rejudge.Std())
 		if err != nil {
 			return nil, err

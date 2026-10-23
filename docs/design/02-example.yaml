@@ -48,6 +48,7 @@ decision:
         action: abstain
       - name: low_confidence
         when: decision_confidence_below_threshold
+        threshold: 0.6
         action: ask_clarification
     cache:
       enabled: true

@@ -112,6 +112,7 @@ func (c *Chain) Decide(ctx context.Context, in domain.DecisionInput) (domain.Dec
 					Degraded:     true,
 					Model:        d.Model,
 					ModelVersion: d.ModelVersion,
+					Degradation:  appendReasons(reasons, domain.ReasonRulesApplied),
 				}
 				c.emitFallback(meta, RouteRules, domain.ReasonRulesApplied)
 				return g, nil
@@ -122,6 +123,7 @@ func (c *Chain) Decide(ctx context.Context, in domain.DecisionInput) (domain.Dec
 		}
 		if s.Route != RouteJev {
 			d.Degraded = true
+			d.Degradation = appendReasons(reasons, domain.ReasonDecisionCacheHit)
 		}
 		return d, nil
 	}
@@ -169,9 +171,21 @@ func appendReason(reasons []string, reason string) []string {
 
 func terminal(reason string, reasons []string) domain.Decision {
 	return domain.Decision{
-		Action:     domain.ActionAbstain,
-		ReasonCode: reason,
-		Provider:   "fallback",
-		Degraded:   true,
+		Action:      domain.ActionAbstain,
+		ReasonCode:  reason,
+		Provider:    "fallback",
+		Degraded:    true,
+		Degradation: appendReasons(reasons, reason),
 	}
+}
+
+// appendReasons 追加并去重。
+func appendReasons(reasons []string, reason string) []string {
+	for _, r := range reasons {
+		if r == reason {
+			return reasons
+		}
+	}
+	out := append([]string(nil), reasons...)
+	return append(out, reason)
 }
