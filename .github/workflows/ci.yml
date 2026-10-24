@@ -46,10 +46,10 @@ jobs:
         with:
           go-version: '1.25.x'
           cache: true
-      - name: golangci-lint（版本锁定）
-        uses: golangci/golangci-lint-action@v6
+      - name: golangci-lint（版本锁定 v2，兼容 Go 1.25+ 导出数据格式）
+        uses: golangci/golangci-lint-action@v8
         with:
-          version: v1.61.0
+          version: v2.15.0
           args: --timeout=5m
       - name: fmt-check
         run: |

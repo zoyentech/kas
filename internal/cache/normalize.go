@@ -12,6 +12,7 @@ import (
 //     （规避土耳其语 i 等区域陷阱；中文无大小写不受影响）
 type CasePolicy int
 
+// 大小写归一策略枚举（CaseASCII 为默认）。
 const (
 	CaseOff CasePolicy = iota
 	CaseASCII

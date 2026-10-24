@@ -1,13 +1,15 @@
-# golangci-lint 配置（Story 1.2.1.2）。CI 与本地共用本文件；版本由
-# .github/workflows/ci.yml 固定（Makefile GOLANGCI_VERSION）。
+# golangci-lint 配置（v2 schema；Story 1.2.1.2）。CI 与本地共用本文件；
+# 版本由 .github/workflows/ci.yml 固定（Makefile GOLANGCI_VERSION）。
+# v2 升级说明：Go 1.25+ 标准库导出数据格式（version 2）需 golangci-lint
+# v2.x 解析；v1.61 与 Go 1.25/1.26 不兼容（ADR-0002 修订记录）。
+version: "2"
+
 run:
   timeout: 5m
   tests: true
 
-output:
-  sort-results: true
-
 linters:
+  default: none
   enable:
     - errcheck      # 未检查的 error
     - govet         # go vet 全集
@@ -19,20 +21,18 @@ linters:
     - revive        # 导出符号注释、命名等
     - copyloopvar   # 循环变量拷贝（Go1.22+ 不再需要）
 
-linters-settings:
-  revive:
-    rules:
-      - name: exported
-        arguments:
-          - disableStutteringCheck # 包名 kas 前缀（KASClient 等）属领域命名，不算 stutter
+  settings:
+    revive:
+      rules:
+        - name: exported
+          arguments:
+            - disableStutteringCheck # 包名 kas 前缀（KASClient 等）属领域命名，不算 stutter
 
-issues:
-  # 每条豁免必须写明理由（Story 验收标准）。
-  exclude-rules:
-    # 测试文件允许使用 gosec 低危项与较长函数
-    - path: _test\.go
-      linters:
-        - gocritic
-      # 理由：测试中构造表格用例的重复模式会触发 gocritic 建议，降低可读性。
-  max-issues-per-linter: 0
-  max-same-issues: 0
+  exclusions:
+    # 每条豁免必须写明理由（Story 验收标准）。
+    rules:
+      # 测试文件允许 gocritic 建议类告警
+      - path: _test\.go
+        linters:
+          - gocritic
+        # 理由：测试中构造表格用例的重复模式会触发 gocritic 建议，降低可读性。

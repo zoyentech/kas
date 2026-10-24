@@ -7,7 +7,7 @@ MODULE := github.com/kas-runtime/kas
 # 覆盖率阈值：初始 60%（Story 1.2.2.1），随 Stage 递增至 D-8 目标
 # （核心包 80%，P0 安全路径 90%，Stage 7 全量 80%）。
 COVER_THRESHOLD ?= 60
-GOLANGCI_VERSION ?= v1.61.0
+GOLANGCI_VERSION ?= v2.15.0
 GOFUMPT_VERSION ?= v0.7.0
 
 .PHONY: help build test test-race lint cover fmt fmt-check tidy verify clean acceptance goldenset-freeze audit-deps

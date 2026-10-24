@@ -42,6 +42,7 @@ type RequestEndEvent struct {
 	Degraded bool
 }
 
+// Kind implements Event.
 func (RequestEndEvent) Kind() string { return "request_end" }
 
 // StageEndEvent 一个阶段结束（kas_stage_duration_seconds）。
@@ -54,6 +55,7 @@ type StageEndEvent struct {
 	Remaining time.Duration // 阶段结束时剩余 deadline（trace 需求）
 }
 
+// Kind implements Event.
 func (StageEndEvent) Kind() string { return "stage_end" }
 
 // StageDeadlineEvent 阶段或 root deadline 超时
@@ -64,6 +66,7 @@ type StageDeadlineEvent struct {
 	DeadlineStage string // deadline_stage label 值
 }
 
+// Kind implements Event.
 func (StageDeadlineEvent) Kind() string { return "stage_deadline" }
 
 // CacheEvent Evidence 缓存读写结果（kas_evidence_cache_total）。
@@ -72,6 +75,7 @@ type CacheEvent struct {
 	Result string // hit / miss / bypass / error
 }
 
+// Kind implements Event.
 func (CacheEvent) Kind() string { return "cache" }
 
 // CacheEvictionEvent 缓存淘汰（kas_evidence_cache_evictions_total）。
@@ -80,6 +84,7 @@ type CacheEvictionEvent struct {
 	Reason string // capacity_entries / capacity_bytes / item_too_large / namespace_delete
 }
 
+// Kind implements Event.
 func (CacheEvictionEvent) Kind() string { return "cache_eviction" }
 
 // FilterEvent 有效期/权限过滤（kas_evidence_filtered_total）。
@@ -89,6 +94,7 @@ type FilterEvent struct {
 	Count  int
 }
 
+// Kind implements Event.
 func (FilterEvent) Kind() string { return "filter" }
 
 // ProviderErrorEvent provider 错误（kas_provider_errors_total）。
@@ -99,6 +105,7 @@ type ProviderErrorEvent struct {
 	ErrorClass string // timeout / canceled / unavailable / contract / closed
 }
 
+// Kind implements Event.
 func (ProviderErrorEvent) Kind() string { return "provider_error" }
 
 // FallbackEvent 决策降级链路由（kas_decision_fallback_total）。
@@ -108,6 +115,7 @@ type FallbackEvent struct {
 	Reason string // 受控 reason code（domain.ReasonXxx）
 }
 
+// Kind implements Event.
 func (FallbackEvent) Kind() string { return "fallback" }
 
 // HealthEvent 组件健康变化（kas_health_status）。
@@ -117,6 +125,7 @@ type HealthEvent struct {
 	Status    string // healthy / degraded / not_ready
 }
 
+// Kind implements Event.
 func (HealthEvent) Kind() string { return "health" }
 
 // DecisionTraceEvent 决策过程的 trace 字段（docs/design/04 §6：provider、
@@ -133,4 +142,5 @@ type DecisionTraceEvent struct {
 	Confidence     float64
 }
 
+// Kind implements Event.
 func (DecisionTraceEvent) Kind() string { return "decision_trace" }

@@ -444,15 +444,9 @@ func (g *gateEvidence) Health(ctx context.Context) domain.ComponentHealth {
 func TestSupplementResultsRefiltered(t *testing.T) {
 	now := time.Now()
 	expired := now.Add(-time.Minute)
-	firstRound := []domain.Evidence{
-		{ID: "ok1", SourceID: "s", ObservedAt: now},
-		{ID: "exp1", ValidUntil: &expired},
-	}
-	// 组合过滤策略：无 max-age 策略 → 无 ValidUntil 的按 unknown 丢弃！
-	// tinyYAML validity.require=false 且 fail_closed=true，无 default_max_age。
-	// 因此首轮证据需要显式 ValidUntil。
 	valid1 := now.Add(time.Hour)
-	firstRound = []domain.Evidence{
+	// tinyYAML 无 default_max_age → 证据需显式 ValidUntil（否则按 unknown 丢弃）
+	firstRound := []domain.Evidence{
 		{ID: "ok1", ValidUntil: &valid1},
 		{ID: "exp1", ValidUntil: &expired},
 	}

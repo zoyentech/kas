@@ -20,6 +20,7 @@ type Clock interface {
 // SystemClock 是生产时钟。
 type SystemClock struct{}
 
+// Now implements Clock.
 func (SystemClock) Now() time.Time { return time.Now() }
 
 // PreliminaryOutcome 是初判结果（docs/design/01 §4 第 4 步）。
@@ -31,6 +32,7 @@ type PreliminaryOutcome struct {
 // PreliminaryKind 是初判路径枚举。
 type PreliminaryKind string
 
+// 初判路径枚举。
 const (
 	PreliminaryContinue PreliminaryKind = "continue"
 	PreliminaryClarify  PreliminaryKind = "ask_clarification"

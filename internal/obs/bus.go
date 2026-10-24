@@ -13,6 +13,7 @@ type Subscriber interface {
 // SubscriberFunc 函数适配器。
 type SubscriberFunc func(event Event)
 
+// Notify implements Subscriber.
 func (f SubscriberFunc) Notify(event Event) { f(event) }
 
 // Bus 是同步分发的事件总线（Story 3.3.1.2 T2）：无额外 goroutine，分发在

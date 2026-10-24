@@ -52,6 +52,10 @@
 
 ## 修订记录
 
+- **2026-10-24（推送 GitHub）**：golangci-lint v1.61 → v2.15.0——Go 1.25+
+  标准库导出数据格式（version 2）v1.x 无法解析（CI typecheck 全挂）；
+  配置迁移 v2 schema（exclusions 移至 linters.exclusions；revive 显式
+  规则集=exported）。
 - **2026-10-24（S7）**：规则配置新增 `threshold` 字段（∈[0,1]），
   `decision_confidence_below_threshold` 条件必填——隐式默认阈值不可审计，
   与 docs/04 §3"规则必须可审计，条件完整"冲突，故显式化；docs/02 示例

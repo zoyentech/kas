@@ -61,20 +61,27 @@ tracing: {enabled: false}
 `
 
 func main() {
+	if err := run(); err != nil {
+		fmt.Fprintln(os.Stderr, "runner:", err)
+		os.Exit(1)
+	}
+}
+
+func run() error {
 	casesDir := flag.String("cases", "acceptance/goldenset/cases", "用例目录")
 	outDir := flag.String("out", "acceptance/report", "报告输出目录")
 	flag.Parse()
 
 	cases, err := acc.LoadDir(*casesDir)
 	if err != nil {
-		fail(err)
+		return err
 	}
 	// 语料锚点 = 执行时刻（用例 valid_at 是冻结元数据；证据时间相对锚点构造）
 	anchor := time.Now()
 
 	cfg, err := kas.LoadConfig(strings.NewReader(runnerYAML))
 	if err != nil {
-		fail(fmt.Errorf("runner 配置非法: %w", err))
+		return fmt.Errorf("runner 配置非法: %w", err)
 	}
 	corpus := acc.BuildCorpus(cases, anchor)
 	client, err := kas.New(cfg, kas.Dependencies{
@@ -83,16 +90,16 @@ func main() {
 		PermissionChecker: kas.NewTagChecker(map[string][]string{"scope-internal": {"kb:internal"}}),
 	})
 	if err != nil {
-		fail(err)
+		return err
 	}
 	defer func() { _ = client.Close() }()
 
 	if err := os.MkdirAll(*outDir, 0o755); err != nil {
-		fail(err)
+		return err
 	}
 	jsonl, err := os.Create(filepath.Join(*outDir, "results.jsonl")) // #nosec G304 -- 固定输出目录
 	if err != nil {
-		fail(err)
+		return err
 	}
 	defer func() { _ = jsonl.Close() }()
 
@@ -108,7 +115,6 @@ func main() {
 	var scores []acc.CaseScore
 	var p0Scores []acc.CaseScore
 	var durations []float64
-	var records []runRecord
 	failed := 0
 
 	for _, c := range cases {
@@ -144,10 +150,9 @@ func main() {
 		if err != nil {
 			rec.Error = err.Error()
 		}
-		records = append(records, rec)
 		b, _ := json.Marshal(rec)
 		if _, werr := jsonl.WriteString(string(b) + "\n"); werr != nil {
-			fail(werr)
+			return werr
 		}
 	}
 
@@ -163,10 +168,10 @@ func main() {
 		},
 	}, "", "  ")
 	if err := os.WriteFile(filepath.Join(*outDir, "report.json"), jsonOut, 0o644); err != nil {
-		fail(err)
+		return err
 	}
 	if err := os.WriteFile(filepath.Join(*outDir, "report.md"), []byte(report), 0o644); err != nil {
-		fail(err)
+		return err
 	}
 	fmt.Print(report)
 
@@ -178,10 +183,14 @@ func main() {
 		all.AbstainAccuracy >= thresholdAbstain
 	if !verdict {
 		fmt.Println("\n门槛判定：FAIL")
-		os.Exit(1)
+		return errThresholdNotMet
 	}
 	fmt.Println("\n门槛判定：PASS")
+	return nil
 }
+
+// errThresholdNotMet 表示门槛判定未通过（CI 以非零退出反映）。
+var errThresholdNotMet = fmt.Errorf("GoldenSet 门槛判定未通过")
 
 func buildReport(cases []acc.Case, all, p0 acc.SetScore, failed int, anchor time.Time) string {
 	hash, _ := acc.ContentHash(cases)
@@ -225,9 +234,4 @@ func buildReport(cases []acc.Case, all, p0 acc.SetScore, failed int, anchor time
 func casesHash(cases []acc.Case) string {
 	h, _ := acc.ContentHash(cases)
 	return h
-}
-
-func fail(err error) {
-	fmt.Fprintln(os.Stderr, "runner:", err)
-	os.Exit(1)
 }

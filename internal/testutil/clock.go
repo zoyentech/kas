@@ -14,6 +14,7 @@ type Clock interface {
 // SystemClock 返回系统真实时间。
 type SystemClock struct{}
 
+// Now implements Clock.
 func (SystemClock) Now() time.Time { return time.Now() }
 
 // NewFakeClock 返回固定在 start 的假时钟（并发安全）。

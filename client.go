@@ -91,7 +91,7 @@ func New(cfg Config, deps Dependencies, opts ...Option) (*Client, error) {
 	engine.Perm = deps.PermissionChecker
 
 	// 决策链（F-007/F-008）：宿主注入的 DecisionProvider 作为首选级
-	//（Jev 角色）；未注入时按配置构建 Jev 客户端。降级链与护栏始终生效。
+	// （Jev 角色）；未注入时按配置构建 Jev 客户端。降级链与护栏始终生效。
 	chain, err := buildDecisionChain(cfg, bus, deps.DecisionProvider)
 	if err != nil {
 		return nil, err

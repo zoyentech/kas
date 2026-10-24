@@ -24,7 +24,7 @@ type DecisionInput struct {
 	// TraceID 事件关联键（fallback/trace 事件；不参与决策语义）。
 	TraceID string
 	// ScopeFingerprint 与 KnowledgeCorpusGen 是决策缓存 key 维度
-	//（docs/design/04 §3：绑定 principal scope 与知识代次）。
+	// （docs/design/04 §3：绑定 principal scope 与知识代次）。
 	ScopeFingerprint   string
 	KnowledgeCorpusGen string
 }
@@ -67,6 +67,7 @@ type ComponentHealth struct {
 // ComponentStatus 是组件健康枚举。
 type ComponentStatus string
 
+// 组件健康状态枚举。
 const (
 	ComponentHealthy  ComponentStatus = "healthy"
 	ComponentDegraded ComponentStatus = "degraded"
@@ -84,6 +85,7 @@ type HealthReport struct {
 // OverallStatus 是总健康状态。
 type OverallStatus string
 
+// 总健康状态枚举。
 const (
 	StatusHealthy  OverallStatus = "healthy"
 	StatusDegraded OverallStatus = "degraded"

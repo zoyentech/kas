@@ -16,6 +16,7 @@ type Response struct {
 // ActionType 是有限决策动作枚举；未知值按 provider contract error 拒绝。
 type ActionType string
 
+// 决策动作四枚举（docs/design/03 §2）。
 const (
 	ActionAnswer     ActionType = "answer"
 	ActionSupplement ActionType = "supplement"
