@@ -158,10 +158,17 @@ jobs:
         run: |
           TAG="${GITHUB_REF_NAME}"
           REPO="${GITHUB_REPOSITORY}"
-          if gh release view "$TAG" -R "$REPO" > /dev/null 2>&1; then
+          # gh release view 会按"显示名"匹配到草稿：tag 被删重建后 GitHub 把
+          # 旧 Release 转为无 tag 草稿，直接 edit 无法补 tag（真实踩坑）。
+          # 因此按 tagName 精确判定：非草稿且 tag 匹配才走 edit，否则删除后重建。
+          matched=$(gh release view "$TAG" -R "$REPO" --json tagName,isDraft \
+            --jq 'select(.tagName == "'"${TAG}"'" and .isDraft == false) | .tagName' 2>/dev/null || true)
+          if [ "$matched" = "$TAG" ]; then
             echo "Release ${TAG} 已存在，更新发布说明"
             gh release edit "$TAG" -R "$REPO" --notes-file notes.md
           else
+            echo "未发现已发布的 ${TAG}（草稿/孤儿将清理），创建新 Release"
+            gh release delete "$TAG" -R "$REPO" --yes 2>/dev/null || true
             gh release create "$TAG" -R "$REPO" --verify-tag --title "$TAG" --notes-file notes.md
           fi
 
