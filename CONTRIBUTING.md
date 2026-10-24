@@ -52,6 +52,18 @@
 - 契约测试：新实现 Evidence/Decision/Cache 时，在自身 `_test.go` 中调用 `contract.Suite…` 一行接入合规套件
 - 敏感性：任何测试不得写入真实 PII/secret；样例问题文本必须去标识化
 
+## 发版流程
+
+发版由 git tag 驱动，自动化见 [.github/workflows/release.yml](.github/workflows/release.yml)：
+
+1. 确认 main 分支 CI 全绿（7 个必需检查全部通过）。
+2. 在 `CHANGELOG.md` 顶部新增版本段落，格式固定 `## [vX.Y.Z] - YYYY-MM-DD`（Release 发布说明自动截取该段落）。
+3. 打 tag 并推送：`git tag vX.Y.Z && git push origin vX.Y.Z`（版本号遵循 [SemVer](https://semver.org/)；库的破坏性 API 变更升主版本）。
+4. Release workflow 自动执行：校验（SemVer、tag 在 main 上、CHANGELOG 段落、go.mod module 路径）→ 在 tag 提交上重跑测试与 GoldenSet 验收 → 创建 GitHub Release → 预热公共 module proxy 并以消费者视角验证 `go get` 可安装。任一步失败即中止发布。
+5. 发布后使用者即可安装：`go get github.com/zoyentech/kas@vX.Y.Z`。
+
+说明：Go 模块没有类似 npm 的中心发布市场——`go get`/`go install` 直接消费 git tag，公共代理（proxy.golang.org，国内镜像 goproxy.cn）自动抓取缓存，pkg.go.dev 自动生成文档页；无需也无法"推送上架"。workflow 中的预热步骤只为让新版本立即对外可拉取。
+
 ## 行为准则
 
 参与本项目即同意遵守 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)。

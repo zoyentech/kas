@@ -2,7 +2,7 @@
 # 改动命令时两处同步修改。
 SHELL := /bin/bash
 GO    ?= go
-MODULE := github.com/kas-runtime/kas
+MODULE := github.com/zoyentech/kas
 
 # 覆盖率阈值：初始 60%（Story 1.2.2.1），随 Stage 递增至 D-8 目标
 # （核心包 80%，P0 安全路径 90%，Stage 7 全量 80%）。
