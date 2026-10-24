@@ -68,6 +68,12 @@
 - docs/05 §2 验收矩阵 19 行场景套件（安全/降级/并发）全部自动化
 - 发布审计：五输出面敏感值零泄漏扫描（指标/trace/错误/响应/health）
 
+### fix(deps)
+
+- golang.org/x/text 升级 v0.39.0（GO-2026-5970，go 基线随之 1.23→1.25，
+  ADR-0002 修订）；govulncheck 影响代码漏洞 0（部署工具链建议 ≥ go1.26.10，
+  覆盖 stdlib GO-2026-6809 等 14 项）
+
 ### chore
 
 - 开源治理基线：Apache-2.0、CONTRIBUTING、SECURITY、CODEOWNERS、模板、
