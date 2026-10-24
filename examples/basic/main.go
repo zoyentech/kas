@@ -49,8 +49,10 @@ func main() {
 	until := time.Now().Add(24 * time.Hour)
 	client, err := kas.New(cfg, kas.Dependencies{
 		EvidenceProvider: inmem.New([]domain.Evidence{
-			{ID: "doc-10#seg-2", SourceID: "doc-10", Title: "配置方式",
-				Excerpt: "支持配置文件与环境变量", ValidUntil: &until, ContentVersion: "v3"},
+			{
+				ID: "doc-10#seg-2", SourceID: "doc-10", Title: "配置方式",
+				Excerpt: "支持配置文件与环境变量", ValidUntil: &until, ContentVersion: "v3",
+			},
 		}),
 		DecisionProvider: stubDecision{},
 	})

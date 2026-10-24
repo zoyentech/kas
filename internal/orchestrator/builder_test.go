@@ -20,8 +20,10 @@ func validEvidence(ids ...string) domain.EvidenceResult {
 }
 
 func answerCfg() config.AnswerConfig {
-	return config.AnswerConfig{MaxCitations: 5, RequireCitationForFactualClaims: true,
-		AllowAnswerWithoutEvidence: false, OutputOnUnknown: "abstain"}
+	return config.AnswerConfig{
+		MaxCitations: 5, RequireCitationForFactualClaims: true,
+		AllowAnswerWithoutEvidence: false, OutputOnUnknown: "abstain",
+	}
 }
 
 // TestCiteValidate 引用归属校验（Story 5.4.1.1 T1）：混合引用集仅有效保留。

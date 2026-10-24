@@ -29,16 +29,40 @@ func TestAggregateMatrix(t *testing.T) {
 		degraded   bool
 		want       domain.OverallStatus
 	}{
-		{"all_healthy", map[string]domain.ComponentHealth{"evidence_provider": healthy, "jev": healthy},
-			[]string{"evidence_provider"}, []string{"jev"}, true, domain.StatusHealthy},
-		{"required_down", map[string]domain.ComponentHealth{"evidence_provider": down, "jev": healthy},
-			[]string{"evidence_provider"}, []string{"jev"}, true, domain.StatusNotReady},
-		{"optional_down_flag_on", map[string]domain.ComponentHealth{"evidence_provider": healthy, "jev": down},
-			[]string{"evidence_provider"}, []string{"jev"}, true, domain.StatusDegraded},
-		{"optional_down_flag_off", map[string]domain.ComponentHealth{"evidence_provider": healthy, "jev": down},
-			[]string{"evidence_provider"}, []string{"jev"}, false, domain.StatusHealthy},
-		{"required_missing_component", map[string]domain.ComponentHealth{"jev": healthy},
-			[]string{"evidence_provider"}, nil, true, domain.StatusNotReady},
+		{
+			"all_healthy",
+			map[string]domain.ComponentHealth{"evidence_provider": healthy, "jev": healthy},
+			[]string{"evidence_provider"},
+			[]string{"jev"},
+			true, domain.StatusHealthy,
+		},
+		{
+			"required_down",
+			map[string]domain.ComponentHealth{"evidence_provider": down, "jev": healthy},
+			[]string{"evidence_provider"},
+			[]string{"jev"},
+			true, domain.StatusNotReady,
+		},
+		{
+			"optional_down_flag_on",
+			map[string]domain.ComponentHealth{"evidence_provider": healthy, "jev": down},
+			[]string{"evidence_provider"},
+			[]string{"jev"},
+			true, domain.StatusDegraded,
+		},
+		{
+			"optional_down_flag_off",
+			map[string]domain.ComponentHealth{"evidence_provider": healthy, "jev": down},
+			[]string{"evidence_provider"},
+			[]string{"jev"},
+			false, domain.StatusHealthy,
+		},
+		{
+			"required_missing_component",
+			map[string]domain.ComponentHealth{"jev": healthy},
+			[]string{"evidence_provider"},
+			nil, true, domain.StatusNotReady,
+		},
 	}
 	for _, tc := range tests {
 		got := health.Aggregate(health.Input{

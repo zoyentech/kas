@@ -147,14 +147,17 @@ func (e *Engine) runPipeline(root *deadline.Root, st *state) (domain.Response, e
 // 立即 cancel → 发 StageEndEvent。deadline 超时发 StageDeadlineEvent 并返回
 // ErrDeadlineExceeded。
 func (e *Engine) runStage(root *deadline.Root, st *state, name string, budget time.Duration,
-	provider string, fn func(ctx context.Context) error) (StageOutcome, error) {
+	provider string, fn func(ctx context.Context) error,
+) (StageOutcome, error) {
 	now := e.Clock.Now()
 	// root 越界守卫（Story 3.2.1.2 T3）：root 已到期则不启动本阶段，
 	// 任何 provider 调用计数为 0。
 	if root.Expired(now) {
 		e.Bus.Emit(obs.StageDeadlineEvent{Meta: withAt(st.meta, now), Stage: name, DeadlineStage: name})
-		e.Bus.Emit(obs.StageEndEvent{Meta: withAt(st.meta, e.Clock.Now()), Stage: name, Provider: provider,
-			Outcome: "deadline_exceeded", Duration: 0, Remaining: 0})
+		e.Bus.Emit(obs.StageEndEvent{
+			Meta: withAt(st.meta, e.Clock.Now()), Stage: name, Provider: provider,
+			Outcome: "deadline_exceeded", Duration: 0, Remaining: 0,
+		})
 		return StageOutcome{}, deadline.ExpiredErr(name)
 	}
 	stageStart := now
@@ -173,16 +176,22 @@ func (e *Engine) runStage(root *deadline.Root, st *state, name string, budget ti
 	if err != nil {
 		if isDeadlineErr(err) {
 			e.Bus.Emit(obs.StageDeadlineEvent{Meta: withAt(st.meta, e.Clock.Now()), Stage: name, DeadlineStage: name})
-			e.Bus.Emit(obs.StageEndEvent{Meta: withAt(st.meta, e.Clock.Now()), Stage: name, Provider: provider,
-				Outcome: "deadline_exceeded", Duration: elapsed, Remaining: remaining})
+			e.Bus.Emit(obs.StageEndEvent{
+				Meta: withAt(st.meta, e.Clock.Now()), Stage: name, Provider: provider,
+				Outcome: "deadline_exceeded", Duration: elapsed, Remaining: remaining,
+			})
 			return outcome, err
 		}
-		e.Bus.Emit(obs.StageEndEvent{Meta: withAt(st.meta, e.Clock.Now()), Stage: name, Provider: provider,
-			Outcome: "provider_error", Duration: elapsed, Remaining: remaining})
+		e.Bus.Emit(obs.StageEndEvent{
+			Meta: withAt(st.meta, e.Clock.Now()), Stage: name, Provider: provider,
+			Outcome: "provider_error", Duration: elapsed, Remaining: remaining,
+		})
 		return outcome, err
 	}
-	e.Bus.Emit(obs.StageEndEvent{Meta: withAt(st.meta, e.Clock.Now()), Stage: name, Provider: provider,
-		Outcome: "ok", Duration: elapsed, Remaining: remaining})
+	e.Bus.Emit(obs.StageEndEvent{
+		Meta: withAt(st.meta, e.Clock.Now()), Stage: name, Provider: provider,
+		Outcome: "ok", Duration: elapsed, Remaining: remaining,
+	})
 	return outcome, nil
 }
 
@@ -322,8 +331,10 @@ func (e *Engine) assembleReserve(root *deadline.Root, st *state) (domain.Respons
 	if err != nil {
 		outcome = "error"
 	}
-	e.Bus.Emit(obs.StageEndEvent{Meta: withAt(st.meta, e.Clock.Now()), Stage: StageReserve, Provider: "internal",
-		Outcome: outcome, Duration: elapsed, Remaining: remaining})
+	e.Bus.Emit(obs.StageEndEvent{
+		Meta: withAt(st.meta, e.Clock.Now()), Stage: StageReserve, Provider: "internal",
+		Outcome: outcome, Duration: elapsed, Remaining: remaining,
+	})
 	return resp, err
 }
 

@@ -18,8 +18,10 @@ func TestMain(m *testing.M) { kasutil.VerifyTestMain(m) }
 func cfg() config.MetricsConfig {
 	return config.MetricsConfig{
 		Enabled: true, Namespace: "kas",
-		LabelAllowlist: []string{"operation", "outcome", "action", "stage", "provider",
-			"result", "reason", "route", "component", "status", "deadline_stage", "error_class"},
+		LabelAllowlist: []string{
+			"operation", "outcome", "action", "stage", "provider",
+			"result", "reason", "route", "component", "status", "deadline_stage", "error_class",
+		},
 	}
 }
 

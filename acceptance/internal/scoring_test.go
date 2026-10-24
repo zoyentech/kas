@@ -146,26 +146,38 @@ func TestAggregateAbstainAndP0(t *testing.T) {
 // TestLoaderValidation 加载期校验（Story 7.1.1.1 T1）。
 func TestLoaderValidation(t *testing.T) {
 	bad := []acc.Case{
-		{CaseID: "bad-id", Risk: "p0", Question: "q", PrincipalScope: "s",
-			KnowledgeNamespace: "ns", CorpusGeneration: "g",
-			ValidAt: time.Now(), ExpectedAction: "answer"}, // case_id 格式
-		{CaseID: "golden-9999", Risk: "p9", Question: "q", PrincipalScope: "s",
-			KnowledgeNamespace: "ns", CorpusGeneration: "g",
-			ValidAt: time.Now(), ExpectedAction: "answer"}, // risk
-		{CaseID: "golden-9999", Risk: "p0", Question: " ", PrincipalScope: "s",
-			KnowledgeNamespace: "ns", CorpusGeneration: "g",
-			ValidAt: time.Now(), ExpectedAction: "answer"}, // 空 question
-		{CaseID: "golden-9999", Risk: "p0", Question: "q", PrincipalScope: "s",
-			KnowledgeNamespace: "ns", CorpusGeneration: "g",
-			ValidAt: time.Now(), ExpectedAction: "explode"}, // action
-		{CaseID: "golden-9999", Risk: "p0", Question: "q", PrincipalScope: "s",
+		{
+			CaseID: "bad-id", Risk: "p0", Question: "q", PrincipalScope: "s",
 			KnowledgeNamespace: "ns", CorpusGeneration: "g",
 			ValidAt: time.Now(), ExpectedAction: "answer",
-			Tags: []string{"bogus"}}, // tag
-		{CaseID: "golden-9999", Risk: "p0", Question: "q", PrincipalScope: "s",
+		}, // case_id 格式
+		{
+			CaseID: "golden-9999", Risk: "p9", Question: "q", PrincipalScope: "s",
 			KnowledgeNamespace: "ns", CorpusGeneration: "g",
 			ValidAt: time.Now(), ExpectedAction: "answer",
-			MustAbstain: true, ExpectedEvidenceIDs: []string{"a"}}, // 互斥
+		}, // risk
+		{
+			CaseID: "golden-9999", Risk: "p0", Question: " ", PrincipalScope: "s",
+			KnowledgeNamespace: "ns", CorpusGeneration: "g",
+			ValidAt: time.Now(), ExpectedAction: "answer",
+		}, // 空 question
+		{
+			CaseID: "golden-9999", Risk: "p0", Question: "q", PrincipalScope: "s",
+			KnowledgeNamespace: "ns", CorpusGeneration: "g",
+			ValidAt: time.Now(), ExpectedAction: "explode",
+		}, // action
+		{
+			CaseID: "golden-9999", Risk: "p0", Question: "q", PrincipalScope: "s",
+			KnowledgeNamespace: "ns", CorpusGeneration: "g",
+			ValidAt: time.Now(), ExpectedAction: "answer",
+			Tags: []string{"bogus"},
+		}, // tag
+		{
+			CaseID: "golden-9999", Risk: "p0", Question: "q", PrincipalScope: "s",
+			KnowledgeNamespace: "ns", CorpusGeneration: "g",
+			ValidAt: time.Now(), ExpectedAction: "answer",
+			MustAbstain: true, ExpectedEvidenceIDs: []string{"a"},
+		}, // 互斥
 	}
 	for i, b := range bad {
 		if err := validateForTest(t, b); err == nil {
