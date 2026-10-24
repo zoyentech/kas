@@ -34,7 +34,7 @@
 
 ## Story DoD
 
-- [ ] module/目录/占位 API/Makefile 就位，`go build ./...` 绿。
+- [x] module/目录/占位 API/Makefile 就位，`go build ./...` 绿。
 
 ## 设计依据
 

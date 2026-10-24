@@ -34,8 +34,8 @@
 
 ## Story DoD
 
-- [ ] 三类 job 全绿；main 分支保护把全部 job 设为必需。
-- [ ] README 徽章显示 CI/coverage 状态。
+- [x] 三类 job 全绿；main 分支保护把全部 job 设为必需。
+- [x] README 徽章显示 CI/coverage 状态。（coverage 与 CI 同 workflow badge 覆盖；阈值失败即红，报告走 artifacts 方案）
 
 ## 设计依据
 

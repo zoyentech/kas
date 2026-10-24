@@ -18,7 +18,7 @@
 
 ## Story DoD
 
-- [ ] kas_evidence_filtered_total 四类 reason 数据面就绪（S6 只做消费）。
+- [x] kas_evidence_filtered_total 四类 reason 数据面就绪（S6 只做消费）。
 
 ## 设计依据
 

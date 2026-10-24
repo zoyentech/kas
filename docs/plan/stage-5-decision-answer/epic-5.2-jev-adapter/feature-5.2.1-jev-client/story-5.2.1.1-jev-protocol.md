@@ -34,7 +34,7 @@
 
 ## Story DoD
 
-- [ ] adapter 可作为 DecisionProvider 被编排器调用（fake server 驱动）。
+- [x] adapter 可作为 DecisionProvider 被编排器调用（fake server 驱动）。
 
 ## 设计依据
 

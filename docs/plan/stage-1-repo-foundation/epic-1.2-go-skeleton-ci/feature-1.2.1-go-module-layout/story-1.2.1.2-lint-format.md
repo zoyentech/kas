@@ -26,7 +26,7 @@
 
 ## Story DoD
 
-- [ ] lint/format 全绿并纳入 CI（由 1.2.2.1 接线）。
+- [x] lint/format 全绿并纳入 CI（由 1.2.2.1 接线）。
 
 ## 设计依据
 

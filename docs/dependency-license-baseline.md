@@ -9,7 +9,7 @@
 | 模块 | 版本 | License | 用途（决策） |
 |---|---|---|---|
 | gopkg.in/yaml.v3 | v3.0.1 | MIT & Apache-2.0（双许可） | 配置严格解析（D-2） |
-| golang.org/x/text | v0.21.0 | BSD-3-Clause | NFKC 规范化（S4 cache，ADR-0002 修订：新增 D-2 关联依赖） |
+| golang.org/x/text | v0.39.0 | BSD-3-Clause | NFKC 规范化（S4 cache）；v0.39.0 修复 GO-2026-5970 |
 
 ## 直接依赖（计划中，按 Stage 引入）
 
@@ -21,8 +21,10 @@
 
 | 模块 | 版本 | License | 用途（决策） |
 |---|---|---|---|
-| gotest.tools/v3 | v3.5.1 | Apache-2.0 | 断言最小集（D-4） |
 | go.uber.org/goleak | v1.3.0 | MIT | goroutine 泄漏检测（D-9） |
+
+> gotest.tools/v3（D-4 原计划）未采纳：测试全部以标准库 testing 表驱动实现，
+> 依赖面更小（ADR-0002 修订 2026-10-24）。
 
 ## 间接依赖（当前 go.sum）
 
@@ -32,6 +34,13 @@
 | github.com/davecgh/go-spew | ISC | testify | 仅测试 |
 | github.com/pmezard/go-difflib | MIT | testify | 仅测试 |
 | gopkg.in/check.v1 | BSD-2-Clause | yaml.v3 | 仅测试 |
+
+## 漏洞扫描结论（govulncheck，2026-10-24）
+
+- x/text 升级 v0.21.0 → v0.39.0（GO-2026-5970）
+- 标准库漏洞属构建工具链：建议工具链 ≥ go1.26.10（修复 GO-2026-6809 等
+  14 项 net/http、crypto/tls、crypto/x509、mime/multipart、net/url 相关项）
+- 以 go1.26.10 扫描：**affecting = 0**
 
 ## 结论
 

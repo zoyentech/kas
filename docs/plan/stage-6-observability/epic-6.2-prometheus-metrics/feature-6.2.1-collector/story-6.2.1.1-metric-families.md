@@ -34,7 +34,7 @@
 
 ## Story DoD
 
-- [ ] 十类指标齐备；allowlist 防护进入 CI。
+- [x] 十类指标齐备；allowlist 防护进入 CI。
 
 ## 设计依据
 

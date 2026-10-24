@@ -34,7 +34,7 @@
 
 ## Story DoD
 
-- [ ] `make acceptance` 端到端可用；首轮报告归档。
+- [x] `make acceptance` 端到端可用；首轮报告归档。
 
 ## 设计依据
 

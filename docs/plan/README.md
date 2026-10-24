@@ -193,7 +193,7 @@ plan/
 | Epic | 19 | 对应 multica Issue 粒度 |
 | Feature | 30 | 对应 multica 子 Issue / 标签粒度 |
 | Story | 49 | 对应 multica 带 stage 的任务 |
-| Task | 136 | 最小执行单元，每张任务卡 0.5~2 人日 |
+| Task | 135 | 最小执行单元，每张任务卡 0.5~2 人日 |
 
 ## 使用约定（摘要，详见 overview/03）
 

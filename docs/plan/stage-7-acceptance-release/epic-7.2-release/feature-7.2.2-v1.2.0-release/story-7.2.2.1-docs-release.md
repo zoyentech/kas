@@ -34,7 +34,7 @@
 
 ## Story DoD
 
-- [ ] MVP 完成：发布在线、报告归档、multica 全部 Story 置 done。
+- [ ] MVP 完成：发布在线、报告归档、multica 全部 Story 置 done。（注：发布与报告已完成；multica 平台侧同步待项目流程执行）
 
 ## 设计依据
 

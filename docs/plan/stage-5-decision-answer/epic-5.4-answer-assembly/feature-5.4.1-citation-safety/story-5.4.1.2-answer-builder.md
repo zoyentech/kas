@@ -26,7 +26,7 @@
 
 ## Story DoD
 
-- [ ] 组装器合入 reserve 阶段；端到端（S3+S4+S5 全链 fake）测试通过。
+- [x] 组装器合入 reserve 阶段；端到端（S3+S4+S5 全链 fake）测试通过。
 
 ## 设计依据
 

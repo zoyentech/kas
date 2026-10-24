@@ -26,7 +26,7 @@
 
 ## Story DoD
 
-- [ ] 契约冻结；套件进入 internal/contract 供 Stage 5 与验收复用。
+- [x] 契约冻结；套件进入 internal/contract 供 Stage 5 与验收复用。
 
 ## 设计依据
 

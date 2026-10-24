@@ -34,7 +34,7 @@
 
 ## Story DoD
 
-- [ ] F-008 验收证据齐备（与 5.2 fake server 联测）。
+- [x] F-008 验收证据齐备（与 5.2 fake server 联测）。
 
 ## 设计依据
 

@@ -52,6 +52,14 @@
 
 ## 修订记录
 
+- **2026-10-24（发布审计）**：
+  - D-1 修订：Go 基线 1.23 → **1.25**——安全修复 golang.org/x/text v0.39.0
+    （GO-2026-5970）要求 go ≥ 1.25；CI 矩阵（1.25/1.26）不变。部署方工具链
+    建议 ≥ go1.26.10（stdlib 修复 GO-2026-6809 等 14 项，SDK 构建方自管）。
+  - D-4 修订：gotest.tools/v3 **未采纳**——全部测试以标准库 testing 表驱动
+    风格实现后依赖面更小（go mod tidy 已移除）；如后续需要 golden/fs 断言
+    再按本 ADR 流程引入。
+  - govulncheck 基线： affecting=0（go1.26.10 + x/text v0.39.0）。
 - **2026-10-24（推送 GitHub）**：golangci-lint v1.61 → v2.15.0——Go 1.25+
   标准库导出数据格式（version 2）v1.x 无法解析（CI typecheck 全挂）；
   配置迁移 v2 schema（exclusions 移至 linters.exclusions；revive 显式

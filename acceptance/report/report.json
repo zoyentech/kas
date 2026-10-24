@@ -7,9 +7,9 @@
     "NDCG": 1,
     "FactSupport": 1,
     "AbstainAccuracy": 1,
-    "MedianMS": 0.028,
-    "P95MS": 0.050949999999999995,
-    "P99MS": 0.25748999999999983,
+    "MedianMS": 0.0335,
+    "P95MS": 0.16734999999999967,
+    "P99MS": 0.29062,
     "P0Violations": 0
   },
   "count": 102,

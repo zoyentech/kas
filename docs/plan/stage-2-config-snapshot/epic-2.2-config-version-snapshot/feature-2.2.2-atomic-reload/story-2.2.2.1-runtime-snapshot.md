@@ -26,7 +26,7 @@
 
 ## Story DoD
 
-- [ ] snapshot/New 可用；"准备 provider/runtime"步骤有独立函数供 Reload 复用。
+- [x] snapshot/New 可用；"准备 provider/runtime"步骤有独立函数供 Reload 复用。
 
 ## 设计依据
 

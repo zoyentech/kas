@@ -34,8 +34,8 @@
 
 ## Story DoD
 
-- [ ] 三张任务卡完成；仓库、LICENSE、README 骨架就位。
-- [ ] 项目负责人确认仓库地址并同步 multica（后续 Issue 均引用该地址）。
+- [x] 三张任务卡完成；仓库、LICENSE、README 骨架就位。
+- [ ] 项目负责人确认仓库地址并同步 multica（后续 Issue 均引用该地址）。（注：地址已确认 zoyentech/kas；multica 平台同步待项目流程执行）
 
 ## 设计依据
 

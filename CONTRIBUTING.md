@@ -4,9 +4,9 @@
 
 ## 开发环境
 
-- Go ≥ 1.23（CI 矩阵跑最近两个大版本；`context.WithDeadlineCause` 等特性必需）
+- Go ≥ 1.25（x/text v0.39 安全修复要求；CI 矩阵 1.25/1.26。部署工具链建议 ≥ 1.26.10）
 - `make build test test-race lint cover fmt` 与 CI 命令一一对应（见 `Makefile`）
-- 依赖最小化：仅允许 `gopkg.in/yaml.v3`（D-2）、`prometheus/client_golang`（D-3）、`gotest.tools/v3`（D-4，仅测试）与 `go.uber.org/goleak`（D-9，仅测试）四类运行时/测试依赖；新增依赖需先提 ADR
+- 依赖最小化：仅允许 `gopkg.in/yaml.v3`（D-2）、`prometheus/client_golang`（D-3）、`golang.org/x/text`（NFKC）与 `go.uber.org/goleak`（D-9，仅测试）；新增依赖需先提 ADR
 
 ## 分支与提交
 
@@ -46,7 +46,7 @@
 
 ## 测试约定
 
-- 断言库：`gotest.tools/v3`（最小集：`assert`/`fs`/`golden`，不引入 BDD 框架）
+- 断言：标准库 `testing` 表驱动风格（D-4 修订：gotest.tools 未采纳，保持零额外断言依赖）
 - 并发测试：一律可被 `-race` 复现；用 `goleak` 防 goroutine/context 泄漏（各包 `TestMain` 挂 `testutil.CheckLeaks`）
 - 属性测试：规范化保留否定词/数字/单位/型号符号（`internal/cache/normalize_test.go`）
 - 契约测试：新实现 Evidence/Decision/Cache 时，在自身 `_test.go` 中调用 `contract.Suite…` 一行接入合规套件
