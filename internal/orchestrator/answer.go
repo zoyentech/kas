@@ -132,7 +132,7 @@ func (e *Engine) runPipeline(root *deadline.Root, st *state) (domain.Response, e
 	if st.decision.NeedSupplement && !root.Expired(e.Clock.Now()) {
 		if _, err := e.runStage(root, st, StageSupplement, budget.Supplement.Std(), "evidence", func(ctx context.Context) error {
 			// 补检经 CachedProvider 同一路径重新权限+有效期过滤
-			//（docs/design/01 §4 第 8 步；过滤路径唯一不绕过）
+			// （docs/design/01 §4 第 8 步；过滤路径唯一不绕过）
 			return e.searchEvidence(ctx, st, true)
 		}); err != nil {
 			st.reasons = append(st.reasons, domain.ReasonEvidenceUnavailable)
