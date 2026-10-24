@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/kas-runtime/kas/internal/config"
+	"github.com/zoyentech/kas/internal/config"
 )
 
 // ReloadResult 是一次成功 Reload 的产物。

@@ -7,8 +7,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/kas-runtime/kas/internal/config"
-	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/config"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // Context 是规则求值上下文：输入候选组 + 可选上游决策（链内上一级结果）。

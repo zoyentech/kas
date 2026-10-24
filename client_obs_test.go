@@ -10,8 +10,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/testutil"
 
-	kas "github.com/kas-runtime/kas"
-	"github.com/kas-runtime/kas/internal/obs/trace"
+	kas "github.com/zoyentech/kas"
+	"github.com/zoyentech/kas/internal/obs/trace"
 )
 
 var metricsYAML = strings.NewReplacer(

@@ -6,8 +6,8 @@ package validity
 import (
 	"time"
 
-	"github.com/kas-runtime/kas/internal/config"
-	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/config"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // Reason 是过滤原因枚举（kas_evidence_filtered_total 的有界 label）。

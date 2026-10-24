@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/kas-runtime/kas/internal/cache"
-	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/cache"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // CorpusProvider 按规范化问题返回该用例的语料（acceptance 语料装载）：

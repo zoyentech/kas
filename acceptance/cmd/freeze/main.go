@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	acc "github.com/kas-runtime/kas/acceptance/internal"
+	acc "github.com/zoyentech/kas/acceptance/internal"
 )
 
 func main() {

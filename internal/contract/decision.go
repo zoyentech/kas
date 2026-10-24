@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kas-runtime/kas/internal/decision"
-	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/decision"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // InmemDecision 是测试用可编程决策 provider（Story 5.1.1.1 T3 随套件交付）。

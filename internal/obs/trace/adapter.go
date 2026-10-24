@@ -4,8 +4,8 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/kas-runtime/kas/internal/domain"
-	"github.com/kas-runtime/kas/internal/obs"
+	"github.com/zoyentech/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/obs"
 )
 
 // Adapter 把内部事件流转换为 TraceSink 记录（订阅事件总线）。

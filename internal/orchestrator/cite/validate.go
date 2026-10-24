@@ -2,7 +2,7 @@
 // 来自本次最终有效证据集——越权/过期/不在当前结果中的引用一律丢弃并计数。
 package cite
 
-import "github.com/kas-runtime/kas/internal/domain"
+import "github.com/zoyentech/kas/internal/domain"
 
 // Validate 校验引用归属（Story 5.4.1.1 T1）：按 EvidenceID 匹配最终有效集；
 // SourceID 不一致或 EvidenceID 未知 → 丢弃。返回保留引用（保序）与丢弃计数。

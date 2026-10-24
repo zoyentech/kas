@@ -4,12 +4,12 @@ import (
 	"context"
 	"time"
 
-	"github.com/kas-runtime/kas/internal/cache"
-	"github.com/kas-runtime/kas/internal/config"
-	"github.com/kas-runtime/kas/internal/domain"
-	"github.com/kas-runtime/kas/internal/evidence/perm"
-	"github.com/kas-runtime/kas/internal/evidence/validity"
-	"github.com/kas-runtime/kas/internal/obs"
+	"github.com/zoyentech/kas/internal/cache"
+	"github.com/zoyentech/kas/internal/config"
+	"github.com/zoyentech/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/evidence/perm"
+	"github.com/zoyentech/kas/internal/evidence/validity"
+	"github.com/zoyentech/kas/internal/obs"
 )
 
 // CachedProvider 是缓存读写路径（Story 4.3.2.2；docs/design/04 §2）：

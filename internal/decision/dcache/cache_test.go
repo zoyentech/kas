@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kas-runtime/kas/internal/decision/dcache"
-	"github.com/kas-runtime/kas/internal/domain"
-	"github.com/kas-runtime/kas/internal/testutil"
+	"github.com/zoyentech/kas/internal/decision/dcache"
+	"github.com/zoyentech/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/testutil"
 )
 
 func TestMain(m *testing.M) { testutil.VerifyTestMain(m) }

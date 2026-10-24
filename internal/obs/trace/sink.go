@@ -9,7 +9,7 @@ import (
 	"io"
 	"sync"
 
-	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // Sink 是默认结构化 sink：JSON 行写入 w（宿主控制 w 的去向）。

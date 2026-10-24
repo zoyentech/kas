@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/kas-runtime/kas/internal/contract"
-	"github.com/kas-runtime/kas/internal/decision"
-	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/contract"
+	"github.com/zoyentech/kas/internal/decision"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // inmem 决策 provider 接入契约套件（Story 5.1.1.1 T3 验收）。

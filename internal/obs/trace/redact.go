@@ -3,7 +3,7 @@ package trace
 import (
 	"strings"
 
-	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // sensitiveKeys 是敏感键硬拒清单（docs/design/01 §6：问题正文、Evidence

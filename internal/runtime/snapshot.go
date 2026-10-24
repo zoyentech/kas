@@ -3,7 +3,7 @@ package runtime
 import (
 	"time"
 
-	"github.com/kas-runtime/kas/internal/config"
+	"github.com/zoyentech/kas/internal/config"
 )
 
 // Snapshot 是不可变运行时快照（Story 2.2.2.1 T1）：Config + 脱敏

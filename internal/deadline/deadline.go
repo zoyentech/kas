@@ -6,7 +6,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // RootCause 是 root deadline 超时的原因（WithDeadlineCause 注入）。

@@ -3,7 +3,7 @@
 // 宿主授权模型变化不影响 KAS 核心。
 package perm
 
-import "github.com/kas-runtime/kas/internal/domain"
+import "github.com/zoyentech/kas/internal/domain"
 
 // ReasonUnauthorized 是权限过滤原因（kas_evidence_filtered_total label）。
 const ReasonUnauthorized = "unauthorized"

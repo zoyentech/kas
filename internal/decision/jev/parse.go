@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/kas-runtime/kas/internal/decision"
-	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/decision"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // decisionValidate 复用统一响应校验器（信任边界一致，F-010）。

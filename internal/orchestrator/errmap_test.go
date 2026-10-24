@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/kas-runtime/kas/internal/domain"
-	"github.com/kas-runtime/kas/internal/orchestrator"
+	"github.com/zoyentech/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/orchestrator"
 )
 
 // TestMapToPublicError 错误映射表驱动（Story 3.1.1.2 T2）：

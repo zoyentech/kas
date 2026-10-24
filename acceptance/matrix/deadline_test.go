@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	kas "github.com/kas-runtime/kas"
-	"github.com/kas-runtime/kas/internal/domain"
-	"github.com/kas-runtime/kas/internal/testutil"
+	kas "github.com/zoyentech/kas"
+	"github.com/zoyentech/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/testutil"
 )
 
 // 矩阵行 15：provider 阻塞——ctx cancellation 传播；不启动越过 root

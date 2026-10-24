@@ -14,8 +14,8 @@ import (
 	"strings"
 	"time"
 
-	kas "github.com/kas-runtime/kas"
-	acc "github.com/kas-runtime/kas/acceptance/internal"
+	kas "github.com/zoyentech/kas"
+	acc "github.com/zoyentech/kas/acceptance/internal"
 )
 
 // 门槛（docs/05 §3 建议值；O-3 冻结前按建议值执行，冻结后替换）。

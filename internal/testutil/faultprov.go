@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // FaultMode 是可独立开关的故障模式（Story 4.1.1.2 T2）。

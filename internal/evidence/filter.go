@@ -3,9 +3,9 @@ package evidence
 import (
 	"time"
 
-	"github.com/kas-runtime/kas/internal/domain"
-	"github.com/kas-runtime/kas/internal/evidence/perm"
-	"github.com/kas-runtime/kas/internal/evidence/validity"
+	"github.com/zoyentech/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/evidence/perm"
+	"github.com/zoyentech/kas/internal/evidence/validity"
 )
 
 // FilterConfig 是组合过滤配置（有效期 + 权限）。

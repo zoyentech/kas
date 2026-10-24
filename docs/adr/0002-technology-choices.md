@@ -15,7 +15,7 @@
 | D-3 | 指标 | `prometheus/client_golang`，注册进宿主 Registerer | docs/design/04 §5；KAS 不开 listener |
 | D-4 | 测试断言 | 标准库 `testing` + `gotest.tools/v3` 最小集 | 开源依赖最小化 |
 | D-5 | License | Apache-2.0 | 专利授权，Go 生态惯例 |
-| D-6 | 模块路径 | `github.com/<org>/kas`（org 见 O-1） | 本仓库暂用占位 `github.com/kas-runtime/kas` |
+| D-6 | 模块路径 | `github.com/zoyentech/kas` | O-1 已确认（2026-10-24，zoyentech 组织） |
 | D-7 | 包布局 | 顶层包仅公共 API；实现全部在 `internal/` | 强制封装边界 |
 | D-8 | 覆盖率门禁 | 核心包语句覆盖率 ≥ 80%，P0 安全路径 ≥ 90% | 安全优先 |
 | D-9 | 竞态 | 全部 CI 测试带 `-race`；并发测试用 `goleak` 防 context 泄漏 | F-011/F-012 |

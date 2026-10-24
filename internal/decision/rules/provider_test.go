@@ -5,10 +5,10 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/kas-runtime/kas/internal/config"
-	"github.com/kas-runtime/kas/internal/decision/rules"
-	"github.com/kas-runtime/kas/internal/domain"
-	"github.com/kas-runtime/kas/internal/testutil"
+	"github.com/zoyentech/kas/internal/config"
+	"github.com/zoyentech/kas/internal/decision/rules"
+	"github.com/zoyentech/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/testutil"
 )
 
 func TestMain(m *testing.M) { testutil.VerifyTestMain(m) }

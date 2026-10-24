@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // EvidenceProviderSuite 是 EvidenceProvider 的合规契约套件（Story 4.1.1.1 T2）。

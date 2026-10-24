@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kas-runtime/kas/internal/testutil"
+	"github.com/zoyentech/kas/internal/testutil"
 )
 
 func TestMain(m *testing.M) {

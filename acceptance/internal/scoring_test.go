@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	acc "github.com/kas-runtime/kas/acceptance/internal"
-	"github.com/kas-runtime/kas/internal/testutil"
+	acc "github.com/zoyentech/kas/acceptance/internal"
+	"github.com/zoyentech/kas/internal/testutil"
 )
 
 func TestMain(m *testing.M) { testutil.VerifyTestMain(m) }

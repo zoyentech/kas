@@ -12,8 +12,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/kas-runtime/kas/internal/config"
-	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/config"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // Config 是运行所需的环境注入配置（Story 5.2.1.1 T1）。

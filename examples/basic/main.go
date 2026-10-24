@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
-	kas "github.com/kas-runtime/kas"
-	"github.com/kas-runtime/kas/internal/domain"
-	"github.com/kas-runtime/kas/internal/evidence/inmem"
+	kas "github.com/zoyentech/kas"
+	"github.com/zoyentech/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/evidence/inmem"
 )
 
 // stubDecision 演示宿主自定义决策器（作为降级链首选级注入）。

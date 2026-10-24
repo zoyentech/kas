@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/kas-runtime/kas/internal/contract"
+	"github.com/zoyentech/kas/internal/contract"
 )
 
 // 本文件演示契约套件的"一行接入"模式（Story 1.2.2.2 T3）：

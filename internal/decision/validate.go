@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // ValidateDecision 统一响应安全校验器（Story 5.1.1.1 T2）：

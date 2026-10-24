@@ -3,7 +3,7 @@ package domain
 import (
 	"errors"
 
-	"github.com/kas-runtime/kas/internal/config"
+	"github.com/zoyentech/kas/internal/config"
 )
 
 // 哨兵错误（docs/design/03 §6）：至少区分配置无效、请求无效、超时、

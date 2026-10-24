@@ -1,4 +1,4 @@
-module github.com/kas-runtime/kas
+module github.com/zoyentech/kas
 
 go 1.23
 

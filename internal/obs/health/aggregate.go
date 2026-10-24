@@ -5,7 +5,7 @@
 package health
 
 import (
-	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // Input 是聚合输入（纯逻辑，Story 6.1.1.1 T1 判定矩阵）。

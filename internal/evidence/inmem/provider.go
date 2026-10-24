@@ -7,7 +7,7 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // Provider 是可编程返回指定 Evidence 集的参考实现：按 Query 过滤

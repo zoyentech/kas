@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	kas "github.com/kas-runtime/kas"
-	"github.com/kas-runtime/kas/internal/testutil"
+	kas "github.com/zoyentech/kas"
+	"github.com/zoyentech/kas/internal/testutil"
 )
 
 func TestMain(m *testing.M) { testutil.VerifyTestMain(m) }

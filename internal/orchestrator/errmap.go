@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // MapToPublicError 将内部错误映射到公共错误面（Story 3.1.1.2 T2：

@@ -1,6 +1,6 @@
 package kas
 
-import "github.com/kas-runtime/kas/internal/domain"
+import "github.com/zoyentech/kas/internal/domain"
 
 // 哨兵错误（docs/design/03 §6；唯一权威定义在 internal/domain）：
 // errors.Is 可判定的七类。错误原文不直接返回用户——编排器输出固定枚举

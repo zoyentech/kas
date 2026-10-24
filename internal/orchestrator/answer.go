@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kas-runtime/kas/internal/deadline"
-	"github.com/kas-runtime/kas/internal/decision"
-	"github.com/kas-runtime/kas/internal/domain"
-	"github.com/kas-runtime/kas/internal/evidence"
-	"github.com/kas-runtime/kas/internal/obs"
-	"github.com/kas-runtime/kas/internal/runtime"
+	"github.com/zoyentech/kas/internal/deadline"
+	"github.com/zoyentech/kas/internal/decision"
+	"github.com/zoyentech/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/evidence"
+	"github.com/zoyentech/kas/internal/obs"
+	"github.com/zoyentech/kas/internal/runtime"
 )
 
 // Answer 执行一次问答编排（Story 3.3.1.1 T1）：

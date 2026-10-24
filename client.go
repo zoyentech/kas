@@ -8,18 +8,18 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 
-	"github.com/kas-runtime/kas/internal/cache"
-	"github.com/kas-runtime/kas/internal/decision/dcache"
-	"github.com/kas-runtime/kas/internal/decision/fallback"
-	"github.com/kas-runtime/kas/internal/decision/jev"
-	"github.com/kas-runtime/kas/internal/decision/rules"
-	"github.com/kas-runtime/kas/internal/domain"
-	"github.com/kas-runtime/kas/internal/obs"
-	"github.com/kas-runtime/kas/internal/obs/health"
-	"github.com/kas-runtime/kas/internal/obs/metrics"
-	"github.com/kas-runtime/kas/internal/obs/trace"
-	"github.com/kas-runtime/kas/internal/orchestrator"
-	"github.com/kas-runtime/kas/internal/runtime"
+	"github.com/zoyentech/kas/internal/cache"
+	"github.com/zoyentech/kas/internal/decision/dcache"
+	"github.com/zoyentech/kas/internal/decision/fallback"
+	"github.com/zoyentech/kas/internal/decision/jev"
+	"github.com/zoyentech/kas/internal/decision/rules"
+	"github.com/zoyentech/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/obs"
+	"github.com/zoyentech/kas/internal/obs/health"
+	"github.com/zoyentech/kas/internal/obs/metrics"
+	"github.com/zoyentech/kas/internal/obs/trace"
+	"github.com/zoyentech/kas/internal/orchestrator"
+	"github.com/zoyentech/kas/internal/runtime"
 )
 
 // Dependencies 是宿主/装配层注入的运行依赖。EvidenceProvider 必需；

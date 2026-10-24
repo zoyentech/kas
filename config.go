@@ -3,7 +3,7 @@ package kas
 import (
 	"io"
 
-	"github.com/kas-runtime/kas/internal/config"
+	"github.com/zoyentech/kas/internal/config"
 )
 
 // Config 是 v1.2 配置模型（internal/config 为唯一权威定义；本别名为公共

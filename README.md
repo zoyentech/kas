@@ -1,5 +1,8 @@
 # KAS — Knowledge Answer Service SDK
 
+[![CI](https://github.com/zoyentech/kas/actions/workflows/ci.yml/badge.svg)](https://github.com/zoyentech/kas/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+
 KAS 是**可嵌入宿主 Go 服务的知识问答运行时 SDK**：统一请求预算、Evidence 检索与知识有效期筛选、决策 provider、带引用回答、安全缓存与配置热替换。
 
 KAS 是 query runtime，**不接管**知识事实源、导入、切片、索引管理与 UI。回答文本由上游决策 provider 生成，KAS 只做组装与引用安全校验。
@@ -7,10 +10,10 @@ KAS 是 query runtime，**不接管**知识事实源、导入、切片、索引�
 ## 安装
 
 ~~~bash
-go get github.com/kas-runtime/kas@v1.2.0
+go get github.com/zoyentech/kas@v1.2.0
 ~~~
 
-> 模块路径 `github.com/kas-runtime/kas` 为开放决策 O-1 的占位值；正式组织/仓库名确认后统一迁移（[ADR-0002](docs/adr/0002-technology-choices.md)）。
+仓库：<https://github.com/zoyentech/kas>（O-1 已确认）。
 
 ## 三步嵌入
 
@@ -86,7 +89,7 @@ make audit-deps      # govulncheck + license 清单
 
 ## 状态
 
-v1.2.0（开发完成，待推 GitHub：O-1 组织/仓库名确认后创建远端与分支保护）。API 在 v1.3 前不保证兼容。
+v1.2.0 已发布（<https://github.com/zoyentech/kas/releases/tag/v1.2.0>）。API 在 v1.3 前不保证兼容。
 
 ## 许可
 

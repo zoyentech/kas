@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	kas "github.com/kas-runtime/kas"
-	"github.com/kas-runtime/kas/internal/domain"
+	kas "github.com/zoyentech/kas"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // 矩阵行 13：多条规则冲突 → 优先级稳定、trace 可解释（reason 含规则名）。

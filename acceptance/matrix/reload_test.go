@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	kas "github.com/kas-runtime/kas"
-	"github.com/kas-runtime/kas/internal/domain"
+	kas "github.com/zoyentech/kas"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // 矩阵行 8：Reload 并发——在途 response 为旧版，新请求为新版。

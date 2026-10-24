@@ -5,7 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 
-	"github.com/kas-runtime/kas/internal/config"
+	"github.com/zoyentech/kas/internal/config"
 )
 
 // KeyParts 是 Evidence 缓存 key 的七维（docs/design/04 §2 公式逐项）。

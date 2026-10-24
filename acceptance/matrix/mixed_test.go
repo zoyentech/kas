@@ -9,8 +9,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/testutil"
 
-	kas "github.com/kas-runtime/kas"
-	"github.com/kas-runtime/kas/internal/domain"
+	kas "github.com/zoyentech/kas"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // brokenHealthProvider：检索正常但 Health 报 not_ready。

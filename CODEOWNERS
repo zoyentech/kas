@@ -1,14 +1,14 @@
 # CODEOWNERS — 评审路由（Story 1.1.2.3）
-# 占位维护者账号将在 O-1（组织/仓库名）确认后替换为正式 GitHub 团队/用户名。
+# 维护者：@tornado404（zoyentech）；正式维护团队组建后替换为 @zoyentech/<team>。
 
 # 默认所有变更需维护者评审
-* @kas-maintainers
+* @tornado404
 
 # 设计文档与决策记录
-/docs/        @kas-maintainers
+/docs/        @tornado404
 
 # 实现代码（封装边界，D-7）
-/internal/    @kas-maintainers
+/internal/    @tornado404
 
 # 公共 API 变更最高优先评审
-/*.go         @kas-maintainers
+/*.go         @tornado404

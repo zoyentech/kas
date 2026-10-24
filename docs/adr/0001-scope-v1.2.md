@@ -52,7 +52,7 @@ KAS v1.2 是首个开源版本，定位为**可嵌入宿主 Go 服务的知识�
 
 | # | 决策 | 状态（本 ADR 时点） | 本仓库默认处置 |
 |---|---|---|---|
-| O-1 | GitHub 组织与仓库名 | 待项目负责人确认 | 占位模块路径 `github.com/kas-runtime/kas`，确认后统一 sed 迁移 |
+| O-1 | GitHub 组织与仓库名 | **已确认（2026-10-24）**：zoyentech/kas | 已按此迁移模块路径并推送 |
 | O-2 | Jev 私有协议文档 | 待协议 Owner 提供 | Epic 5.2 以 docs/design/03 §3 契约 fake server 先行 |
 | O-3 | GoldenSet 门槛数值冻结 | 待业务负责人签字 | 按 docs/design/05 §3 建议值实现，常量集中可调 |
 | O-4 | 宿主 total 预算上限来源 | 待确认 | 可选配置字段 `host_max_total`，未配置则不校验 |

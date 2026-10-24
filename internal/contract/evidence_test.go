@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kas-runtime/kas/internal/contract"
-	"github.com/kas-runtime/kas/internal/domain"
-	"github.com/kas-runtime/kas/internal/evidence/inmem"
+	"github.com/zoyentech/kas/internal/contract"
+	"github.com/zoyentech/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/evidence/inmem"
 )
 
 // inmem 参考实现接入契约套件（Story 4.1.1.2 T1 验收：inmem 接入即跑通）。

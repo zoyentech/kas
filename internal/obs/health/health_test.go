@@ -6,11 +6,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kas-runtime/kas/internal/config"
-	"github.com/kas-runtime/kas/internal/domain"
-	"github.com/kas-runtime/kas/internal/obs"
-	"github.com/kas-runtime/kas/internal/obs/health"
-	"github.com/kas-runtime/kas/internal/testutil"
+	"github.com/zoyentech/kas/internal/config"
+	"github.com/zoyentech/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/obs"
+	"github.com/zoyentech/kas/internal/obs/health"
+	"github.com/zoyentech/kas/internal/testutil"
 )
 
 func TestMain(m *testing.M) { testutil.VerifyTestMain(m) }

@@ -11,8 +11,8 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 
-	"github.com/kas-runtime/kas/internal/config"
-	"github.com/kas-runtime/kas/internal/obs"
+	"github.com/zoyentech/kas/internal/config"
+	"github.com/zoyentech/kas/internal/obs"
 )
 
 // Collector 是事件→指标采集器（实现 obs.Subscriber）。

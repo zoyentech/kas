@@ -13,8 +13,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/kas-runtime/kas/internal/decision"
-	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/decision"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // Key 是决策缓存 key 维度（六维，Story 5.3.2.1 T1）。

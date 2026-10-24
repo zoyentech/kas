@@ -8,7 +8,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/kas-runtime/kas/internal/runtime"
+	"github.com/zoyentech/kas/internal/runtime"
 )
 
 // TestReloadConcurrentNoVersionMixing F-011 并发语义（Story 2.2.2.2 T3）：

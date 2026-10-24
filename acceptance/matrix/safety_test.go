@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	kas "github.com/kas-runtime/kas"
-	"github.com/kas-runtime/kas/internal/domain"
+	kas "github.com/zoyentech/kas"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // 矩阵行 1：标准可答、问法改写——Evidence recall 达标，事实由引用支持。

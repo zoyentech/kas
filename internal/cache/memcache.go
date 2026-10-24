@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/kas-runtime/kas/internal/domain"
-	"github.com/kas-runtime/kas/internal/obs"
+	"github.com/zoyentech/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/obs"
 )
 
 // MemCache 是 v1.2 默认进程内 Evidence 缓存（Story 4.3.2.1）：entries/总字节/

@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kas-runtime/kas/internal/deadline"
-	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/deadline"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // TestGuardCallBlocksUntilDeadline 阻塞 provider（永不返回除非 ctx.Done）：

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kas-runtime/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/domain"
 )
 
 // Guard 包装 provider 调用（Story 3.2.1.2 T1）：注入阶段 ctx、透传取消、

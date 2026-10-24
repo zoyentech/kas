@@ -6,10 +6,10 @@ import (
 	"encoding/hex"
 	"time"
 
-	"github.com/kas-runtime/kas/internal/domain"
-	"github.com/kas-runtime/kas/internal/evidence"
-	"github.com/kas-runtime/kas/internal/obs"
-	"github.com/kas-runtime/kas/internal/runtime"
+	"github.com/zoyentech/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/evidence"
+	"github.com/zoyentech/kas/internal/obs"
+	"github.com/zoyentech/kas/internal/runtime"
 )
 
 // Clock 抽象时间源（生产用系统时钟；测试注入 fake clock）。

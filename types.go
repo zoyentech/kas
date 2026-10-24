@@ -1,9 +1,9 @@
 package kas
 
 import (
-	"github.com/kas-runtime/kas/internal/domain"
-	"github.com/kas-runtime/kas/internal/evidence"
-	"github.com/kas-runtime/kas/internal/evidence/perm"
+	"github.com/zoyentech/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/evidence"
+	"github.com/zoyentech/kas/internal/evidence/perm"
 )
 
 // 本文件集中定义根包公共类型别名（D-7：实现全部在 internal/；类型唯一

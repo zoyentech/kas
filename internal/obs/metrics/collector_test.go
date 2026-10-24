@@ -8,9 +8,9 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/testutil"
 
-	"github.com/kas-runtime/kas/internal/config"
-	"github.com/kas-runtime/kas/internal/obs"
-	kasutil "github.com/kas-runtime/kas/internal/testutil"
+	"github.com/zoyentech/kas/internal/config"
+	"github.com/zoyentech/kas/internal/obs"
+	kasutil "github.com/zoyentech/kas/internal/testutil"
 )
 
 func TestMain(m *testing.M) { kasutil.VerifyTestMain(m) }

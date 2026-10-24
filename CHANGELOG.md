@@ -71,7 +71,6 @@
 ### chore
 
 - 开源治理基线：Apache-2.0、CONTRIBUTING、SECURITY、CODEOWNERS、模板、
-  ADR-0001/0002、依赖 license 基线（O-1 组织/仓库名待确认，模块路径为
-  占位）
+  ADR-0001/0002、依赖 license 基线（O-1 已确认：github.com/zoyentech/kas）
 - CI：Go 1.25/1.26 × linux/darwin 矩阵、lint+fmt 门禁、覆盖率阈值
   （60% 起）、acceptance job
