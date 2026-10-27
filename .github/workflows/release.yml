@@ -171,6 +171,24 @@ jobs:
             gh release delete "$TAG" -R "$REPO" --yes 2>/dev/null || true
             gh release create "$TAG" -R "$REPO" --verify-tag --title "$TAG" --notes-file notes.md
           fi
+      - name: 下载本轮验收报告（acceptance job 产物）
+        uses: actions/download-artifact@v4
+        with:
+          name: acceptance-report-${{ github.ref_name }}
+          run-id: ${{ github.run_id }}
+          path: acceptance-report
+      - name: 附带验收报告到 Release（永久归档，替代 30 天过期的 workflow artifact）
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          REPO="${GITHUB_REPOSITORY}"
+          # 统一命名前缀，幂等重跑（--clobber 覆盖同名资产）
+          cd acceptance-report
+          gh release upload "$TAG" -R "$REPO" report.md#kas-acceptance-report.md \
+            report.json#kas-acceptance-report.json results.jsonl#kas-acceptance-results.jsonl --clobber
+          echo "已附带资产："
+          gh release view "$TAG" -R "$REPO" --json assets --jq '.assets[].name' 
 
   publish-go-proxy:
     name: warm go proxies + verify install

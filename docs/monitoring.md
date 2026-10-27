@@ -178,7 +178,15 @@ decision:
 单列（`kas_requests_total{outcome="degraded"}`）不折算失败。label 白名单见
 配置 `metrics.label_allowlist`（新增 `source`/`unit` 供余额 gauge）。
 
-## 七、告警（归宿主）
+## 七、发布资产说明
+
+每个 [Release](https://github.com/zoyentech/kas/releases) 附带本轮验收报告资产
+（`kas-acceptance-report.md/.json`、`kas-acceptance-results.jsonl`）：报告随
+Release 永久归档，不受 workflow artifact 30 天过期影响（docs/design/05 §4
+"每轮保留报告"的落地形态）。Go SDK 无二进制发布物——`go get` 经 module proxy
+拉取源码与校验和，无需分发包。
+
+## 八、告警（归宿主）
 
 本栈不含 Alertmanager。建议告警（在宿主现有告警体系配置上述 PromQL）：
 

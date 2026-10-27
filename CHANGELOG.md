@@ -3,6 +3,17 @@
 本项目遵循 [Semantic Versioning](https://semver.org/)；格式参考
 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [v1.4.3] - 2026-10-27
+
+### docs(ci)
+
+- README 安装命令去版本号：`go get github.com/zoyentech/kas` 自动解析最新
+  Release（固定版本写法注明 @vX.Y.Z）
+- Release 附带验收报告资产（kas-acceptance-report.md/.json、
+  kas-acceptance-results.jsonl，幂等 --clobber）：报告随 Release 永久归档，
+  替代 30 天过期的 workflow artifact（docs/design/05 §4 报告归档口径）
+- 库代码零变更（文档/流水线版本）
+
 ## [v1.4.2] - 2026-10-27
 
 ### fix(example)

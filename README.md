@@ -10,8 +10,11 @@ KAS 是 query runtime，**不接管**知识事实源、导入、切片、索引�
 ## 安装
 
 ~~~bash
-go get github.com/zoyentech/kas@v1.2.0
+go get github.com/zoyentech/kas
 ~~~
+
+> 不带版本号自动解析[最新 Release](https://github.com/zoyentech/kas/releases/latest)；
+> 需固定版本时写 `go get github.com/zoyentech/kas@vX.Y.Z`。
 
 仓库：<https://github.com/zoyentech/kas>（O-1 已确认）。
 
