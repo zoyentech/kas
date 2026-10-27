@@ -183,10 +183,13 @@ jobs:
         run: |
           TAG="${GITHUB_REF_NAME}"
           REPO="${GITHUB_REPOSITORY}"
-          # 统一命名前缀，幂等重跑（--clobber 覆盖同名资产）
+          # 统一 kas- 前缀命名（gh release upload 不支持 # 重命名，先 mv）
           cd acceptance-report
-          gh release upload "$TAG" -R "$REPO" report.md#kas-acceptance-report.md \
-            report.json#kas-acceptance-report.json results.jsonl#kas-acceptance-results.jsonl --clobber
+          mv report.md kas-acceptance-report.md
+          mv report.json kas-acceptance-report.json
+          mv results.jsonl kas-acceptance-results.jsonl
+          gh release upload "$TAG" -R "$REPO" kas-acceptance-report.md \
+            kas-acceptance-report.json kas-acceptance-results.jsonl --clobber
           echo "已附带资产："
           gh release view "$TAG" -R "$REPO" --json assets --jq '.assets[].name' 
 
