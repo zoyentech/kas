@@ -128,6 +128,31 @@ type HealthEvent struct {
 // Kind implements Event.
 func (HealthEvent) Kind() string { return "health" }
 
+// BreakerEvent 熔断状态迁移（kas_provider_breaker_state gauge 数据源；
+// v1.3 F-019，ADR-0003）。State/PrevState ∈ closed/open/half_open。
+type BreakerEvent struct {
+	Meta
+	Provider  string // 有界（当前仅 jev）
+	State     string
+	PrevState string
+}
+
+// Kind implements Event.
+func (BreakerEvent) Kind() string { return "breaker" }
+
+// BalanceEvent 余额刷新（kas_balance_amount/state gauge 数据源；
+// v1.3 F-016，ADR-0003）。State ∈ normal/low/critical/unknown。
+type BalanceEvent struct {
+	Meta
+	Source string // 有界（余额来源标识，如 jev）
+	State  string
+	Amount float64
+	Unit   string // 有界枚举（如 credit/cny）
+}
+
+// Kind implements Event.
+func (BalanceEvent) Kind() string { return "balance" }
+
 // DecisionTraceEvent 决策过程的 trace 字段（docs/design/04 §6：provider、
 // model、model_version、候选数量、action、reason code）。
 type DecisionTraceEvent struct {

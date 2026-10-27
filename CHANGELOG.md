@@ -3,6 +3,43 @@
 本项目遵循 [Semantic Versioning](https://semver.org/)；格式参考
 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [v1.3.0] - 2026-10-27
+
+运营洞察与接入稳定化（展示层走 Prometheus+Grafana，ADR-0003；F-015~F-019）。
+
+### feat(stability)
+
+- provider panic 隔离（F-019）：deadline.Call / 降级链每级 / 阶段挂载点 / 组装器
+  四层守卫——任意三方 provider panic 不再击穿宿主进程，归一为契约违规走降级，
+  panic 值原文不进入任何输出面；`kas_provider_errors_total{error_class="panic"}` 计数
+- Jev 熔断（F-019，默认开启）：连续失败 5 次进 open（快速失败直落降级链，
+  不再烧 rejudge 超时预算）、冷却 30s 后 half-open 单探测、成功自动回闭；
+  `kas_provider_breaker_state` gauge + Health detail 可见；配置
+  `decision.jev.breaker.{enabled,failure_threshold,cooldown}`
+
+### feat(balance)
+
+- 余额监测（F-016）：BalanceSource 契约（宿主可注入任意计费源）+ Jev 适配
+  （O-2 协议未定，最小契约 + fake 先行）+ 后台轮询（失败指数退避、unknown 保留
+  上次成功值）+ 四态判定 normal/low/critical/unknown（阈值可配）；
+  `kas_balance_amount{source,unit}` / `kas_balance_state{source}` gauge、
+  BalanceEvent、`Client.Balance()`、Health balance 信息组件；
+  配置节 `balance:` + `decision.jev.balance_endpoint_env`
+
+### feat(monitoring)
+
+- 监控栈交付（F-015/F-017/F-018）：`monitoring/` 一键 docker compose
+  （Prometheus+Grafana 版本固定、datasource/看板自动 provisioning、30 天保留）
+  + 预置 KAS Overview 看板（健康/成功率/QPS/时延分位/阶段/缓存/降级/错误/
+  余额/熔断 14 面板）+ `examples/metrics` 宿主 /metrics 可运行演示
+  （fake Jev、余额递减、持续流量）+ `docs/monitoring.md` 指南与 PromQL 速查
+- 指标面新增 label：`source`/`unit`（余额 gauge，有界枚举）
+
+### chore
+
+- ADR-0003 accepted（含路线 A 修订）；Stage 8 计划按路线重组
+  （8.1/8.3/8.4 deferred，新增 8.7 监控栈交付）；契约套件增 panic 用例
+
 ## [v1.2.0] - 2026-10-24
 
 首个开源版本（MVP：P0 需求 F-001~F-012 全部落地；GoldenSet 验收通过建议门槛）。

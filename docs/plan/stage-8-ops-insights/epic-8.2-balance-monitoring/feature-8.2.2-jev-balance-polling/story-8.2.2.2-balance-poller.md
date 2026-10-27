@@ -1,6 +1,6 @@
 # Story 8.2.2.2 — 余额轮询器
 
-> 状态：todo ｜ 作为运维，我希望余额自动刷新并在越限时第一时间可见，以便余额耗尽前介入。
+> 状态：done ｜ 作为运维，我希望余额自动刷新并在越限时第一时间可见，以便余额耗尽前介入。
 
 ## 前置依赖
 
@@ -18,16 +18,17 @@
 - **依赖：** T8.2.2.1.1。
 - **预估：** 1d
 
-#### T8.2.2.2.2 stats/仪表盘数据面
-- **目标：** 余额态与余额值序列进 StatsSnapshot（环形采样，如最近 24 点）。
-- **产出：** stats collector 扩展 + snapshot 字段。
-- **验收标准：** 仪表盘余额卡可直接消费（8.4 联测）。
+#### T8.2.2.2.2 gauge 导出与 Health 信息组件（路线 A 改造）
+- **目标：** BalanceEvent → `kas_balance_amount{source,unit}`/`kas_balance_state{source}`
+  gauge；Health 聚合报告含 balance 信息组件（不影响总态）。
+- **产出：** obs.BalanceEvent + metrics collector 扩展 + client.Health 接线。
+- **验收标准：** 采集自事件流设置 gauge；Grafana 看板余额面板可渲染（8.7 联测）。
 - **依赖：** T8.2.2.2.1；Story 8.1.1.2。
 - **预估：** 0.5d
 
 ## Story DoD
 
-- [ ] 轮询器合入；事件与快照数据面就绪；生命周期 -race 干净。
+- [x] 轮询器合入；事件与快照数据面就绪；生命周期 -race 干净。
 
 ## 设计依据
 

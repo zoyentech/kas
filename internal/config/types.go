@@ -13,6 +13,18 @@ type Config struct {
 	Health        HealthConfig   `yaml:"health" json:"health"`
 	Metrics       MetricsConfig  `yaml:"metrics" json:"metrics"`
 	Tracing       TracingConfig  `yaml:"tracing" json:"tracing"`
+	// Balance 余额监测配置（v1.3 F-016；零值 = 禁用）。
+	Balance BalanceConfig `yaml:"balance" json:"balance"`
+}
+
+// BalanceConfig 是余额监测配置（Story 8.2.1.1）。
+type BalanceConfig struct {
+	Enabled  bool     `yaml:"enabled" json:"enabled"`
+	Interval Duration `yaml:"interval" json:"interval"`
+	// LowThreshold 低余额阈值（amount ≤ low 且 > critical 记 low）。
+	LowThreshold float64 `yaml:"low_threshold" json:"low_threshold"`
+	// CriticalThreshold 危急阈值（amount ≤ critical 记 critical）。
+	CriticalThreshold float64 `yaml:"critical_threshold" json:"critical_threshold"`
 }
 
 // TimeoutBudget 是五阶段请求预算；Total 必须精确等于其余五段之和（F-001）。
@@ -122,6 +134,20 @@ type JevConfig struct {
 	// RetryBackoff 重试间隔（可选，默认 0）；最坏耗时 = Σ(attempt+backoff)
 	// 必须装入 Rejudge 预算。
 	RetryBackoff *Duration `yaml:"retry_backoff,omitempty" json:"retry_backoff,omitempty"`
+	// BalanceEndpointEnv 余额查询端点的环境变量名（v1.3 F-016；O-2 协议
+	// 未定按最小契约 + fake 先行，协议到位仅改 internal/balance 的 adapter）。
+	BalanceEndpointEnv string `yaml:"balance_endpoint_env,omitempty" json:"balance_endpoint_env,omitempty"`
+	// Breaker 熔断配置（v1.3 F-019；nil = 默认开启 {5 次连续失败, 30s 冷却}）。
+	Breaker *JevBreakerConfig `yaml:"breaker,omitempty" json:"breaker,omitempty"`
+}
+
+// JevBreakerConfig 是 Jev 级熔断参数（Story 8.5.2.1）。
+type JevBreakerConfig struct {
+	Enabled bool `yaml:"enabled" json:"enabled"`
+	// FailureThreshold 连续失败进 open 的阈值（必须 > 0）。
+	FailureThreshold int `yaml:"failure_threshold" json:"failure_threshold"`
+	// Cooldown open 冷却时长（必须 > 0；期满转 half_open 单探测）。
+	Cooldown Duration `yaml:"cooldown" json:"cooldown"`
 }
 
 // FallbackConfig 是降级链配置；顺序固定 jev → deterministic_rules →

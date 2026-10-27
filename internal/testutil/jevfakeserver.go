@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -16,6 +17,10 @@ type JevScript struct {
 	Calls    int32         // 调用计数（测试断言单次尝试）
 	LastAuth string        // 捕获的 Authorization 头（扫描测试用）
 	LastBody string        // 捕获的请求体
+	// BalanceBody 非空时 GET /balance 返回该 JSON（如 {"amount":42,"unit":"credit"}）。
+	BalanceBody string
+	// BalanceStatus /balance 状态码（0 视为 200；置 5xx 可模拟余额查询故障）。
+	BalanceStatus int
 }
 
 // JevFakeServer 是脚本化 Jev 端点（覆盖 200/timeout/5xx/畸形体）。
@@ -29,6 +34,18 @@ type JevFakeServer struct {
 func NewJevFakeServer(script JevScript) *JevFakeServer {
 	f := &JevFakeServer{script: script}
 	f.srv = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/balance" {
+			f.mu.Lock()
+			status, body := f.script.BalanceStatus, f.script.BalanceBody
+			f.mu.Unlock()
+			if status == 0 {
+				status = http.StatusOK
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(status)
+			_, _ = w.Write([]byte(body))
+			return
+		}
 		f.mu.Lock()
 		f.script.Calls++
 		f.script.LastAuth = r.Header.Get("Authorization")
@@ -95,4 +112,16 @@ func ValidJevBody(action, groupID string, confidence float64) string {
 		"answer_text":      "回答正文",
 	})
 	return string(b)
+}
+
+// SetBalanceBody 动态更新 /balance 响应（状态迁移演示/测试）。
+func (f *JevFakeServer) SetBalanceBody(body string) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	f.script.BalanceBody = body
+}
+
+// SetBalanceAmount 以 credit 单位生成余额 JSON 并更新脚本（快捷方式）。
+func (f *JevFakeServer) SetBalanceAmount(amount float64) {
+	f.SetBalanceBody(`{"amount":` + strconv.FormatFloat(amount, 'f', 2, 64) + `,"unit":"credit"}`)
 }

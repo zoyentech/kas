@@ -43,6 +43,8 @@ var validationRules = []func(Config) []Violation{
 	ruleHealthParams,
 	ruleMetricsParams,
 	ruleTracingParams,
+	ruleBalanceConfig,
+	ruleJevBreaker,
 }
 
 // ruleSchemaVersion 校验 schema 版本（v1.2 仅接受 1）。

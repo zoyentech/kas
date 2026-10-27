@@ -1,6 +1,6 @@
 # KAS v1.2 MVP 开发计划（WBS）
 
-**状态：** v1.2（Stage 1~7）已交付发布（v1.2.0）；v1.3 Stage 8（运营洞察与接入稳定化）proposed 待确认排期。**依据：** [../design](../design) 设计文件包（01 架构 PRD / 02 示例配置 / 03 Go SDK API / 04 超时缓存可观测 / 05 GoldenSet 验收 / 06 迁移说明）。
+**状态：** v1.2（Stage 1~7）已交付（v1.2.0）；v1.3 Stage 8 已交付（v1.3.0，路线 A：Prometheus+Grafana，ADR-0003）。**依据：** [../design](../design) 设计文件包（01 架构 PRD / 02 示例配置 / 03 Go SDK API / 04 超时缓存可观测 / 05 GoldenSet 验收 / 06 迁移说明）。
 **交付对象：** multica 团队研发。**代码仓库：** GitHub 新建开源仓库（仓库名/组织见开放决策 O-1）。
 
 ## 阅读顺序
@@ -199,13 +199,13 @@ plan/stage-8-ops-insights/            # v1.3 运营洞察与接入稳定化（pr
 
 ## 规模统计
 
-| 层级 | v1.2（Stage 1~7，已交付） | v1.3（Stage 8，proposed） |
+| 层级 | v1.2（Stage 1~7，已交付） | v1.3（Stage 8 已交付：v1.3.0；8.1/8.3/8.4 deferred） |
 |---|---:|---:|
 | Stage | 7 | 1 |
-| Epic | 19 | 6 |
-| Feature | 30 | 10 |
-| Story | 49 | 14 |
-| Task | 135 | 24 |
+| Epic | 19 | 7（active 4 / deferred 3） |
+| Feature | 30 | 11 |
+| Story | 49 | 17 |
+| Task | 135 | 27 |
 
 ## 使用约定（摘要，详见 overview/03）
 

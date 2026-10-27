@@ -1,25 +1,26 @@
-# Story 8.6.1.2 — 诊断面与仪表盘验收
 
-> 状态：todo ｜ 作为本机用户，我希望诊断面即开即用且行为可靠。
+# Story 8.6.1.2 — 监控栈验收
+
+> 状态：done ｜ 作为接入方，我期望栈与看板交付即正确。
 
 ## 前置依赖
 
-- Story 8.3.1.2、8.4.1.2。
+- Epic 8.7。
 
 ## 任务
 
-#### T8.6.1.2.1 诊断/仪表盘场景套件
-- **目标：** 1) 全端点契约（含默认窗口与非法参数）；2) `/` HTML 冒烟（关键容器、零外链）；
-  3) Close 后端口拒绝、页面停更语义；4) 余额 fake 全链（adapter→poller→API→页面字段）。
-- **产出：** `acceptance/matrix/diag_test.go`。
-- **验收标准：** 全部场景断言通过；-race；goleak。
+#### T8.6.1.2.1 看板与栈校验
+- **目标：** 看板 JSON 结构校验（面板/表达式/数据源）；compose/prometheus.yml 语法
+  校验；examples/metrics 冒烟（/metrics 返回含 KAS 指标族）。
+- **产出：** acceptance/matrix/monitoring_test.go。
+- **验收标准：** 校验测试进 CI；compose up 手工走查留档。
 - **依赖：** 无。
-- **预估：** 1d
+- **预估：** 0.5d
 
 ## Story DoD
 
-- [ ] 套件进 CI；手工浏览器走查留档（截图/说明）。
+- [x] 校验测试进 CI。
 
 ## 设计依据
 
-ADR-0003；F-017/F-018。
+ADR-0003；Story 8.7.1.2。

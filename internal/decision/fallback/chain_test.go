@@ -253,3 +253,33 @@ func mustRules(t *testing.T) *rules.Provider {
 }
 
 var _ = strings.Contains
+
+// panicDec 恒 panic 的决策 provider（守卫用例）。
+type panicDec struct{}
+
+func (panicDec) Decide(ctx context.Context, in domain.DecisionInput) (domain.Decision, error) {
+	panic("provider exploded")
+}
+
+func (panicDec) Health(ctx context.Context) domain.ComponentHealth {
+	return domain.ComponentHealth{Status: domain.ComponentHealthy}
+}
+
+// TestChainIsolatesStagePanic 链内单级 panic：该级按失败计、链继续下一级
+// （Story 8.5.1.1）。
+func TestChainIsolatesStagePanic(t *testing.T) {
+	bus := obs.NewBus()
+	chain := fallback.New([]fallback.Stage{
+		{Route: fallback.RouteJev, Provider: panicDec{}},
+		{Route: fallback.RouteRules, Provider: mustRules(t)},
+	}, bus, guard(t))
+	// 无证据输入：Jev 级 panic 后规则级命中 no_valid_evidence → abstain
+	in := domain.DecisionInput{TraceID: "t", ConfigVersion: "v", Groups: []domain.CandidateGroup{{ID: "g1"}}}
+	d, err := chain.Decide(context.Background(), in)
+	if err != nil {
+		t.Fatalf("panic 应被隔离且链继续: %v", err)
+	}
+	if d.Provider != "rules" || d.Action != domain.ActionAbstain {
+		t.Fatalf("应降级到规则级: %+v", d)
+	}
+}

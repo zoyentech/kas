@@ -1,6 +1,6 @@
 # Story 8.5.1.1 — deadline.Call panic 守卫
 
-> 状态：todo ｜ 作为宿主服务负责人，我希望三方 provider 的 bug 不至于拖垮我的进程，以便接入无底线担忧。
+> 状态：done ｜ 作为宿主服务负责人，我希望三方 provider 的 bug 不至于拖垮我的进程，以便接入无底线担忧。
 
 ## 前置依赖
 
@@ -28,7 +28,7 @@
 
 ## Story DoD
 
-- [ ] panic 注入测试进 CI；godoc 声明 panic 隔离语义。
+- [x] panic 注入测试进 CI；godoc 声明 panic 隔离语义。
 
 ## 设计依据
 

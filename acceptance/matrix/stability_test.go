@@ -1,0 +1,204 @@
+package matrix
+
+import (
+	"context"
+	"strings"
+	"testing"
+	"time"
+
+	kas "github.com/zoyentech/kas"
+	"github.com/zoyentech/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/testutil"
+)
+
+// panicProvider 检索即 panic（矩阵行级：经公共 Client 注入）。
+type panicProvider struct{}
+
+func (panicProvider) Search(ctx context.Context, in kas.EvidenceQuery) (kas.EvidenceResult, error) {
+	panic("matrix: evidence provider exploded")
+}
+
+func (panicProvider) Health(ctx context.Context) kas.ComponentHealth {
+	return kas.ComponentHealth{Status: kas.ComponentHealthy}
+}
+
+// TestRowPanicIsolatedThroughClient panic 经 Client 注入：请求降级 abstain、
+// 进程存活（Story 8.6.1.1）。
+func TestRowPanicIsolatedThroughClient(t *testing.T) {
+	c := newClient(t, panicProvider{}, nil, nil)
+	resp, err := c.Answer(context.Background(), req("panic 注入问题"))
+	if err != nil {
+		t.Fatalf("panic 应被隔离并降级: %v", err)
+	}
+	if resp.Action != kas.ActionAbstain || !resp.Degraded {
+		t.Fatalf("应降级 abstain: %+v", resp)
+	}
+}
+
+// breakerYAML：熔断阈值 2、冷却 1h（测试期不复位），Jev 指向 fake server。
+const breakerYAMLTpl = `
+schema_version: 1
+timeouts: {total: 470ms, preliminary: 40ms, first_round: 120ms, rejudge: 150ms, supplement: 100ms, reserve: 60ms, min_reserve: 40ms}
+evidence:
+  provider: matrix
+  namespace: ns-a
+  top_k: 4
+  max_candidate_groups: 2
+  validity: {require_validity_policy_for_each_source: false, default_max_age: {s: 24h}, fail_closed_on_unknown_validity: true}
+  cache: {enabled: false}
+decision:
+  provider: jev
+  jev:
+    endpoint_env: KAS_BRK_JEV
+    api_key_env: KAS_BRK_KEY
+    model: m
+    model_version: v1
+    max_attempts: 1
+    breaker: {enabled: true, failure_threshold: 2, cooldown: 1h}
+  fallback:
+    order: [jev, deterministic_rules, decision_cache, abstain]
+    rules: [{name: no_valid_evidence, when: valid_evidence_count_equals_zero, action: abstain}]
+    cache: {enabled: false, ttl: 30s, max_entries: 100}
+answer: {max_citations: 5, require_citation_for_factual_claims: true, allow_answer_without_evidence: false, output_on_unknown: abstain}
+health: {required_components: [evidence_provider], optional_components: [jev], check_timeout: 250ms}
+metrics: {enabled: false, namespace: kas}
+tracing: {enabled: false}
+balance: {enabled: false}
+`
+
+// TestRowBreakerFastFail 熔断 open：零 Jev 调用 + 快速降级 + half-open 恢复
+// （Story 8.6.1.1）。
+func TestRowBreakerFastFail(t *testing.T) {
+	fake := testutil.NewJevFakeServer(testutil.JevScript{Status: 500, Body: `{}`})
+	defer fake.Close()
+	t.Setenv("KAS_BRK_JEV", fake.URL())
+	t.Setenv("KAS_BRK_KEY", "k")
+
+	until := time.Now().Add(time.Hour)
+	ev := &matrixEvidence{items: []domain.Evidence{{ID: "e1", SourceID: "s", ValidUntil: &until}}}
+	cfg, err := kas.LoadConfig(strings.NewReader(breakerYAMLTpl))
+	if err != nil {
+		t.Fatal(err)
+	}
+	c, err := kas.New(cfg, kas.Dependencies{EvidenceProvider: ev})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = c.Close() }()
+
+	// 两次失败（阈值 2）→ open
+	for i := 0; i < 2; i++ {
+		resp, err := c.Answer(context.Background(), req("熔断问题"))
+		if err != nil || !resp.Degraded {
+			t.Fatalf("失败请求应降级: %+v %v", resp, err)
+		}
+	}
+	if fake.Calls() != 2 {
+		t.Fatalf("熔断前调用数 = %d, want 2", fake.Calls())
+	}
+	// open 期：快速降级、零 HTTP 调用
+	start := time.Now()
+	resp, err := c.Answer(context.Background(), req("熔断问题"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if elapsed := time.Since(start); elapsed > 100*time.Millisecond {
+		t.Fatalf("open 期应快速降级（远小于 rejudge 150ms）: %s", elapsed)
+	}
+	if !resp.Degraded {
+		t.Fatalf("open 期应降级: %+v", resp)
+	}
+	if fake.Calls() != 2 {
+		t.Fatalf("open 期不得发起 HTTP: %d", fake.Calls())
+	}
+	// Health detail 可见熔断态
+	if h := c.Health(context.Background()); h.Components["jev"].Detail == "" {
+		t.Fatal("Health detail 应含熔断状态")
+	}
+}
+
+// balanceYAML：余额监测开、100ms 轮询（演示快速迁移）。
+const balanceYAML = `
+schema_version: 1
+timeouts: {total: 400ms, preliminary: 40ms, first_round: 120ms, rejudge: 80ms, supplement: 100ms, reserve: 60ms, min_reserve: 40ms}
+evidence:
+  provider: matrix
+  namespace: ns-a
+  top_k: 4
+  max_candidate_groups: 2
+  validity: {require_validity_policy_for_each_source: false, default_max_age: {s: 24h}, fail_closed_on_unknown_validity: true}
+  cache: {enabled: false}
+decision:
+  provider: jev
+  jev:
+    endpoint_env: KAS_BAL_JEV
+    api_key_env: KAS_BAL_KEY
+    balance_endpoint_env: KAS_BAL_EP
+    model: m
+    model_version: v1
+    max_attempts: 1
+  fallback:
+    order: [jev, deterministic_rules, decision_cache, abstain]
+    rules: [{name: no_valid_evidence, when: valid_evidence_count_equals_zero, action: abstain}]
+    cache: {enabled: false, ttl: 30s, max_entries: 100}
+answer: {max_citations: 5, require_citation_for_factual_claims: true, allow_answer_without_evidence: false, output_on_unknown: abstain}
+health: {required_components: [evidence_provider], optional_components: [jev], check_timeout: 250ms}
+metrics: {enabled: false, namespace: kas}
+tracing: {enabled: false}
+balance: {enabled: true, interval: 100ms, low_threshold: 300, critical_threshold: 50}
+`
+
+// waitState 轮询等待余额态达到 want（超时失败）。
+func waitState(t *testing.T, c *kas.Client, want kas.BalanceState) {
+	t.Helper()
+	deadline := time.Now().Add(3 * time.Second)
+	for time.Now().Before(deadline) {
+		if _, st := c.Balance(); st == want {
+			return
+		}
+		time.Sleep(30 * time.Millisecond)
+	}
+	_, st := c.Balance()
+	t.Fatalf("余额态未达 %s（当前 %s）", want, st)
+}
+
+// TestRowBalanceLifecycle 余额全链路：fake 端点→poller→Client.Balance/Health
+// 四态迁移（Story 8.6.1.1）。
+func TestRowBalanceLifecycle(t *testing.T) {
+	fake := testutil.NewJevFakeServer(testutil.JevScript{Status: 200, Body: testutil.ValidJevBody("answer", "g1", 0.9)})
+	fake.SetBalanceAmount(500)
+	defer fake.Close()
+	t.Setenv("KAS_BAL_JEV", fake.URL())
+	t.Setenv("KAS_BAL_KEY", "k")
+	t.Setenv("KAS_BAL_EP", fake.URL()+"/balance")
+
+	until := time.Now().Add(time.Hour)
+	ev := &matrixEvidence{items: []domain.Evidence{{ID: "e1", SourceID: "s", ValidUntil: &until}}}
+	cfg, err := kas.LoadConfig(strings.NewReader(balanceYAML))
+	if err != nil {
+		t.Fatal(err)
+	}
+	c, err := kas.New(cfg, kas.Dependencies{EvidenceProvider: ev})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = c.Close() }()
+
+	// normal → low → critical
+	waitState(t, c, kas.BalanceNormal)
+	fake.SetBalanceAmount(200)
+	waitState(t, c, kas.BalanceLow)
+	fake.SetBalanceAmount(10)
+	waitState(t, c, kas.BalanceCritical)
+
+	info, st := c.Balance()
+	if st != kas.BalanceCritical || info.Amount != 10 || info.Unit != "credit" {
+		t.Fatalf("快照异常: %+v %s", info, st)
+	}
+	// Health 信息组件
+	h := c.Health(context.Background())
+	bc, ok := h.Components["balance"]
+	if !ok || bc.Status != kas.ComponentNotReady {
+		t.Fatalf("critical 余额应反映到 Health: %+v", h.Components)
+	}
+}

@@ -45,6 +45,13 @@ type Collector struct {
 	providerErrors   *prometheus.CounterVec
 	decisionFallback *prometheus.CounterVec
 	healthStatus     *prometheus.GaugeVec
+	balanceAmount    *prometheus.GaugeVec
+	balanceState     *prometheus.GaugeVec
+	breakerState     *prometheus.GaugeVec
+
+	balanceAmtLabels []string
+	balanceStLabels  []string
+	breakerLabels    []string
 }
 
 // New 构建 collector；namespace 取配置（默认 kas）。
@@ -65,6 +72,9 @@ func New(cfg config.MetricsConfig) *Collector {
 	c.errLabels = labelsFiltered(cfg, "provider", "operation", "error_class")
 	c.fbLabels = labelsFiltered(cfg, "route", "reason")
 	c.healthLabels = labelsFiltered(cfg, "component", "status")
+	c.balanceAmtLabels = labelsFiltered(cfg, "source", "unit")
+	c.balanceStLabels = labelsFiltered(cfg, "source")
+	c.breakerLabels = labelsFiltered(cfg, "provider")
 
 	c.requestsTotal = prometheus.NewCounterVec(prometheus.CounterOpts{
 		Name: ns + "_requests_total", Help: "请求总数（label: operation/outcome/action；docs/design/04 §5）",
@@ -101,6 +111,16 @@ func New(cfg config.MetricsConfig) *Collector {
 	c.healthStatus = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: ns + "_health_status", Help: "组件健康状态（label: component/status；值 1=当前状态）",
 	}, c.healthLabels)
+	// v1.3（ADR-0003）：余额与熔断 gauge——状态以数值承载，避免状态值 label 基数
+	c.balanceAmount = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: ns + "_balance_amount", Help: "余额数值（label: source/unit；F-016）",
+	}, c.balanceAmtLabels)
+	c.balanceState = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: ns + "_balance_state", Help: "余额状态（label: source；3=normal 2=low 1=critical 0=unknown）",
+	}, c.balanceStLabels)
+	c.breakerState = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: ns + "_provider_breaker_state", Help: "熔断状态（label: provider；0=closed 1=open 2=half_open；F-019）",
+	}, c.breakerLabels)
 	return c
 }
 
@@ -143,6 +163,7 @@ func (c *Collector) collectors() []prometheus.Collector {
 		c.requestsTotal, c.requestDuration, c.stageDuration, c.stageDeadline,
 		c.deadlineTotal, c.cacheTotal, c.cacheEvictions, c.evidenceFiltered,
 		c.providerErrors, c.decisionFallback, c.healthStatus,
+		c.balanceAmount, c.balanceState, c.breakerState,
 	}
 }
 
@@ -200,6 +221,40 @@ func (c *Collector) Notify(ev obs.Event) {
 	case obs.HealthEvent:
 		c.healthStatus.WithLabelValues(pick(c.healthLabels,
 			"component", e.Component, "status", e.Status)...).Set(1)
+	case obs.BalanceEvent:
+		c.balanceAmount.WithLabelValues(pick(c.balanceAmtLabels,
+			"source", e.Source, "unit", e.Unit)...).Set(e.Amount)
+		c.balanceState.WithLabelValues(pick(c.balanceStLabels,
+			"source", e.Source)...).Set(balanceStateValue(e.State))
+	case obs.BreakerEvent:
+		c.breakerState.WithLabelValues(pick(c.breakerLabels,
+			"provider", e.Provider)...).Set(breakerStateValue(e.State))
+	}
+}
+
+// balanceStateValue 状态字符串 → gauge 值（unknown 归 0）。
+func balanceStateValue(state string) float64 {
+	switch state {
+	case "normal":
+		return 3
+	case "low":
+		return 2
+	case "critical":
+		return 1
+	default:
+		return 0
+	}
+}
+
+// breakerStateValue 状态字符串 → gauge 值。
+func breakerStateValue(state string) float64 {
+	switch state {
+	case "open":
+		return 1
+	case "half_open":
+		return 2
+	default:
+		return 0
 	}
 }
 

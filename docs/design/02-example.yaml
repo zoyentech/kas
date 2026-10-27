@@ -65,6 +65,17 @@ answer:
   allow_answer_without_evidence: false
   output_on_unknown: abstain
 
+# v1.3 运营能力（可选；详见 docs/monitoring.md）：
+# decision:
+#   jev:
+#     balance_endpoint_env: KAS_JEV_BALANCE_ENDPOINT  # 余额监测（F-016）
+#     breaker: {enabled: true, failure_threshold: 5, cooldown: 30s}  # 熔断（F-019，默认开）
+# balance:
+#   enabled: true
+#   interval: 60s
+#   low_threshold: 300
+#   critical_threshold: 50
+
 health:
   required_components: [evidence_provider]
   optional_components: [jev]

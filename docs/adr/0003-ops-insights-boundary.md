@@ -1,6 +1,16 @@
 # ADR-0003 — v1.3 运营洞察与诊断面边界
 
-> 状态：proposed ｜ 日期：2026-10-27 ｜ 关联：F-015~F-019（Stage 8）；F-014（post-MVP）；ADR-0001
+> 状态：accepted（含 2026-10-27 路线修订）｜ 日期：2026-10-27 ｜ 关联：F-015~F-019（Stage 8）；F-014（post-MVP）；ADR-0001
+
+## 决策修订（2026-10-27，路线确认）
+
+**展示层采用路线 A（Prometheus + Grafana）**，原决策 1/2/4 中"进程内统计查询、
+诊断 HTTP API、内嵌 SPA"**延迟为可选**（触发条件：需要零依赖秒开本机诊断页时；
+届时诊断 server 可顺带暴露 /metrics 兼作抓取目标）。依据：接入方愿意常驻
+Prometheus+Grafana；宿主可方便暴露 /metrics；天/周级历史保留有价值且可复用到
+生产监控。本期展示层 = monitoring/ compose 栈 + 预置 kas-overview 看板 + PromQL
+手册（F-015/F-017/F-018 由其承载）；进程内新增仅余额/熔断 gauge（事件驱动，
+复用 F-006 collector）。决策 3（余额 fake 先行）与 5（panic/熔断）不变。
 
 ## 背景
 

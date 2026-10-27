@@ -1,0 +1,10 @@
+# Grafana datasource 自动装配（uid 固定供看板引用）。
+apiVersion: 1
+datasources:
+  - name: KAS Prometheus
+    uid: kas-prom
+    type: prometheus
+    access: proxy
+    url: http://kas-prometheus:9090
+    isDefault: true
+    editable: false

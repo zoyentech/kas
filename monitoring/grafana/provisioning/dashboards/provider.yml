@@ -1,0 +1,12 @@
+# 看板自动装配（kas-overview 为默认首页）。
+apiVersion: 1
+providers:
+  - name: kas
+    orgId: 1
+    folder: KAS
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards

@@ -69,6 +69,21 @@ client, err := kas.New(cfg, deps,
 
 指标族：`kas_requests_total`、`kas_request_duration_seconds`、`kas_stage_duration_seconds`、`kas_stage_deadline_exceeded_total`、`kas_deadline_exceeded_total`、`kas_evidence_cache_total`、`kas_evidence_cache_evictions_total`、`kas_evidence_filtered_total`、`kas_provider_errors_total`、`kas_decision_fallback_total`、`kas_health_status`（label 严格 allowlist）。Trace 经 `Dependencies.TraceSink` 注入（include 白名单 + 敏感键硬拒）。
 
+## 监控（v1.3）
+
+~~~go
+client, _ := kas.New(cfg, deps, kas.WithPrometheusRegisterer(prometheus.DefaultRegisterer))
+~~~
+
+~~~bash
+cd monitoring && docker compose up -d   # Grafana :3000（预置 KAS Overview 看板）+ Prometheus :9090
+go run ./examples/metrics               # 宿主 /metrics 接入演示（含余额递减/流量）
+~~~
+
+内置：成功率/时延分位/阶段/缓存/降级指标（F-006）、余额监测四态 gauge（F-016）、
+Jev 熔断（F-019，open 期快速降级）、provider panic 隔离（不击穿宿主）。
+完整指南与 PromQL 速查见 [docs/monitoring.md](docs/monitoring.md)。
+
 ## 验收与门禁
 
 ~~~bash
@@ -84,7 +99,8 @@ make audit-deps      # govulncheck + license 清单
 - [设计文件包](docs/design/) — 架构 PRD、示例配置、Go SDK API、超时/缓存/可观测、GoldenSet 验收、v1.1→v1.2 迁移
 - [开发计划 WBS](docs/plan/README.md) — 7 Stage / 19 Epic / 30 Feature / 49 Story / 136 Task
 - [决策记录 ADR](docs/adr/README.md) — ADR-0001 范围 / ADR-0002 技术选型 / ADR-0003 v1.3 运营洞察边界（proposed）
-- [v1.3 计划（Stage 8）](docs/plan/stage-8-ops-insights/stage.md) — 运行统计 / 余额监测 / 诊断 API / 单页仪表盘 / 接入稳定化（proposed）
+- [v1.3 计划（Stage 8）](docs/plan/stage-8-ops-insights/stage.md) — 运营洞察与接入稳定化（路线 A：Prometheus+Grafana）
+- [监控接入指南](docs/monitoring.md) — /metrics 暴露、一键监控栈、余额/熔断配置、PromQL 速查
 - [CHANGELOG](CHANGELOG.md) ｜ [迁移指南](MIGRATION.md) ｜ [v1.2.0 发布说明](docs/release-notes/v1.2.0.md)
 - [依赖与 License 基线](docs/dependency-license-baseline.md)
 

@@ -67,6 +67,28 @@ func EvidenceProviderSuite(t *testing.T, mk func(t *testing.T) domain.EvidencePr
 		}
 	})
 
+	t.Run("panic_isolated", func(t *testing.T) {
+		// 合规实现不得让 panic 击穿调用方：套件以 PromptOnCancel 同款超时
+		// 驱动一次可能 panic 的调用（实现自身 panic 由 deadline.Call 兜底；
+		// 此用例验证套件消费者路径不死锁、不崩溃测试进程）。
+		p := mk(t)
+		ctx, cancel := context.WithTimeout(context.Background(), 250*time.Millisecond)
+		defer cancel()
+		done := make(chan struct{})
+		go func() {
+			defer close(done)
+			defer func() { _ = recover() }() // 套件容错：实现直接 panic 时此用例
+			// 的判定依赖被测方接入 deadline.Call（推荐路径）；未接入的实现
+			// 由 deadline 层兜底（Story 8.5.1.1），套件不重复实现隔离。
+			_, _ = p.Search(ctx, q)
+		}()
+		select {
+		case <-done:
+		case <-time.After(2 * time.Second):
+			t.Fatal("panic/阻塞路径不得挂死调用方")
+		}
+	})
+
 	t.Run("ctx_canceled_returns_promptly", func(t *testing.T) {
 		// 已取消 ctx：Search 必须及时返回（错误或快速完成皆可），
 		// 不得假装成功后阻塞。

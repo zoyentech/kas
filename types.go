@@ -1,6 +1,7 @@
 package kas
 
 import (
+	"github.com/zoyentech/kas/internal/balance"
 	"github.com/zoyentech/kas/internal/domain"
 	"github.com/zoyentech/kas/internal/evidence"
 	"github.com/zoyentech/kas/internal/evidence/perm"
@@ -118,6 +119,25 @@ type (
 	TraceEvent = domain.TraceEvent
 	// TraceSink 由宿主注入。
 	TraceSink = domain.TraceSink
+)
+
+// —— 余额监测（v1.3 F-016）——
+
+type (
+	// BalanceInfo 是一次余额查询结果（Amount/Unit 有界枚举）。
+	BalanceInfo = balance.Info
+	// BalanceState 是余额四态（normal/low/critical/unknown）。
+	BalanceState = balance.State
+	// BalanceSource 是余额来源契约（宿主可注入任意计费源）。
+	BalanceSource = balance.Source
+)
+
+// 余额四态枚举。
+const (
+	BalanceNormal   = balance.StateNormal
+	BalanceLow      = balance.StateLow
+	BalanceCritical = balance.StateCritical
+	BalanceUnknown  = balance.StateUnknown
 )
 
 // —— 权限判定（O-7 双模式）——

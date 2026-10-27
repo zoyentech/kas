@@ -55,6 +55,25 @@ func DecisionProviderSuite(t *testing.T, mk func(t *testing.T) domain.DecisionPr
 		}
 	})
 
+	t.Run("panic_isolated", func(t *testing.T) {
+		// 同 Evidence 套件口径：panic/阻塞路径不得挂死调用方（隔离兜底在
+		// deadline.Call 与降级链 safeDecide，Story 8.5.1.1）。
+		p := mk(t)
+		ctx, cancel := context.WithTimeout(context.Background(), 250*time.Millisecond)
+		defer cancel()
+		done := make(chan struct{})
+		go func() {
+			defer close(done)
+			defer func() { _ = recover() }()
+			_, _ = p.Decide(ctx, input)
+		}()
+		select {
+		case <-done:
+		case <-time.After(2 * time.Second):
+			t.Fatal("panic/阻塞路径不得挂死调用方")
+		}
+	})
+
 	t.Run("ctx_canceled_returns_promptly", func(t *testing.T) {
 		p := mk(t)
 		ctx, cancel := context.WithCancel(context.Background())

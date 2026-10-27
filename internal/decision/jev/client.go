@@ -14,6 +14,7 @@ import (
 
 	"github.com/zoyentech/kas/internal/config"
 	"github.com/zoyentech/kas/internal/domain"
+	"github.com/zoyentech/kas/internal/obs"
 )
 
 // Config 是运行所需的环境注入配置（Story 5.2.1.1 T1）。
@@ -97,6 +98,8 @@ type jevResponse struct {
 type Client struct {
 	cfg  Config
 	http *http.Client
+	// brk 可选熔断器（v1.3 F-019；nil = 不熔断）。
+	brk *Breaker
 }
 
 // New 构建 Jev 客户端。
@@ -110,9 +113,41 @@ func New(cfg Config) *Client {
 	}
 }
 
+// WithBreaker 挂载熔断器（链式；bus 用于 BreakerEvent 分发）。
+func (c *Client) WithBreaker(cfg BreakerConfig, bus *obs.Bus) *Client {
+	if !cfg.Enabled {
+		return c
+	}
+	c.brk = NewBreaker(cfg, bus)
+	return c
+}
+
+// BreakerState 返回熔断状态（Health detail 消费；未挂载恒 closed）。
+func (c *Client) BreakerState() string {
+	if c.brk == nil {
+		return BreakerClosed.String()
+	}
+	return c.brk.State().String()
+}
+
 // Decide 执行单次调用（Story 5.2.1.1 T3：拒绝重试，即使配置 >1）；
 // 响应经严格解析 + 统一校验器（Story 5.2.1.2）；模型版本捕获进 Decision。
+// 熔断 open 期快速失败（不烧 rejudge 预算，链直接降级；Story 8.5.2.1）。
 func (c *Client) Decide(ctx context.Context, in domain.DecisionInput) (domain.Decision, error) {
+	if c.brk != nil {
+		if err := c.brk.Allow(); err != nil {
+			return domain.Decision{}, err
+		}
+	}
+	d, err := c.decideOnce(ctx, in)
+	if c.brk != nil {
+		c.brk.Record(err == nil)
+	}
+	return d, err
+}
+
+// decideOnce 单次 HTTP 调用（原 Decide 主体）。
+func (c *Client) decideOnce(ctx context.Context, in domain.DecisionInput) (domain.Decision, error) {
 	if c.cfg.MaxAttempts != 1 {
 		// docs/03 §3：Jev 默认最多调用一次，以免重试耗尽补检/余量预算。
 		// 配置层已限制可装入预算的重试；此处仍按单次执行语义。
@@ -167,9 +202,13 @@ func (c *Client) Decide(ctx context.Context, in domain.DecisionInput) (domain.De
 	return d, nil
 }
 
-// Health 构造期已校验 env；无独立健康端点（O-2 待定），恒报 healthy。
+// Health 构造期已校验 env；无独立健康端点（O-2 待定），恒报 healthy；
+// detail 携带熔断状态（v1.3：运维可见性）。
 func (c *Client) Health(ctx context.Context) domain.ComponentHealth {
-	return domain.ComponentHealth{Status: domain.ComponentHealthy, Detail: "jev env 已注入；无独立健康端点（O-2 待定）"}
+	return domain.ComponentHealth{
+		Status: domain.ComponentHealthy,
+		Detail: "jev env 已注入；无独立健康端点（O-2 待定）；breaker=" + c.BreakerState(),
+	}
 }
 
 // encodeRequest 映射 DecisionInput → jevRequest（Story 5.2.1.1 T2 映射单测对象）。

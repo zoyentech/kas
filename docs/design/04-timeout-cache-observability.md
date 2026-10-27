@@ -104,6 +104,9 @@ SDK 接收宿主 prometheus.Registerer 并注册 collector，不自己创建 /me
 | kas_provider_errors_total | Counter | provider, operation, error_class |
 | kas_decision_fallback_total | Counter | route, reason |
 | kas_health_status | Gauge | component, status |
+| kas_balance_amount（v1.3，ADR-0003） | Gauge | source, unit |
+| kas_balance_state（v1.3；3=normal 2=low 1=critical 0=unknown） | Gauge | source |
+| kas_provider_breaker_state（v1.3；0=closed 1=open 2=half_open） | Gauge | provider |
 
 禁止将 question、principal/user/tenant、Evidence ID、trace ID、错误原文、config_version 或任意自由字符串作为 label。模型版本默认只写 trace，避免高基数。
 

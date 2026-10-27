@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"io"
 	"sync/atomic"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 
+	"github.com/zoyentech/kas/internal/balance"
 	"github.com/zoyentech/kas/internal/cache"
 	"github.com/zoyentech/kas/internal/decision/dcache"
 	"github.com/zoyentech/kas/internal/decision/fallback"
@@ -34,6 +36,9 @@ type Dependencies struct {
 	PermissionChecker PermissionChecker
 	HealthChecks      HealthChecks
 	TraceSink         TraceSink
+	// BalanceSource 可选（v1.3 F-016）：注入自定义计费源；nil 且配置
+	// balance.enabled 时按 decision.jev.balance_endpoint_env 构建 Jev 源。
+	BalanceSource BalanceSource
 }
 
 // Option 定制 New 的装配行为。
@@ -56,7 +61,10 @@ type Client struct {
 	bus       *obs.Bus
 	deps      Dependencies
 	collector *metrics.Collector
-	closed    atomic.Bool
+	// balancePoller 可空（余额监测禁用时为 nil；v1.3 F-016）。
+	balancePoller *balance.Poller
+	balanceCancel context.CancelFunc
+	closed        atomic.Bool
 }
 
 // New 同步校验配置与必要依赖后装配 Client：构建初始 Runtime Snapshot 并
@@ -116,6 +124,27 @@ func New(cfg Config, deps Dependencies, opts ...Option) (*Client, error) {
 		}
 		bus.Subscribe(trace.NewAdapter(sink, trace.NewRedactor(cfg.Tracing.Include)))
 	}
+
+	// 余额监测（v1.3 F-016）：宿主注入源优先；否则按配置构建 Jev 源
+	// （O-2 fake 先行）；启用但无任何可用源 → 构造期 fail-fast。
+	if cfg.Balance.Enabled {
+		src := deps.BalanceSource
+		if src == nil {
+			if cfg.Decision.Provider != "jev" || cfg.Decision.Jev.BalanceEndpointEnv == "" {
+				return nil, fmt.Errorf("%w: balance.enabled=true 但未注入 Dependencies.BalanceSource 且未配置 decision.jev.balance_endpoint_env", ErrInvalidConfig)
+			}
+			js, err := balance.NewJevSource(cfg.Decision.Jev.BalanceEndpointEnv, cfg.Decision.Jev.APIKeyEnv)
+			if err != nil {
+				return nil, err
+			}
+			src = js
+		}
+		poller := balance.NewPoller(src, cfg.Balance, bus)
+		bctx, bcancel := context.WithCancel(context.Background())
+		c.balancePoller = poller
+		c.balanceCancel = bcancel
+		go poller.Run(bctx)
+	}
 	return c, nil
 }
 
@@ -144,11 +173,28 @@ func (c *Client) Health(ctx context.Context) HealthReport {
 	if snap == nil {
 		return HealthReport{Status: domain.StatusNotReady, CheckedAt: orchestrator.SystemClock{}.Now()}
 	}
-	return health.Probe(ctx, snap.Config().Health, health.Deps{
+	report := health.Probe(ctx, snap.Config().Health, health.Deps{
 		Evidence: c.deps.EvidenceProvider,
 		Decision: c.engine.Decision,
 		Extra:    c.deps.HealthChecks,
 	}, c.bus)
+	// 余额信息组件（不参与 required/optional 聚合，仅展示；v1.3 F-016）
+	if c.balancePoller != nil {
+		info, state, stateAt := c.balancePoller.Snapshot()
+		detail := fmt.Sprintf("amount=%.2f%s（state=%s since=%s）", info.Amount, info.Unit, state, stateAt.Format(time.RFC3339))
+		if report.Components == nil {
+			report.Components = map[string]ComponentHealth{}
+		}
+		st := domain.ComponentDegraded
+		switch state {
+		case balance.StateNormal:
+			st = domain.ComponentHealthy
+		case balance.StateCritical, balance.StateUnknown:
+			st = domain.ComponentNotReady
+		}
+		report.Components["balance"] = ComponentHealth{Status: st, Detail: detail}
+	}
+	return report
 }
 
 // Reload 依次解析、Validate、准备候选 runtime、计算脱敏 config_version
@@ -164,6 +210,16 @@ func (c *Client) Reload(ctx context.Context, r io.Reader) (string, error) {
 	return res.Version, nil
 }
 
+// Balance 返回余额快照（余额监测未启用时 state 恒为 unknown；v1.3 F-016）。
+// unknown 态下 last 为最近一次成功值（失联期间保留展示）。
+func (c *Client) Balance() (BalanceInfo, BalanceState) {
+	if c.balancePoller == nil {
+		return BalanceInfo{}, BalanceUnknown
+	}
+	info, state, _ := c.balancePoller.Snapshot()
+	return BalanceInfo(info), BalanceState(state)
+}
+
 // ConfigVersion 返回当前运行快照的 config_version（诊断用途）。
 func (c *Client) ConfigVersion() string { return c.manager.Version() }
 
@@ -175,8 +231,32 @@ func (c *Client) Close() error {
 		if c.collector != nil {
 			c.collector.Unregister()
 		}
+		if c.balanceCancel != nil {
+			c.balanceCancel() // 停止余额轮询 goroutine（goleak 验证）
+		}
 	}
 	return nil
+}
+
+// jevBreakerConfigOf 读取熔断配置（nil → 默认开启 {5, 30s}）。
+func jevBreakerConfigOf(cfg Config) jev.BreakerConfig {
+	if cfg.Decision.Jev.Breaker == nil {
+		return jev.DefaultBreakerConfig()
+	}
+	br := cfg.Decision.Jev.Breaker
+	out := jev.BreakerConfig{
+		Enabled:          br.Enabled,
+		FailureThreshold: br.FailureThreshold, Cooldown: br.Cooldown.Std(),
+	}
+	if out.Enabled {
+		if out.FailureThreshold <= 0 {
+			out.FailureThreshold = 5
+		}
+		if out.Cooldown <= 0 {
+			out.Cooldown = 30 * time.Second
+		}
+	}
+	return out
 }
 
 // buildDecisionChain 装配降级链（Story 5.3.1.1 / 5.3.2.1 T3）；
@@ -198,7 +278,12 @@ func buildDecisionChain(cfg Config, bus *obs.Bus, primary domain.DecisionProvide
 		if err != nil {
 			return nil, err
 		}
-		stages = append(stages, fallback.Stage{Route: fallback.RouteJev, Provider: jev.New(jc)})
+		// 熔断（v1.3 F-019）：默认开启；配置可关/调参（Story 8.5.2.1）
+		bcfg := jevBreakerConfigOf(cfg)
+		stages = append(stages, fallback.Stage{
+			Route:    fallback.RouteJev,
+			Provider: jev.New(jc).WithBreaker(bcfg, bus),
+		})
 	}
 	stages = append(stages, fallback.Stage{Route: fallback.RouteRules, Provider: rulesProv})
 	var dcacheProv *dcache.Provider

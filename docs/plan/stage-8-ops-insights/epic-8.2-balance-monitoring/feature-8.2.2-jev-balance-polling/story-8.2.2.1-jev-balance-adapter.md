@@ -1,6 +1,6 @@
 # Story 8.2.2.1 — Jev 余额 adapter（fake 先行）
 
-> 状态：todo ｜ 作为 SDK，我希望余额协议封装在一个 adapter 内，以便 O-2 文档到位后只改一处。
+> 状态：done ｜ 作为 SDK，我希望余额协议封装在一个 adapter 内，以便 O-2 文档到位后只改一处。
 
 ## 前置依赖
 
@@ -19,7 +19,7 @@
 
 ## Story DoD
 
-- [ ] adapter 契约测试（fake 驱动正常/5xx/超时/畸形体）全绿。
+- [x] adapter 契约测试（fake 驱动正常/5xx/超时/畸形体）全绿。
 
 ## 设计依据
 

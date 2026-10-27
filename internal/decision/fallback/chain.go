@@ -7,6 +7,7 @@ package fallback
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/zoyentech/kas/internal/decision"
@@ -88,7 +89,7 @@ func (c *Chain) Decide(ctx context.Context, in domain.DecisionInput) (domain.Dec
 			return terminal(domain.ReasonDeadlineExceeded, append(reasons, domain.ReasonDeadlineExceeded)), nil
 		}
 
-		d, err := s.Provider.Decide(ctx, in)
+		d, err := c.safeDecide(ctx, s, in)
 		if err != nil {
 			reason := reasonForStage(err, s.Route)
 			reasons = appendReason(reasons, reason)
@@ -139,6 +140,18 @@ func (c *Chain) Health(ctx context.Context) domain.ComponentHealth {
 		return domain.ComponentHealth{Status: domain.ComponentNotReady, Detail: "降级链为空"}
 	}
 	return c.Stages[0].Provider.Health(ctx)
+}
+
+// safeDecide 执行单级 provider 并隔离 panic（Story 8.5.1.1）：panic 视为该级
+// 失败（契约违规大类），链继续下一级而非击穿进程。
+func (c *Chain) safeDecide(ctx context.Context, s Stage, in domain.DecisionInput) (d domain.Decision, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			d, err = domain.Decision{}, fmt.Errorf("%w: route=%s provider panicked (isolated)",
+				domain.ErrProviderContract, s.Route)
+		}
+	}()
+	return s.Provider.Decide(ctx, in)
 }
 
 func (c *Chain) emitFallback(meta obs.Meta, route, reason string) {

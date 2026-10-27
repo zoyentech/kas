@@ -242,6 +242,46 @@ func ruleDecisionCacheParams(cfg Config) []Violation {
 	return vs
 }
 
+// ruleBalanceConfig 余额监测配置校验（Story 8.2.1.1：0 ≤ critical < low；
+// interval > 0；阈值显式必填防误配静默失效）。
+func ruleBalanceConfig(cfg Config) []Violation {
+	b := cfg.Balance
+	if !b.Enabled {
+		return nil
+	}
+	var vs []Violation
+	if b.Interval <= 0 {
+		vs = append(vs, newViolation("balance.interval", "必须为正数，当前 %s", b.Interval))
+	}
+	if b.LowThreshold <= 0 {
+		vs = append(vs, newViolation("balance.low_threshold", "启用余额监测时必须显式配置（>0）"))
+	}
+	if b.CriticalThreshold < 0 {
+		vs = append(vs, newViolation("balance.critical_threshold", "不能为负，当前 %v", b.CriticalThreshold))
+	}
+	if b.LowThreshold > 0 && b.CriticalThreshold >= b.LowThreshold {
+		vs = append(vs, newViolation("balance.critical_threshold",
+			"必须小于 low_threshold（当前 critical=%v ≥ low=%v）", b.CriticalThreshold, b.LowThreshold))
+	}
+	return vs
+}
+
+// ruleJevBreaker 熔断参数校验（Story 8.5.2.1：enabled 时阈值/冷却必填为正）。
+func ruleJevBreaker(cfg Config) []Violation {
+	br := cfg.Decision.Jev.Breaker
+	if br == nil || !br.Enabled {
+		return nil
+	}
+	var vs []Violation
+	if br.FailureThreshold <= 0 {
+		vs = append(vs, newViolation("decision.jev.breaker.failure_threshold", "必须为正数，当前 %d", br.FailureThreshold))
+	}
+	if br.Cooldown <= 0 {
+		vs = append(vs, newViolation("decision.jev.breaker.cooldown", "必须为正数，当前 %s", br.Cooldown))
+	}
+	return vs
+}
+
 // ruleAnswerParams 回答参数校验。
 func ruleAnswerParams(cfg Config) []Violation {
 	var vs []Violation
@@ -284,6 +324,7 @@ var knownMetricLabels = map[string]bool{
 	"provider": true, "result": true, "reason": true, "route": true,
 	"cache_result": true, "fallback_reason": true, "component": true,
 	"status": true, "deadline_stage": true, "error_class": true,
+	"source": true, "unit": true, // v1.3：余额 gauge（有界：来源/单位枚举）
 }
 
 // ruleMetricsParams 指标配置校验（基数防护）。

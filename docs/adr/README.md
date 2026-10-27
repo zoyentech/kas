@@ -8,7 +8,7 @@ ADR（Architecture Decision Record）记录 KAS 的**已决**工程与架构决�
 |---|---|---|
 | [0001](0001-scope-v1.2.md) | v1.2 范围与不做清单 | accepted |
 | [0002](0002-technology-choices.md) | 技术选型（D-1~D-10） | accepted |
-| [0003](0003-ops-insights-boundary.md) | v1.3 运营洞察与诊断面边界 | proposed |
+| [0003](0003-ops-insights-boundary.md) | v1.3 运营洞察与诊断面边界（含路线 A 修订） | accepted |
 
 新 ADR 按下一个可用编号追加到本表，不修改已归档 ADR 正文；推翻旧决策时新建 ADR 并将旧的状态改为 `superseded by <n>`。
 

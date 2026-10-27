@@ -1,0 +1,45 @@
+# KAS 监控栈（Story 8.7.1.1；ADR-0003 路线 A）：Prometheus 抓取宿主 /metrics，
+# Grafana 自动加载 datasource 与 kas-overview 看板。
+#
+# 用法：
+#   cd monitoring && docker compose up -d
+#   Grafana  http://localhost:3000（匿名可读；本机诊断用途）
+#   Prometheus http://localhost:9090
+#
+# 抓取目标：默认 host.docker.internal:8080（宿主应用 /metrics，见 examples/metrics）。
+# Linux 需保留 extra_hosts 映射；改端口编辑 prometheus/prometheus.yml 的 targets。
+services:
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: kas-prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=30d   # 历史保留（按需调整）
+    volumes:
+      - ./prometheus:/etc/prometheus:ro
+      - prom-data:/prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # Linux 兼容
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    container_name: kas-grafana
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true        # 本机诊断：匿名只读
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+      - GF_AUTH_DISABLE_LOGIN_FORM=false      # 保留 admin 入口（默认 admin/admin）
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/var/lib/grafana/dashboards/kas-overview.json
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "127.0.0.1:3000:3000"
+    restart: unless-stopped
+
+volumes:
+  prom-data:
+  grafana-data:

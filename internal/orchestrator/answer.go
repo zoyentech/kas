@@ -165,7 +165,7 @@ func (e *Engine) runStage(root *deadline.Root, st *state, name string, budget ti
 	stageCtx, cancelStage := root.Stage(name, stageStart, budget)
 	defer cancelStage() // 阶段结束立即取消（全路径 cancel 保证）
 
-	err := fn(stageCtx)
+	err := safeStage(fn, stageCtx)
 	cancelStage()
 
 	elapsed := e.Clock.Now().Sub(stageStart)
@@ -194,6 +194,27 @@ func (e *Engine) runStage(root *deadline.Root, st *state, name string, budget ti
 		Outcome: "ok", Duration: elapsed, Remaining: remaining,
 	})
 	return outcome, nil
+}
+
+// safeStage 执行阶段挂载函数并隔离 panic（Story 8.5.1.1：初判/补检等宿主
+// 可注入点同样不得击穿进程；panic 归一为阶段错误走降级路径）。
+func safeStage(fn func(ctx context.Context) error, ctx context.Context) (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("%w: stage hook panicked (isolated)", domain.ErrProviderContract)
+		}
+	}()
+	return fn(ctx)
+}
+
+// safeAssemble 组装器守卫（宿主可注入 Assembler 的 panic 隔离）。
+func safeAssemble(a Assembler, ctx context.Context, in AssembleInput) (resp domain.Response, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			resp, err = domain.Response{}, fmt.Errorf("%w: assembler panicked (isolated)", domain.ErrProviderContract)
+		}
+	}()
+	return a.Assemble(ctx, in)
 }
 
 // StageOutcome 是阶段执行结果占位（S4/S5 扩展具体产物）。
@@ -313,7 +334,7 @@ func (e *Engine) assembleReserve(root *deadline.Root, st *state) (domain.Respons
 	if assembler == nil {
 		assembler = NewBuilder(st.snap.Config().Answer)
 	}
-	resp, err := assembler.Assemble(stageCtx, AssembleInput{
+	resp, err := safeAssemble(assembler, stageCtx, AssembleInput{
 		Request:       st.req,
 		Evidence:      final,
 		Groups:        groups,
@@ -349,7 +370,7 @@ func (e *Engine) assembleDegraded(root *deadline.Root, st *state, reason string)
 	if assembler == nil {
 		assembler = NewBuilder(st.snap.Config().Answer)
 	}
-	return assembler.Assemble(context.WithoutCancel(root.Ctx()), AssembleInput{
+	return safeAssemble(assembler, context.WithoutCancel(root.Ctx()), AssembleInput{
 		Request:       st.req,
 		Evidence:      st.evidence,
 		Degraded:      true,
@@ -362,7 +383,10 @@ func (e *Engine) assembleDegraded(root *deadline.Root, st *state, reason string)
 // emitProviderError 发 provider 错误事件（error_class 有界枚举）。
 func (e *Engine) emitProviderError(stage, op string, err error, st *state) {
 	class := "error"
+	var pe deadline.PanicError
 	switch {
+	case errors.As(err, &pe):
+		class = "panic"
 	case isDeadlineErr(err):
 		class = "timeout"
 	case errors.Is(err, context.Canceled):

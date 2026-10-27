@@ -3,6 +3,7 @@ package deadline_test
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 	"time"
 
@@ -70,5 +71,29 @@ func TestGuardRemaining(t *testing.T) {
 	g := deadline.NewGuard("rejudge", ctx, start)
 	if rem := g.Remaining(start); rem <= 0 || rem > time.Second+50*time.Millisecond {
 		t.Fatalf("remaining = %s, want ~1s", rem)
+	}
+}
+
+// TestCallIsolatesPanic provider panic 被隔离为 PanicError（Story 8.5.1.1：
+// 不击穿进程；错误不含 panic 值原文）。
+func TestCallIsolatesPanic(t *testing.T) {
+	secret := "敏感panic值13800000000"
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	_, err := deadline.Call("first_round", ctx, time.Now(), func(ctx context.Context) (string, error) {
+		panic(secret)
+	})
+	var pe deadline.PanicError
+	if !errors.As(err, &pe) {
+		t.Fatalf("应为 PanicError: %v", err)
+	}
+	if pe.Stage != "first_round" {
+		t.Fatalf("应含阶段名: %+v", pe)
+	}
+	if !errors.Is(err, domain.ErrProviderContract) {
+		t.Fatal("应归属 ErrProviderContract 大类")
+	}
+	if strings.Contains(err.Error(), secret) {
+		t.Fatal("panic 值原文不得进入错误串")
 	}
 }

@@ -499,3 +499,117 @@ func (d *captureDecision) Decide(ctx context.Context, in domain.DecisionInput) (
 func (d *captureDecision) Health(ctx context.Context) domain.ComponentHealth {
 	return domain.ComponentHealth{Status: domain.ComponentHealthy}
 }
+
+// —— Story 8.5.1.1 panic 注入矩阵：四注入点全部降级且进程存活 ——
+
+// panicEvidence 检索时 panic。
+type panicEvidence struct{ calls int }
+
+func (p *panicEvidence) Search(ctx context.Context, in domain.EvidenceQuery) (domain.EvidenceResult, error) {
+	p.calls++
+	panic("evidence provider exploded")
+}
+
+func (p *panicEvidence) Health(ctx context.Context) domain.ComponentHealth {
+	return domain.ComponentHealth{Status: domain.ComponentHealthy}
+}
+
+// panicPreliminary 初判时 panic。
+type panicPreliminary struct{}
+
+func (panicPreliminary) Judge(ctx context.Context, in orchestrator.PreliminaryInput) (orchestrator.PreliminaryOutcome, error) {
+	panic("preliminary exploded")
+}
+
+// panicAssembler 组装时 panic。
+type panicAssembler struct{}
+
+func (panicAssembler) Assemble(ctx context.Context, in orchestrator.AssembleInput) (domain.Response, error) {
+	panic("assembler exploded")
+}
+
+func TestPanicIsolationMatrix(t *testing.T) {
+	validUntil := time.Now().Add(time.Hour)
+	okEvidence := &fakeEvidence{result: domain.EvidenceResult{Evidence: []domain.Evidence{
+		{ID: "e1", SourceID: "s", ValidUntil: &validUntil},
+	}}}
+
+	t.Run("evidence_panic", func(t *testing.T) {
+		rec := &recorder{}
+		e := newEngine(t, &panicEvidence{}, nil, rec)
+		resp, err := e.Answer(context.Background(), sampleRequest())
+		if err != nil {
+			t.Fatalf("panic 应降级而非报错: %v", err)
+		}
+		if resp.Action != domain.ActionAbstain || !resp.Degraded {
+			t.Fatalf("应降级 abstain: %+v", resp)
+		}
+		assertPanicEvent(t, rec, "evidence", "search")
+	})
+
+	t.Run("decision_panic", func(t *testing.T) {
+		rec := &recorder{}
+		e := newEngine(t, okEvidence, panicDecOrch{}, rec)
+		resp, err := e.Answer(context.Background(), sampleRequest())
+		if err != nil {
+			t.Fatalf("panic 应降级: %v", err)
+		}
+		if !resp.Degraded {
+			t.Fatalf("应降级: %+v", resp)
+		}
+	})
+
+	t.Run("preliminary_panic", func(t *testing.T) {
+		rec := &recorder{}
+		e := newEngine(t, okEvidence, nil, rec)
+		e.Preliminary = panicPreliminary{}
+		resp, err := e.Answer(context.Background(), sampleRequest())
+		if err != nil {
+			t.Fatalf("初判 panic 应降级: %v", err)
+		}
+		if !resp.Degraded {
+			t.Fatalf("应降级: %+v", resp)
+		}
+	})
+
+	t.Run("assembler_panic", func(t *testing.T) {
+		rec := &recorder{}
+		e := newEngine(t, okEvidence, nil, rec)
+		e.Assembler = panicAssembler{}
+		_, err := e.Answer(context.Background(), sampleRequest())
+		if err == nil {
+			t.Fatal("组装器 panic 且无兜底组装路径时应返回受控错误")
+		}
+		if !errors.Is(err, domain.ErrProviderContract) && !errors.Is(err, errPublicMapped) {
+			// 公共面经 Client.Answer 映射；Engine 层为契约违规大类
+			t.Fatalf("错误应属契约违规大类: %v", err)
+		}
+	})
+}
+
+// panicDecOrch 编排层注入的 panic 决策 provider。
+type panicDecOrch struct{}
+
+func (panicDecOrch) Decide(ctx context.Context, in domain.DecisionInput) (domain.Decision, error) {
+	panic("decision provider exploded")
+}
+
+func (panicDecOrch) Health(ctx context.Context) domain.ComponentHealth {
+	return domain.ComponentHealth{Status: domain.ComponentHealthy}
+}
+
+// errPublicMapped 仅为断言辅助（公共错误映射存在性）。
+var errPublicMapped = domain.ErrProviderContract
+
+// assertPanicEvent 断言 error_class=panic 的 provider 错误事件已发出。
+func assertPanicEvent(t *testing.T, rec *recorder, provider, op string) {
+	t.Helper()
+	for _, ev := range rec.ofKind("provider_error") {
+		if pe, ok := ev.(obs.ProviderErrorEvent); ok && pe.ErrorClass == "panic" {
+			if pe.Provider == provider && pe.Operation == op {
+				return
+			}
+		}
+	}
+	t.Fatalf("未捕获 error_class=panic 事件（provider=%s op=%s）: %+v", provider, op, rec.ofKind("provider_error"))
+}
