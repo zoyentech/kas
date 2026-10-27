@@ -83,7 +83,8 @@ make audit-deps      # govulncheck + license 清单
 
 - [设计文件包](docs/design/) — 架构 PRD、示例配置、Go SDK API、超时/缓存/可观测、GoldenSet 验收、v1.1→v1.2 迁移
 - [开发计划 WBS](docs/plan/README.md) — 7 Stage / 19 Epic / 30 Feature / 49 Story / 136 Task
-- [决策记录 ADR](docs/adr/README.md) — ADR-0001 范围 / ADR-0002 技术选型
+- [决策记录 ADR](docs/adr/README.md) — ADR-0001 范围 / ADR-0002 技术选型 / ADR-0003 v1.3 运营洞察边界（proposed）
+- [v1.3 计划（Stage 8）](docs/plan/stage-8-ops-insights/stage.md) — 运行统计 / 余额监测 / 诊断 API / 单页仪表盘 / 接入稳定化（proposed）
 - [CHANGELOG](CHANGELOG.md) ｜ [迁移指南](MIGRATION.md) ｜ [v1.2.0 发布说明](docs/release-notes/v1.2.0.md)
 - [依赖与 License 基线](docs/dependency-license-baseline.md)
 

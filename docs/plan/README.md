@@ -1,6 +1,6 @@
 # KAS v1.2 MVP 开发计划（WBS）
 
-**状态：** 已拆解，待评审排期。**依据：** [../design](../design) 设计文件包（01 架构 PRD / 02 示例配置 / 03 Go SDK API / 04 超时缓存可观测 / 05 GoldenSet 验收 / 06 迁移说明）。
+**状态：** v1.2（Stage 1~7）已交付发布（v1.2.0）；v1.3 Stage 8（运营洞察与接入稳定化）proposed 待确认排期。**依据：** [../design](../design) 设计文件包（01 架构 PRD / 02 示例配置 / 03 Go SDK API / 04 超时缓存可观测 / 05 GoldenSet 验收 / 06 迁移说明）。
 **交付对象：** multica 团队研发。**代码仓库：** GitHub 新建开源仓库（仓库名/组织见开放决策 O-1）。
 
 ## 阅读顺序
@@ -184,16 +184,28 @@ plan/
             ├── feature.md
             └── story-7.2.2.1-docs-release.md
 ```
+```text
+（v1.2 计划以上；v1.3 追加：）
+
+plan/stage-8-ops-insights/            # v1.3 运营洞察与接入稳定化（proposed）
+├── stage.md                          # 含 v1.2.0 审核结论与关键口径
+├── epic-8.1-runtime-stats/           # F-015 统计内核
+├── epic-8.2-balance-monitoring/      # F-016 余额监测
+├── epic-8.3-diagnostic-api/          # F-017 诊断 API
+├── epic-8.4-dashboard-spa/           # F-018 单页仪表盘
+├── epic-8.5-integration-stability/   # F-019 panic 隔离/Jev 熔断
+└── epic-8.6-acceptance-release/      # 验收与 v1.3.0
+```
 
 ## 规模统计
 
-| 层级 | 数量 | 说明 |
-|---|---:|---|
-| Stage | 7 | MVP 阶段，串/并行关系见 overview/02 |
-| Epic | 19 | 对应 multica Issue 粒度 |
-| Feature | 30 | 对应 multica 子 Issue / 标签粒度 |
-| Story | 49 | 对应 multica 带 stage 的任务 |
-| Task | 135 | 最小执行单元，每张任务卡 0.5~2 人日 |
+| 层级 | v1.2（Stage 1~7，已交付） | v1.3（Stage 8，proposed） |
+|---|---:|---:|
+| Stage | 7 | 1 |
+| Epic | 19 | 6 |
+| Feature | 30 | 10 |
+| Story | 49 | 14 |
+| Task | 135 | 24 |
 
 ## 使用约定（摘要，详见 overview/03）
 
