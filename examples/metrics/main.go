@@ -11,13 +11,13 @@ package main
 import (
 	"context"
 	"log"
+	"math"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"os/signal"
 	"strconv"
 	"strings"
-	"sync/atomic"
 	"syscall"
 	"time"
 
@@ -71,16 +71,14 @@ balance:
 `
 
 func main() {
-	// fake 组件端点（演示用；生产替换为真实 endpoint env 注入）
-	var balance atomic.Int64 // Jev 余额 ×100 存储（演示递减）
-	balance.Store(50000)     // 500.00 credit
-	fake := fakeJev(&balance)
-
-	var dsBalance atomic.Int64     // DeepSeek 余额 ×100（CNY）
-	dsBalance.Store(12000)         // 120.00 CNY
-	var aliyunBalance atomic.Int64 // 阿里云现金余额 ×100（CNY）
-	aliyunBalance.Store(66666)     // 666.66 CNY
-	fakes := fakeComponentEndpoints(&dsBalance, &aliyunBalance)
+	// fake 组件端点（演示用；生产替换为真实 endpoint env 注入）。
+	// 余额为"趋势函数"：锚定持久化时间基准（/tmp/kas-demo-epoch，首启写入），
+	// 按墙钟线性递减、触地板自动充值回满——重启不重置（无回跳）、不穿底，
+	// 周期性走完 normal→low→critical→充值 全状态。
+	epoch := demoEpoch()
+	trend := newBalanceTrends(epoch)
+	fake := fakeJev(trend.jev)
+	fakes := fakeComponentEndpoints(trend.deepseek, trend.aliyun)
 
 	envs := map[string]string{
 		"KAS_DEMO_JEV_ENDPOINT":           fake + "/decide",
@@ -126,9 +124,6 @@ func main() {
 				Principal: kas.PrincipalScope{TenantKey: "demo", ScopeFingerprint: "fp-demo", AuthorizationEpoch: "e1"},
 				Knowledge: kas.KnowledgeScope{Namespace: "demo", CorpusGeneration: "g1"},
 			})
-			balance.Add(-137)      // 每请求扣 1.37 credit（Jev 余额递减）
-			dsBalance.Add(-11)     // DeepSeek 缓降
-			aliyunBalance.Add(-23) // 阿里云现金余额缓降
 			time.Sleep(time.Second)
 		}
 	}()
@@ -167,11 +162,11 @@ type fakeEndpoints struct{ ds, aliyun string }
 
 // fakeComponentEndpoints DeepSeek（/user/balance 契约）与阿里云 BSS
 // （QueryAccountBalance 响应形态；签名校验由真实端点负责，fake 忽略）本地端点。
-func fakeComponentEndpoints(dsBalance, aliyunBalance *atomic.Int64) fakeEndpoints {
+func fakeComponentEndpoints(dsBalance, aliyunBalance trendFn) fakeEndpoints {
 	dsMux := http.NewServeMux()
 	dsMux.HandleFunc("/user/balance", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		amount := strconv.FormatFloat(float64(dsBalance.Load())/100, 'f', 2, 64)
+		amount := strconv.FormatFloat(dsBalance(), 'f', 2, 64)
 		_, _ = w.Write([]byte(`{"is_available":true,"balance_infos":[` +
 			`{"currency":"CNY","total_balance":"` + amount + `","granted_balance":"0.00","topped_up_balance":"` + amount + `"}]}`))
 	})
@@ -180,15 +175,60 @@ func fakeComponentEndpoints(dsBalance, aliyunBalance *atomic.Int64) fakeEndpoint
 	aliMux := http.NewServeMux()
 	aliMux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		amount := strconv.FormatFloat(float64(aliyunBalance.Load())/100, 'f', 2, 64)
+		amount := strconv.FormatFloat(aliyunBalance(), 'f', 2, 64)
 		_, _ = w.Write([]byte(`{"Success":true,"Data":{"AvailableCashAmount":"` + amount + `","Currency":"CNY"}}`))
 	})
 	aliSrv := httptest.NewServer(aliMux)
 	return fakeEndpoints{ds: dsSrv.URL, aliyun: aliSrv.URL}
 }
 
+// trendFn 返回当前时刻的模拟余额（元单位；时间锚定，重启续走）。
+type trendFn func() float64
+
+// balanceTrend 三个组件的余额趋势参数（full→floor 线性递减，触底回满）。
+type balanceTrends struct{ jev, deepseek, aliyun trendFn }
+
+// newBalanceTrends 各组件周期：jev≈30min、deepseek≈45min、aliyun≈60min
+// （错峰触发 low/critical，便于看板观察状态迁移与充值回跳）。
+func newBalanceTrends(epoch time.Time) *balanceTrends {
+	return &balanceTrends{
+		jev:      sawtooth(epoch, 500, 25, 30*time.Minute),
+		deepseek: sawtooth(epoch, 120, 5, 45*time.Minute),
+		aliyun:   sawtooth(epoch, 666.66, 25, 60*time.Minute),
+	}
+}
+
+// sawtooth 返回 f(t)：从 full 线性降至 floor 后回满，周期 period（纯时间函数，
+// 幂等、跨进程一致）。
+func sawtooth(epoch time.Time, full, floor float64, period time.Duration) trendFn {
+	drop := full - floor
+	rate := drop / period.Seconds() // 单位/秒
+	return func() float64 {
+		elapsed := time.Since(epoch).Seconds()
+		inCycle := math.Mod(elapsed, period.Seconds())
+		v := full - rate*inCycle
+		if v < floor {
+			return floor
+		}
+		return v
+	}
+}
+
+// demoEpoch 演示时间基准：/tmp/kas-demo-epoch 首启写入、后续复用（重启续走）。
+func demoEpoch() time.Time {
+	const path = "/tmp/kas-demo-epoch"
+	if b, err := os.ReadFile(path); err == nil {
+		if ts, err := strconv.ParseInt(strings.TrimSpace(string(b)), 10, 64); err == nil {
+			return time.Unix(ts, 0)
+		}
+	}
+	now := time.Now()
+	_ = os.WriteFile(path, []byte(strconv.FormatInt(now.Unix(), 10)), 0o644)
+	return now
+}
+
 // fakeJev 进程内 decide + balance 端点。
-func fakeJev(balance *atomic.Int64) string {
+func fakeJev(balance trendFn) string {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/decide", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -197,7 +237,7 @@ func fakeJev(balance *atomic.Int64) string {
 	})
 	mux.HandleFunc("/balance", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		amount := strconv.FormatFloat(float64(balance.Load())/100, 'f', 2, 64)
+		amount := strconv.FormatFloat(balance(), 'f', 2, 64)
 		_, _ = w.Write([]byte(`{"amount":` + amount + `,"unit":"credit"}`))
 	})
 	return httptest.NewServer(mux).URL
