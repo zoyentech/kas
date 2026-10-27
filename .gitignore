@@ -24,3 +24,7 @@ go.work.sum
 # Local env / secrets (never commit)
 .env
 *.local.yaml
+
+# go build 产物（根目录裸名二进制，如 go build ./examples/metrics 的输出）
+/metrics
+/kas-metrics-demo

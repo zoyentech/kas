@@ -3,6 +3,23 @@
 本项目遵循 [Semantic Versioning](https://semver.org/)；格式参考
 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [v1.4.2] - 2026-10-27
+
+### fix(example)
+
+- 演示余额改为时间锚定 sawtooth 趋势函数：修复重启重置导致的看板余额回跳与
+  扣费过快穿底（KAS 余额链路本身无问题，均为示例缺陷；commit 6ffcd44）
+- 新增真实凭据模式 `KAS_DEMO_FAKE=0`：注入 DEEPSEEK_TOKEN / ALIBABA_CLOUD AK·SK /
+  QWEN_APIKEY 后 deepseek→官方 /user/balance、aliyun/qwen→BSS
+  QueryAccountBalance（Jev 无官方接口保持 fake，O-2）；实测与控制台一致
+- monitoring.md 补真实/模拟切换说明
+
+### chore
+
+- 移除误提交的 16MB `metrics` 编译产物并加入 .gitignore（根目录 go build 裸名输出）
+- 库代码（根包/internal）相对 v1.4.1 零变更——本版为示例/文档/仓库卫生版本，
+  对 `go get` 使用者无行为影响
+
 ## [v1.4.1] - 2026-10-27
 
 ### feat(balance)
