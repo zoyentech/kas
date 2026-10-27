@@ -117,6 +117,22 @@ type BalanceSource interface{ Balance(ctx) (BalanceInfo, error) }
 - 阿里云 BSS：POP RPC V1 签名（HMAC-SHA1，SDK 内自实现零额外依赖）；
   需要 RAM 凭据具备 BSS 只读权限。
 
+### 演示示例的真实/模拟切换
+
+`examples/metrics` 默认用本机 fake 端点模拟余额（sawtooth 趋势，用于无凭据演示
+监控链路）。**接真实账户**：进程环境注入真实凭据后以 `KAS_DEMO_FAKE=0` 启动——
+deepseek 走 `api.deepseek.com/user/balance`，aliyun/qwen 走 BSS
+QueryAccountBalance（例如从 `~/.config/ai-support-platform/ai.env` 提取）：
+
+~~~bash
+eval "$(grep -E '^(DEEPSEEK_TOKEN|ALIBABA_CLOUD_ACCESS_KEY_ID|ALIBABA_CLOUD_ACCESS_KEY_SECRET|ALIBABA_CLOUD_SECURITY_TOKEN|QWEN_APIKEY)='   ~/.config/ai-support-platform/ai.env | sed 's/^/export /')"
+KAS_DEMO_FAKE=0 go run ./examples/metrics
+~~~
+
+Jev 无官方余额接口（O-2），示例中始终为 fake 端点。看板数值应与各控制台一致；
+阈值（low/critical）按业务自定——示例默认阈值下，1.72 元的账户现金余额会显示
+critical（红）、44.98 元的 DeepSeek 显示 low（黄）。
+
 ## 四、Jev 熔断（F-019，默认开启）
 
 ~~~yaml

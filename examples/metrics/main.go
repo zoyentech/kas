@@ -80,16 +80,29 @@ func main() {
 	fake := fakeJev(trend.jev)
 	fakes := fakeComponentEndpoints(trend.deepseek, trend.aliyun)
 
+	// 模式：KAS_DEMO_FAKE=0 走真实凭据（DEEPSEEK_TOKEN/ALIBABA_CLOUD_*/QWEN_APIKEY
+	// 由进程环境提供，例如 ~/.config/ai-support-platform/ai.env 注入）；默认 fake。
+	realMode := os.Getenv("KAS_DEMO_FAKE") == "0"
 	envs := map[string]string{
-		"KAS_DEMO_JEV_ENDPOINT":           fake + "/decide",
-		"KAS_DEMO_JEV_API_KEY":            "demo-key",
-		"KAS_DEMO_JEV_BALANCE":            fake + "/balance",
-		"DEEPSEEK_TOKEN":                  "demo-ds-key",
-		"DEEPSEEK_BALANCE_ENDPOINT":       fakes.ds + "/user/balance",
-		"ALIBABA_CLOUD_ACCESS_KEY_ID":     "demo-ak",
-		"ALIBABA_CLOUD_ACCESS_KEY_SECRET": "demo-sk",
-		"ALIBABA_CLOUD_BSS_ENDPOINT":      fakes.aliyun,
-		"QWEN_APIKEY":                     "demo-qwen-key", // 标识在用 qwen → 注册 qwen 源（计费=阿里云账户余额）
+		"KAS_DEMO_JEV_ENDPOINT": fake + "/decide", // Jev 无官方余额接口（O-2），
+		"KAS_DEMO_JEV_API_KEY":  "demo-key",       // decide/balance 始终用 fake
+		"KAS_DEMO_JEV_BALANCE":  fake + "/balance",
+	}
+	if realMode {
+		for _, k := range []string{"DEEPSEEK_TOKEN", "ALIBABA_CLOUD_ACCESS_KEY_ID", "ALIBABA_CLOUD_ACCESS_KEY_SECRET"} {
+			if os.Getenv(k) == "" {
+				log.Fatalf("KAS_DEMO_FAKE=0 需要真实凭据 env：%s 未设置", k)
+			}
+		}
+		log.Println("余额模式=真实：deepseek→api.deepseek.com，aliyun/qwen→BSS QueryAccountBalance；Jev 仍为 fake（O-2）")
+	} else {
+		envs["DEEPSEEK_TOKEN"] = "demo-ds-key"
+		envs["DEEPSEEK_BALANCE_ENDPOINT"] = fakes.ds + "/user/balance"
+		envs["ALIBABA_CLOUD_ACCESS_KEY_ID"] = "demo-ak"
+		envs["ALIBABA_CLOUD_ACCESS_KEY_SECRET"] = "demo-sk"
+		envs["ALIBABA_CLOUD_BSS_ENDPOINT"] = fakes.aliyun
+		envs["QWEN_APIKEY"] = "demo-qwen-key"
+		log.Println("余额模式=模拟（KAS_DEMO_FAKE=0 切真实凭据）")
 	}
 	for k, v := range envs {
 		if err := os.Setenv(k, v); err != nil {
