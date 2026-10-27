@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -151,12 +152,19 @@ func New(cfg Config, deps Dependencies, opts ...Option) (*Client, error) {
 			mgr.Upsert("deepseek", ds, cfg.Balance)
 			registered++
 		}
-		// 阿里云账户现金余额（Qwen/百炼计费口径；BSS 只读凭据）
-		if al, err := balanceadapters.NewAliyunBSS("ALIBABA_CLOUD_ACCESS_KEY_ID",
+		// 阿里云账户现金余额（BSS 只读凭据）
+		aliyunSrc, aliyunErr := balanceadapters.NewAliyunBSS("ALIBABA_CLOUD_ACCESS_KEY_ID",
 			"ALIBABA_CLOUD_ACCESS_KEY_SECRET", "ALIBABA_CLOUD_SECURITY_TOKEN",
-			"ALIBABA_CLOUD_BSS_ENDPOINT"); err == nil {
-			mgr.Upsert("aliyun", al, cfg.Balance)
+			"ALIBABA_CLOUD_BSS_ENDPOINT")
+		if aliyunErr == nil {
+			mgr.Upsert("aliyun", aliyunSrc, cfg.Balance)
 			registered++
+			// qwen（DashScope/Qwen 模型计费=阿里云账户现金余额；QWEN_APIKEY
+			// 标识在用 qwen，重标为组件视图分列展示；阈值独立可配）
+			if os.Getenv("QWEN_APIKEY") != "" {
+				mgr.Upsert("qwen", balance.WithName("qwen", aliyunSrc), cfg.Balance)
+				registered++
+			}
 		}
 		// 宿主注入源（自定义计费源）
 		if deps.BalanceSource != nil {

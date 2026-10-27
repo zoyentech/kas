@@ -62,14 +62,16 @@ Prometheus 是拉模式——余额采集内建于 SDK（每源独立后台轮�
 |---|---|---|---|---|
 | `jev` | Jev 决策 | `KAS_JEV_API_KEY` | `decision.jev.balance_endpoint_env` 配置 | 自定 |
 | `deepseek` | DeepSeek API | `DEEPSEEK_TOKEN` | `DEEPSEEK_BALANCE_ENDPOINT` | CNY（多币种优先 CNY） |
-| `aliyun` | Qwen/百炼等（阿里云账户现金余额，账号级） | `ALIBABA_CLOUD_ACCESS_KEY_ID` + `ALIBABA_CLOUD_ACCESS_KEY_SECRET`（可选 `ALIBABA_CLOUD_SECURITY_TOKEN`） | `ALIBABA_CLOUD_BSS_ENDPOINT` | CNY |
+| `aliyun` | 阿里云账户现金余额（账号级） | `ALIBABA_CLOUD_ACCESS_KEY_ID` + `ALIBABA_CLOUD_ACCESS_KEY_SECRET`（可选 `ALIBABA_CLOUD_SECURITY_TOKEN`） | `ALIBABA_CLOUD_BSS_ENDPOINT` | CNY |
+| `qwen` | Qwen/DashScope 模型（embedding/rerank/ASR 等计费=阿里云账户现金余额，组件视图） | 在用标识 `QWEN_APIKEY` + 金额取上述 BSS 凭据 | 同 `aliyun` | CNY |
 | `host` | 宿主自定义计费源 | —（注入 `Dependencies.BalanceSource`） | — | 自定 |
 
 > 口径参照 ai-support-platform 管理监控页：DeepSeek 走官方 `GET /user/balance`
->（is_available/balance_infos 契约）；Qwen 计费在阿里云**账户现金余额**
->（BSS QueryAccountBalance，非 API Key 专属）；Jev 官方暂无余额接口，KAS 以
-> 最小契约端点支持（O-2）。OpenViking/RAGFlow 无余额概念，不产生余额源
->（可用性由 Health/`kas_health_status` 承载）。
+>（is_available/balance_infos 契约）；Qwen/DashScope 计费在阿里云**账户现金余额**
+>（BSS QueryAccountBalance，非 API Key 专属）——因此 `qwen` 源是 `aliyun` 计费源
+> 的组件视图（金额相同、阈值/告警独立，`balance.sources.qwen` 可单独配）；
+> Jev 官方暂无余额接口，KAS 以最小契约端点支持（O-2）。OpenViking/RAGFlow 无
+> 余额概念，不产生余额源（可用性由 Health/`kas_health_status` 承载）。
 
 ### 配置（全局默认 + 按源覆盖）
 

@@ -62,3 +62,24 @@ func Classify(amount float64, cfg config.BalanceConfig) State {
 		return StateCritical
 	}
 }
+
+// WithName 返回重标 Source 的包装（同一计费源映射到组件视图：如 Qwen 模型
+// 计费=阿里云账户现金余额，注册为 "qwen" 以便按组件分列展示；v1.4.1/F-016）。
+type namedSource struct {
+	name string
+	src  Source
+}
+
+// WithName 构建重标源。
+func WithName(name string, src Source) Source {
+	return &namedSource{name: name, src: src}
+}
+
+func (n *namedSource) Balance(ctx context.Context) (Info, error) {
+	info, err := n.src.Balance(ctx)
+	if err != nil {
+		return Info{}, err
+	}
+	info.Source = n.name
+	return info, nil
+}

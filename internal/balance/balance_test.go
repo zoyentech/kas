@@ -237,3 +237,21 @@ type tB struct{}
 func (tB) Helper() {}
 
 var _ = http.StatusOK
+
+// TestWithName 重标源（qwen 组件视图复用阿里云 BSS 计费源）。
+func TestWithName(t *testing.T) {
+	inner := &fakeSource{info: balance.Info{Source: "aliyun", Amount: 88, Unit: "CNY"}}
+	wrapped := balance.WithName("qwen", inner)
+	info, err := wrapped.Balance(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if info.Source != "qwen" || info.Amount != 88 || info.Unit != "CNY" {
+		t.Fatalf("重标异常: %+v", info)
+	}
+	// 错误透传
+	bad := balance.WithName("qwen", &fakeSource{err: errors.New("down")})
+	if _, err := bad.Balance(context.Background()); err == nil {
+		t.Fatal("错误应透传")
+	}
+}

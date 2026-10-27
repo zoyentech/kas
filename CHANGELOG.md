@@ -3,6 +3,14 @@
 本项目遵循 [Semantic Versioning](https://semver.org/)；格式参考
 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [v1.4.1] - 2026-10-27
+
+### feat(balance)
+
+- 新增内置 `qwen` 余额源（组件视图）：`QWEN_APIKEY` 存在且阿里云 BSS 凭据可用时
+  自动注册；金额=阿里云账户现金余额（DashScope/Qwen 模型计费口径，与 `aliyun`
+  源同源），阈值/告警独立（`balance.sources.qwen`）；看板按源分列自动展示
+
 ## [v1.4.0] - 2026-10-27
 
 多源余额监测与运行时热更新（F-016 扩展；参考 ai-support-platform 管理监控页 #1243）。

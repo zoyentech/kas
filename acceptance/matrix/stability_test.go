@@ -223,6 +223,15 @@ func TestRowMultiSourceBalance(t *testing.T) {
 	defer dsFake.Close()
 	t.Setenv("DEEPSEEK_TOKEN", "ds-key")
 	t.Setenv("DEEPSEEK_BALANCE_ENDPOINT", dsFake.URL()+"/balance")
+	// qwen 内置源条件：QWEN_APIKEY 在用 + 阿里云 BSS 凭据指向本地 fake
+	// BSS 适配器 GET 根路径（带签名 query），fake 的默认分支按 Body 应答
+	bssJSON := `{"Success":true,"Data":{"AvailableCashAmount":"88.66","Currency":"CNY"}}`
+	aliFake := testutil.NewJevFakeServer(testutil.JevScript{Body: bssJSON, BalanceBody: bssJSON})
+	defer aliFake.Close()
+	t.Setenv("QWEN_APIKEY", "qwen-key")
+	t.Setenv("ALIBABA_CLOUD_ACCESS_KEY_ID", "ak")
+	t.Setenv("ALIBABA_CLOUD_ACCESS_KEY_SECRET", "sk")
+	t.Setenv("ALIBABA_CLOUD_BSS_ENDPOINT", aliFake.URL())
 
 	until := time.Now().Add(time.Hour)
 	ev := &matrixEvidence{items: []domain.Evidence{{ID: "e1", SourceID: "s", ValidUntil: &until}}}
@@ -236,13 +245,23 @@ func TestRowMultiSourceBalance(t *testing.T) {
 	}
 	defer func() { _ = c.Close() }()
 
-	// 内置源自动注册：jev + deepseek（aliyun 未配 env 不注册）
+	// 内置源自动注册：jev + deepseek + aliyun + qwen（QWEN_APIKEY 标识在用）
 	sources := c.BalanceSources()
-	if len(sources) != 2 || sources[0] != "deepseek" || sources[1] != "jev" {
-		t.Fatalf("应自动注册 jev+deepseek: %v", sources)
+	if len(sources) != 4 {
+		t.Fatalf("应自动注册 jev+deepseek+aliyun+qwen: %v", sources)
 	}
 	waitState(t, c, kas.BalanceNormal) // 默认源 jev=500
 	waitSourceState(t, c, "deepseek", kas.BalanceNormal)
+	waitSourceState(t, c, "qwen", kas.BalanceLow) // 88.66 ≤ 300（全局阈值）
+	waitSourceState(t, c, "aliyun", kas.BalanceLow)
+	// qwen 与 aliyun 同为账户现金余额：断言金额一致（组件视图复用计费源）
+	qi, qst, ok := c.BalanceOf("qwen")
+	if !ok || qst != kas.BalanceLow || qi.Amount != 88.66 || qi.Unit != "CNY" {
+		t.Fatalf("qwen 源异常: %+v %s %v", qi, qst, ok)
+	}
+	if ai, _, ok := c.BalanceOf("aliyun"); !ok || ai.Amount != qi.Amount {
+		t.Fatalf("aliyun 与 qwen 金额应一致（同一 BSS 计费源）: %+v vs %+v", ai, qi)
+	}
 
 	// Health 按源分列
 	h := c.Health(context.Background())
@@ -252,20 +271,23 @@ func TestRowMultiSourceBalance(t *testing.T) {
 	if _, ok := h.Components["balance:deepseek"]; !ok {
 		t.Fatal("Health 应含 balance:deepseek")
 	}
+	if _, ok := h.Components["balance:qwen"]; !ok {
+		t.Fatal("Health 应含 balance:qwen")
+	}
 
 	// 热更新：运行时新增 host 源（模拟宿主管理后台注入自定义计费源）
 	hostSrc := staticBalance{amount: 5}
 	if err := c.UpsertBalanceSource("host", hostSrc, cfg.Balance); err != nil {
 		t.Fatal(err)
 	}
-	if got := c.BalanceSources(); len(got) != 3 {
-		t.Fatalf("热更新后应 3 源: %v", got)
+	if got := c.BalanceSources(); len(got) != 5 {
+		t.Fatalf("热更新后应 5 源: %v", got)
 	}
 	waitSourceState(t, c, "host", kas.BalanceCritical) // 5 ≤ 50
 	// 移除源
 	c.RemoveBalanceSource("host")
-	if got := c.BalanceSources(); len(got) != 2 {
-		t.Fatalf("移除后应 2 源: %v", got)
+	if got := c.BalanceSources(); len(got) != 4 {
+		t.Fatalf("移除后应 4 源: %v", got)
 	}
 }
 

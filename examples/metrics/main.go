@@ -91,6 +91,7 @@ func main() {
 		"ALIBABA_CLOUD_ACCESS_KEY_ID":     "demo-ak",
 		"ALIBABA_CLOUD_ACCESS_KEY_SECRET": "demo-sk",
 		"ALIBABA_CLOUD_BSS_ENDPOINT":      fakes.aliyun,
+		"QWEN_APIKEY":                     "demo-qwen-key", // 标识在用 qwen → 注册 qwen 源（计费=阿里云账户余额）
 	}
 	for k, v := range envs {
 		if err := os.Setenv(k, v); err != nil {
@@ -146,7 +147,7 @@ func main() {
 	srv := &http.Server{Addr: "127.0.0.1:8080", Handler: mux}
 	go func() {
 		log.Println("metrics demo: http://127.0.0.1:8080/metrics（monitoring/prometheus.yml 抓取目标）")
-		log.Println("余额源演示: jev(credit 递减) + deepseek(CNY) + aliyun(CNY)；看板按 source 分列")
+		log.Println("余额源演示: jev(credit 递减) + deepseek/aliyun/qwen(CNY)；看板按 source 分列")
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("metrics server: %v", err)
 		}
