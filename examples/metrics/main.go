@@ -116,6 +116,14 @@ func main() {
 		}
 	}()
 
+	// 周期 Health 探测（10s）：真实宿主运维形态，填充 kas_health_status 面板
+	go func() {
+		for {
+			_ = client.Health(context.Background())
+			time.Sleep(10 * time.Second)
+		}
+	}()
+
 	// /metrics：宿主用 promhttp 暴露（监控栈抓取入口）
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", promhttp.Handler())

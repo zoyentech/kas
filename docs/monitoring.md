@@ -30,13 +30,21 @@ http.ListenAndServe("0.0.0.0:8080", mux) // 监控面端口归宿主管理
 ## 二、一键起监控栈
 
 ~~~bash
-cd monitoring && docker compose up -d
+# 在仓库 monitoring/ 目录内执行（zsh 交互模式不剥离行尾 # 注释，命令勿带行尾注释）
+cd ~/zoyen/KAS/kas/monitoring
+docker compose up -d
 ~~~
 
-- Grafana http://localhost:3000（匿名只读；默认首页即 **KAS Overview** 看板）
-- Prometheus http://localhost:9090（保留 30 天，`docker-compose.yml` 可调）
-- 抓取目标默认 `host.docker.internal:8080`（改 `monitoring/prometheus/prometheus.yml`
+- Grafana http://127.0.0.1:23000 （匿名只读；默认首页即 **KAS Overview** 看板）
+- Prometheus http://127.0.0.1:29090 （保留 30 天，`docker-compose.yml` 可调）
+- 抓取目标默认 `host.docker.internal:8080`（改 `prometheus/prometheus.yml`
   的 targets 指向宿主应用；抓取间隔默认 5s）
+- 演示流量（另开终端，**在仓库根目录**执行）：`cd ~/zoyen/KAS/kas && go run ./examples/metrics`
+- 停止栈：`docker compose down`（数据卷保留）
+
+> 端口提示：栈只绑定 IPv4 `127.0.0.1`。若本机 `::1:3000` 已有隧道/转发，
+> 请用显式 `http://127.0.0.1:23000` 访问，避免 `localhost` 被 IPv6 解析到其他服务；
+> 端口冲突时可改 `docker-compose.yml` 的 ports 映射。
 
 看板面板：组件健康卡（Evidence/Jev）、余额状态卡、熔断状态卡、成功率、QPS、
 请求时延 p50/p95/p99、阶段耗时 p95、阶段超时、缓存命中率、降级路由、

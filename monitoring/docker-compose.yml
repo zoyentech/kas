@@ -19,7 +19,7 @@ services:
       - ./prometheus:/etc/prometheus:ro
       - prom-data:/prometheus
     ports:
-      - "127.0.0.1:9090:9090"
+      - "127.0.0.1:29090:9090"   # 宿主端口固定 29090：避开常见占用（Clash API 9090）
     extra_hosts:
       - "host.docker.internal:host-gateway" # Linux 兼容
     restart: unless-stopped
@@ -37,7 +37,7 @@ services:
       - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
       - grafana-data:/var/lib/grafana
     ports:
-      - "127.0.0.1:3000:3000"
+      - "127.0.0.1:23000:3000"   # 宿主端口固定 23000：避开常见占用（3000 常被隧道/Grafana 占用）
     restart: unless-stopped
 
 volumes:

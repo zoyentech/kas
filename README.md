@@ -76,9 +76,17 @@ client, _ := kas.New(cfg, deps, kas.WithPrometheusRegisterer(prometheus.DefaultR
 ~~~
 
 ~~~bash
-cd monitoring && docker compose up -d   # Grafana :3000（预置 KAS Overview 看板）+ Prometheus :9090
-go run ./examples/metrics               # 宿主 /metrics 接入演示（含余额递减/流量）
+# 1. 起监控栈（在仓库 monitoring/ 目录内执行）
+cd ~/zoyen/KAS/kas/monitoring && docker compose up -d
+#    Grafana   http://127.0.0.1:23000 （默认首页即 KAS Overview 看板）
+#    Prometheus http://127.0.0.1:29090
+
+# 2. 起宿主演示（回到仓库根目录执行；产生持续流量与余额递减）
+cd ~/zoyen/KAS/kas && go run ./examples/metrics
 ~~~
+
+> 提示：请用显式 `127.0.0.1` 访问（而非 `localhost`）——若本机 3000 端口存在
+> IPv6（`::1`）转发/隧道，`localhost` 可能被解析到 `::1` 而打开其他服务。
 
 内置：成功率/时延分位/阶段/缓存/降级指标（F-006）、余额监测四态 gauge（F-016）、
 Jev 熔断（F-019，open 期快速降级）、provider panic 隔离（不击穿宿主）。

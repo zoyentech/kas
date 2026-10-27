@@ -235,7 +235,7 @@
             "type": "prometheus",
             "uid": "kas-prom"
           },
-          "expr": "max(kas_provider_breaker_state)",
+          "expr": "max(kas_provider_breaker_state) or on() vector(0)",
           "refId": "A"
         }
       ],
