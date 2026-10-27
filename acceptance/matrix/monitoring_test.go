@@ -15,8 +15,11 @@ const monitoringRoot = "../../monitoring"
 var requiredPanels = []string{
 	"问答成功率 %", "QPS", "请求时延分位", "阶段耗时 p95", "阶段超时 /s",
 	"Evidence 缓存命中率 %", "降级路由 /s", "Provider 错误 /s", "余额", "证据过滤 /s",
-	"余额状态", "Jev 熔断", "Evidence Provider", "Jev",
+	"Jev 熔断", "Evidence Provider", "Jev", "组件余额总览",
 }
+
+// prefixPanels 以前缀匹配的标题（repeat 模板面板标题含变量后缀）。
+var prefixPanels = []string{"余额状态 · "}
 
 // TestMonitoringStackFiles 栈文件齐备与关键内容。
 func TestMonitoringStackFiles(t *testing.T) {
@@ -98,6 +101,38 @@ func TestDashboardStructure(t *testing.T) {
 		if !titles[want] {
 			t.Errorf("看板缺面板 %q", want)
 		}
+	}
+	for _, prefix := range prefixPanels {
+		found := false
+		for title := range titles {
+			if strings.HasPrefix(title, prefix) {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("看板缺前缀面板 %q（按源 repeat）", prefix)
+		}
+	}
+	// 多源模板变量存在
+	var tpl struct {
+		Templating struct {
+			List []struct {
+				Name string `json:"name"`
+			} `json:"list"`
+		} `json:"templating"`
+	}
+	if err := json.Unmarshal(raw, &tpl); err != nil {
+		t.Fatal(err)
+	}
+	hasVar := false
+	for _, v := range tpl.Templating.List {
+		if v.Name == "balance_source" {
+			hasVar = true
+		}
+	}
+	if !hasVar {
+		t.Error("看板缺 balance_source 模板变量（多源分列）")
 	}
 	// 关键口径抽查：成功率/分位/余额/熔断表达式必须出现
 	joined := strings.Join(allExprs, "\n")

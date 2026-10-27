@@ -17,14 +17,24 @@ type Config struct {
 	Balance BalanceConfig `yaml:"balance" json:"balance"`
 }
 
-// BalanceConfig 是余额监测配置（Story 8.2.1.1）。
+// BalanceConfig 是余额监测配置（Story 8.2.1.1；v1.4 多源扩展）。
 type BalanceConfig struct {
 	Enabled  bool     `yaml:"enabled" json:"enabled"`
 	Interval Duration `yaml:"interval" json:"interval"`
-	// LowThreshold 低余额阈值（amount ≤ low 且 > critical 记 low）。
+	// LowThreshold 低余额阈值（amount ≤ low 且 > critical 记 low）——全局默认。
 	LowThreshold float64 `yaml:"low_threshold" json:"low_threshold"`
-	// CriticalThreshold 危急阈值（amount ≤ critical 记 critical）。
+	// CriticalThreshold 危急阈值（amount ≤ critical 记 critical）——全局默认。
 	CriticalThreshold float64 `yaml:"critical_threshold" json:"critical_threshold"`
+	// Sources 按源名覆盖全局默认（v1.4，F-016 多源；未列出的源用全局默认）。
+	// 源名为内置标识（jev/deepseek/aliyun）或宿主 UpsertBalanceSource 的名字。
+	Sources map[string]BalanceSourceConfig `yaml:"sources,omitempty" json:"sources,omitempty"`
+}
+
+// BalanceSourceConfig 是单源覆盖项（零值字段回退全局默认）。
+type BalanceSourceConfig struct {
+	Interval          Duration `yaml:"interval,omitempty" json:"interval,omitempty"`
+	LowThreshold      *float64 `yaml:"low_threshold,omitempty" json:"low_threshold,omitempty"`
+	CriticalThreshold *float64 `yaml:"critical_threshold,omitempty" json:"critical_threshold,omitempty"`
 }
 
 // TimeoutBudget 是五阶段请求预算；Total 必须精确等于其余五段之和（F-001）。

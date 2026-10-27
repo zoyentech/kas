@@ -263,6 +263,20 @@ func ruleBalanceConfig(cfg Config) []Violation {
 		vs = append(vs, newViolation("balance.critical_threshold",
 			"必须小于 low_threshold（当前 critical=%v ≥ low=%v）", b.CriticalThreshold, b.LowThreshold))
 	}
+	for name, sc := range b.Sources {
+		path := "balance.sources." + name
+		low, critical := b.LowThreshold, b.CriticalThreshold
+		if sc.LowThreshold != nil {
+			low = *sc.LowThreshold
+		}
+		if sc.CriticalThreshold != nil {
+			critical = *sc.CriticalThreshold
+		}
+		if critical >= low {
+			vs = append(vs, newViolation(path+".critical_threshold",
+				"合成后必须满足 critical < low（critical=%v, low=%v）", critical, low))
+		}
+	}
 	return vs
 }
 

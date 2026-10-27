@@ -2,6 +2,7 @@ package kas
 
 import (
 	"github.com/zoyentech/kas/internal/balance"
+	"github.com/zoyentech/kas/internal/config"
 	"github.com/zoyentech/kas/internal/domain"
 	"github.com/zoyentech/kas/internal/evidence"
 	"github.com/zoyentech/kas/internal/evidence/perm"
@@ -121,7 +122,7 @@ type (
 	TraceSink = domain.TraceSink
 )
 
-// —— 余额监测（v1.3 F-016）——
+// —— 余额监测（v1.3 F-016；v1.4 多源）——
 
 type (
 	// BalanceInfo 是一次余额查询结果（Amount/Unit 有界枚举）。
@@ -131,6 +132,9 @@ type (
 	// BalanceSource 是余额来源契约（宿主可注入任意计费源）。
 	BalanceSource = balance.Source
 )
+
+// BalanceConfig 是余额监测配置（全局默认 + balance.sources 按源覆盖）。
+type BalanceConfig = config.BalanceConfig
 
 // 余额四态枚举。
 const (

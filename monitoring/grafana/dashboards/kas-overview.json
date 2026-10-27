@@ -145,15 +145,15 @@
     {
       "id": 3,
       "type": "stat",
-      "title": "余额状态",
+      "title": "余额状态 · ${balance_source}",
       "datasource": {
         "type": "prometheus",
         "uid": "kas-prom"
       },
-      "description": "3=normal 2=low 1=critical 0=unknown",
+      "description": "按余额源分列（jev/deepseek/aliyun/host…）；3=normal 2=low 1=critical 0=unknown（v1.4 多源，F-016）",
       "gridPos": {
         "h": 4,
-        "w": 3,
+        "w": 4,
         "x": 6,
         "y": 0
       },
@@ -163,7 +163,7 @@
             "type": "prometheus",
             "uid": "kas-prom"
           },
-          "expr": "max(kas_balance_state)",
+          "expr": "max(kas_balance_state{source=~\"$balance_source\"})",
           "refId": "A"
         }
       ],
@@ -212,6 +212,11 @@
           ]
         },
         "colorMode": "background"
+      },
+      "repeat": {
+        "direction": "h",
+        "variableName": "balance_source",
+        "maxPerRow": 6
       }
     },
     {
@@ -226,7 +231,7 @@
       "gridPos": {
         "h": 4,
         "w": 3,
-        "x": 9,
+        "x": 10,
         "y": 0
       },
       "targets": [
@@ -676,7 +681,7 @@
         "type": "prometheus",
         "uid": "kas-prom"
       },
-      "description": "单位见 unit label；阈值线可自行叠加",
+      "description": "各余额源数值趋势（多源分色；v1.4）",
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -689,9 +694,9 @@
             "type": "prometheus",
             "uid": "kas-prom"
           },
-          "expr": "max(kas_balance_amount{source=\"jev\"})",
-          "refId": "A",
-          "legendFormat": "amount"
+          "expr": "kas_balance_amount{source=~\"$balance_source\"}",
+          "legendFormat": "{{source}}（{{unit}}）",
+          "refId": "A"
         }
       ],
       "fieldConfig": {
@@ -759,12 +764,94 @@
           "mode": "multi"
         }
       }
+    },
+    {
+      "id": 60,
+      "type": "table",
+      "title": "组件余额总览",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "kas-prom"
+      },
+      "description": "全部余额源即时快照：数值与状态（3=normal 2=low 1=critical 0=unknown）",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 44
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "kas-prom"
+          },
+          "expr": "sort_by_label(kas_balance_amount, source)",
+          "legendFormat": "{{source}} 金额({{unit}})",
+          "instant": true,
+          "refId": "A",
+          "format": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "kas-prom"
+          },
+          "expr": "sort_by_label(kas_balance_state, source)",
+          "legendFormat": "{{source}} 状态",
+          "instant": true,
+          "refId": "B",
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        }
+      ],
+      "options": {
+        "showHeader": true
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      }
     }
   ],
   "annotations": {
     "list": []
   },
   "templating": {
-    "list": []
+    "list": [
+      {
+        "name": "balance_source",
+        "type": "query",
+        "label": "余额源",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "kas-prom"
+        },
+        "query": {
+          "query": "label_values(kas_balance_state, source)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 2,
+        "sort": 1,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "options": []
+      }
+    ]
   }
 }

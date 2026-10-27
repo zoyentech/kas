@@ -88,8 +88,9 @@ cd ~/zoyen/KAS/kas && go run ./examples/metrics
 > 提示：请用显式 `127.0.0.1` 访问（而非 `localhost`）——若本机 3000 端口存在
 > IPv6（`::1`）转发/隧道，`localhost` 可能被解析到 `::1` 而打开其他服务。
 
-内置：成功率/时延分位/阶段/缓存/降级指标（F-006）、余额监测四态 gauge（F-016）、
-Jev 熔断（F-019，open 期快速降级）、provider panic 隔离（不击穿宿主）。
+内置：成功率/时延分位/阶段/缓存/降级指标（F-006）、**多源余额监测**（jev/deepseek/
+aliyun 及宿主自定义源，按源四态 gauge 分列 + 运行时热更新 API，F-016）、Jev 熔断
+（F-019，open 期快速降级）、provider panic 隔离（不击穿宿主）。
 完整指南与 PromQL 速查见 [docs/monitoring.md](docs/monitoring.md)。
 
 ## 验收与门禁

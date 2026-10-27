@@ -202,10 +202,10 @@ plan/stage-8-ops-insights/            # v1.3 运营洞察与接入稳定化（pr
 | 层级 | v1.2（Stage 1~7，已交付） | v1.3（Stage 8 已交付：v1.3.0；8.1/8.3/8.4 deferred） |
 |---|---:|---:|
 | Stage | 7 | 1 |
-| Epic | 19 | 7（active 4 / deferred 3） |
-| Feature | 30 | 11 |
-| Story | 49 | 17 |
-| Task | 135 | 27 |
+| Epic | 19 | 8（active 5 / deferred 3） |
+| Feature | 30 | 12 |
+| Story | 49 | 18 |
+| Task | 135 | 28 |
 
 ## 使用约定（摘要，详见 overview/03）
 

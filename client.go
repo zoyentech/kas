@@ -4,13 +4,16 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"sync"
 	"sync/atomic"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/zoyentech/kas/internal/balance"
+	balanceadapters "github.com/zoyentech/kas/internal/balance/adapters"
 	"github.com/zoyentech/kas/internal/cache"
+	"github.com/zoyentech/kas/internal/config"
 	"github.com/zoyentech/kas/internal/decision/dcache"
 	"github.com/zoyentech/kas/internal/decision/fallback"
 	"github.com/zoyentech/kas/internal/decision/jev"
@@ -61,10 +64,13 @@ type Client struct {
 	bus       *obs.Bus
 	deps      Dependencies
 	collector *metrics.Collector
-	// balancePoller 可空（余额监测禁用时为 nil；v1.3 F-016）。
-	balancePoller *balance.Poller
-	balanceCancel context.CancelFunc
-	closed        atomic.Bool
+	// balanceCfg 保存当前余额配置（SetBalanceConfig 热更新；balanceCfgMu 保护）。
+	balanceCfgMu sync.Mutex
+	// balanceMgr 可空（余额监测禁用时为 nil；v1.4 F-016 多源）。
+	balanceMgr *balance.Manager
+	balanceCfg config.BalanceConfig
+	closed     atomic.Bool
+	closeOnce  sync.Once
 }
 
 // New 同步校验配置与必要依赖后装配 Client：构建初始 Runtime Snapshot 并
@@ -125,25 +131,42 @@ func New(cfg Config, deps Dependencies, opts ...Option) (*Client, error) {
 		bus.Subscribe(trace.NewAdapter(sink, trace.NewRedactor(cfg.Tracing.Include)))
 	}
 
-	// 余额监测（v1.3 F-016）：宿主注入源优先；否则按配置构建 Jev 源
-	// （O-2 fake 先行）；启用但无任何可用源 → 构造期 fail-fast。
+	// 余额监测（v1.4 F-016 多源）：内置源按 env 存在自动注册（jev/
+	// deepseek/aliyun），宿主注入源注册为 "host"；至少一个源可用否则 fail-fast。
 	if cfg.Balance.Enabled {
-		src := deps.BalanceSource
-		if src == nil {
-			if cfg.Decision.Provider != "jev" || cfg.Decision.Jev.BalanceEndpointEnv == "" {
-				return nil, fmt.Errorf("%w: balance.enabled=true 但未注入 Dependencies.BalanceSource 且未配置 decision.jev.balance_endpoint_env", ErrInvalidConfig)
+		mgr := balance.NewManager(bus)
+		c.balanceMgr = mgr
+		c.balanceCfg = cfg.Balance
+
+		registered := 0
+		// Jev（可选端点，O-2 最小契约）
+		if cfg.Decision.Provider == "jev" && cfg.Decision.Jev.BalanceEndpointEnv != "" {
+			if js, err := balance.NewJevSource(cfg.Decision.Jev.BalanceEndpointEnv, cfg.Decision.Jev.APIKeyEnv); err == nil {
+				mgr.Upsert("jev", js, cfg.Balance)
+				registered++
 			}
-			js, err := balance.NewJevSource(cfg.Decision.Jev.BalanceEndpointEnv, cfg.Decision.Jev.APIKeyEnv)
-			if err != nil {
-				return nil, err
-			}
-			src = js
 		}
-		poller := balance.NewPoller(src, cfg.Balance, bus)
-		bctx, bcancel := context.WithCancel(context.Background())
-		c.balancePoller = poller
-		c.balanceCancel = bcancel
-		go poller.Run(bctx)
+		// DeepSeek（DEEPSEEK_TOKEN；端点可经 DEEPSEEK_BALANCE_ENDPOINT 覆盖）
+		if ds, err := balanceadapters.NewDeepSeek("DEEPSEEK_TOKEN", "DEEPSEEK_BALANCE_ENDPOINT"); err == nil {
+			mgr.Upsert("deepseek", ds, cfg.Balance)
+			registered++
+		}
+		// 阿里云账户现金余额（Qwen/百炼计费口径；BSS 只读凭据）
+		if al, err := balanceadapters.NewAliyunBSS("ALIBABA_CLOUD_ACCESS_KEY_ID",
+			"ALIBABA_CLOUD_ACCESS_KEY_SECRET", "ALIBABA_CLOUD_SECURITY_TOKEN",
+			"ALIBABA_CLOUD_BSS_ENDPOINT"); err == nil {
+			mgr.Upsert("aliyun", al, cfg.Balance)
+			registered++
+		}
+		// 宿主注入源（自定义计费源）
+		if deps.BalanceSource != nil {
+			mgr.Upsert("host", deps.BalanceSource, cfg.Balance)
+			registered++
+		}
+		if registered == 0 {
+			_ = c.Close()
+			return nil, fmt.Errorf("%w: balance.enabled=true 但无可用余额源（需 decision.jev.balance_endpoint_env / DEEPSEEK_TOKEN / ALIBABA_CLOUD_ACCESS_KEY_ID 任一，或注入 Dependencies.BalanceSource）", ErrInvalidConfig)
+		}
 	}
 	return c, nil
 }
@@ -178,21 +201,26 @@ func (c *Client) Health(ctx context.Context) HealthReport {
 		Decision: c.engine.Decision,
 		Extra:    c.deps.HealthChecks,
 	}, c.bus)
-	// 余额信息组件（不参与 required/optional 聚合，仅展示；v1.3 F-016）
-	if c.balancePoller != nil {
-		info, state, stateAt := c.balancePoller.Snapshot()
-		detail := fmt.Sprintf("amount=%.2f%s（state=%s since=%s）", info.Amount, info.Unit, state, stateAt.Format(time.RFC3339))
+	// 余额信息组件（不参与 required/optional 聚合，仅展示；v1.4 按源分列
+	// "balance:<source>"——管理页与仪表板据此区分组件余额）。
+	if c.balanceMgr != nil {
 		if report.Components == nil {
 			report.Components = map[string]ComponentHealth{}
 		}
-		st := domain.ComponentDegraded
-		switch state {
-		case balance.StateNormal:
-			st = domain.ComponentHealthy
-		case balance.StateCritical, balance.StateUnknown:
-			st = domain.ComponentNotReady
+		for name, snap := range c.balanceMgr.SnapshotAll() {
+			st := domain.ComponentDegraded
+			switch snap.State {
+			case balance.StateNormal:
+				st = domain.ComponentHealthy
+			case balance.StateCritical, balance.StateUnknown:
+				st = domain.ComponentNotReady
+			}
+			report.Components["balance:"+name] = ComponentHealth{
+				Status: st,
+				Detail: fmt.Sprintf("amount=%.2f%s（state=%s since=%s）",
+					snap.Last.Amount, snap.Last.Unit, snap.State, snap.StateAt.Format(time.RFC3339)),
+			}
 		}
-		report.Components["balance"] = ComponentHealth{Status: st, Detail: detail}
 	}
 	return report
 }
@@ -210,14 +238,72 @@ func (c *Client) Reload(ctx context.Context, r io.Reader) (string, error) {
 	return res.Version, nil
 }
 
-// Balance 返回余额快照（余额监测未启用时 state 恒为 unknown；v1.3 F-016）。
-// unknown 态下 last 为最近一次成功值（失联期间保留展示）。
+// Balance 返回默认源（优先 jev，否则字典序首个）的余额快照；未启用余额监测
+// 时 state 恒为 unknown。unknown 态下 last 为最近一次成功值（失联期间保留展示）。
 func (c *Client) Balance() (BalanceInfo, BalanceState) {
-	if c.balancePoller == nil {
+	if c.balanceMgr == nil {
 		return BalanceInfo{}, BalanceUnknown
 	}
-	info, state, _ := c.balancePoller.Snapshot()
+	name, ok := c.balanceMgr.DefaultName()
+	if !ok {
+		return BalanceInfo{}, BalanceUnknown
+	}
+	info, state, _, _ := c.balanceMgr.Snapshot(name)
 	return BalanceInfo(info), BalanceState(state)
+}
+
+// BalanceOf 返回指定源余额快照（多源；v1.4）。
+func (c *Client) BalanceOf(name string) (BalanceInfo, BalanceState, bool) {
+	if c.balanceMgr == nil {
+		return BalanceInfo{}, BalanceUnknown, false
+	}
+	info, state, _, ok := c.balanceMgr.Snapshot(name)
+	return BalanceInfo(info), BalanceState(state), ok
+}
+
+// BalanceSources 返回已注册余额源名（排序稳定）。
+func (c *Client) BalanceSources() []string {
+	if c.balanceMgr == nil {
+		return nil
+	}
+	return c.balanceMgr.Names()
+}
+
+// UpsertBalanceSource 运行时注册/替换余额源（热更新：宿主管理后台更换组件
+// 凭据或新增计费源时调用，无需重建 Client）。global 为当前全局默认配置
+// （通常传 LoadConfig 的 balance 节；源级覆盖经 balance.sources[name] 生效）。
+func (c *Client) UpsertBalanceSource(name string, src BalanceSource, global BalanceConfig) error {
+	if c.closed.Load() {
+		return ErrClosed
+	}
+	if c.balanceMgr == nil {
+		return fmt.Errorf("%w: 余额监测未启用（balance.enabled=false）", ErrInvalidConfig)
+	}
+	if src == nil || name == "" {
+		return fmt.Errorf("%w: 余额源 name/src 不能为空", ErrInvalidRequest)
+	}
+	c.balanceMgr.Upsert(name, src, config.BalanceConfig(global))
+	return nil
+}
+
+// RemoveBalanceSource 运行时移除余额源（停止其轮询）。
+func (c *Client) RemoveBalanceSource(name string) {
+	if c.balanceMgr != nil {
+		c.balanceMgr.Remove(name)
+	}
+}
+
+// SetBalanceConfig 运行时热更新余额配置（阈值/周期；对全部已注册源生效，
+// 源级覆盖经 Sources[name] 生效）。典型来源：宿主 Reload 新配置后同步。
+func (c *Client) SetBalanceConfig(global BalanceConfig) {
+	c.balanceCfgMu.Lock()
+	c.balanceCfg = global
+	c.balanceCfgMu.Unlock()
+	if c.balanceMgr != nil {
+		for _, name := range c.balanceMgr.Names() {
+			c.balanceMgr.SetConfig(name, config.BalanceConfig(global))
+		}
+	}
 }
 
 // ConfigVersion 返回当前运行快照的 config_version（诊断用途）。
@@ -227,14 +313,15 @@ func (c *Client) ConfigVersion() string { return c.manager.Version() }
 // 在途请求自然完成或由其 ctx 取消。宿主传入且共享的资源归宿主管理
 // （docs/design/03 §6）。
 func (c *Client) Close() error {
-	if c.closed.CompareAndSwap(false, true) {
+	c.closeOnce.Do(func() {
+		c.closed.Store(true)
 		if c.collector != nil {
 			c.collector.Unregister()
 		}
-		if c.balanceCancel != nil {
-			c.balanceCancel() // 停止余额轮询 goroutine（goleak 验证）
+		if c.balanceMgr != nil {
+			c.balanceMgr.Close() // 停止全部余额轮询 goroutine（goleak 验证）
 		}
-	}
+	})
 	return nil
 }
 

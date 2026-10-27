@@ -3,6 +3,36 @@
 本项目遵循 [Semantic Versioning](https://semver.org/)；格式参考
 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [v1.4.0] - 2026-10-27
+
+多源余额监测与运行时热更新（F-016 扩展；参考 ai-support-platform 管理监控页 #1243）。
+
+### feat(balance)
+
+- **多源余额**：BalanceSource 升级为命名源注册表（balance.Manager）——每源独立
+  轮询/阈值/周期；`kas_balance_amount{source,unit}` / `kas_balance_state{source}`
+  按源分列；Health 信息组件改为 `balance:<source>`
+- **内置适配器**（按 env 存在自动注册，零新增依赖）：
+  - `deepseek`：官方 `GET /user/balance` 契约（is_available/balance_infos，多币种优先 CNY）
+  - `aliyun`：阿里云 BSS QueryAccountBalance（账户现金余额=Qwen/百炼计费口径；
+    POP RPC V1 HMAC-SHA1 签名自实现，需 RAM BSS 只读权限）
+  - `jev`：v1.3 最小契约端点（O-2）；宿主注入源注册为 `host`
+- **运行时热更新 API**（宿主管理后台接入点，无需重建 Client）：
+  `UpsertBalanceSource` / `RemoveBalanceSource` / `SetBalanceConfig`；
+  编程查询 `BalanceOf` / `BalanceSources`
+- 配置：`balance.sources.<name>` 按源覆盖全局阈值/周期（校验合成后 critical < low）
+
+### feat(monitoring)
+
+- 看板多源分列：`balance_source` 模板变量 + "余额状态 · <源>"repeat 卡 +
+  "组件余额总览"表；余额趋势按源多线（unit 入 legend）
+- `examples/metrics` 三源演示（jev credit / deepseek CNY / aliyun CNY 递减）
+
+### chore
+
+- ADR-0003 v1.4 修订（多源与运行时变更 API 边界）；Stage 8 计划增 Epic 8.8；
+  Health 余额组件键由 `balance` 改为 `balance:<source>`（行为变更，管理页按新键取用）
+
 ## [v1.3.0] - 2026-10-27
 
 运营洞察与接入稳定化（展示层走 Prometheus+Grafana，ADR-0003；F-015~F-019）。

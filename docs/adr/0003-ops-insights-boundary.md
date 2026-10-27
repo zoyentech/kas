@@ -2,6 +2,16 @@
 
 > 状态：accepted（含 2026-10-27 路线修订）｜ 日期：2026-10-27 ｜ 关联：F-015~F-019（Stage 8）；F-014（post-MVP）；ADR-0001
 
+## 决策修订（2026-10-27，v1.4 多源余额）
+
+F-016 扩展为**多源**：BalanceSource 升级为命名源注册表（Manager），内置
+jev/deepseek/aliyun 适配器（契约参照 ai-support-platform 管理监控页 #1243；
+DeepSeek 官方余额端点、阿里云 BSS 账户现金余额——Qwen 计费口径、Jev 最小
+契约端点），宿主可注入自定义源；Client 新增 Upsert/Remove/SetConfig 运行时
+热更新 API（宿主管理后台更换凭据/阈值不重启）。OpenViking/RAGFlow 无余额
+概念不设源（可用性由 Health 承载）。新增 Client 运行时变更 API 属 SDK 组装
+面（与 Reload 同类），非服务化边界变化。
+
 ## 决策修订（2026-10-27，路线确认）
 
 **展示层采用路线 A（Prometheus + Grafana）**，原决策 1/2/4 中"进程内统计查询、

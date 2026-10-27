@@ -145,7 +145,13 @@ answer: {max_citations: 5, require_citation_for_factual_claims: true, allow_answ
 health: {required_components: [evidence_provider], optional_components: [jev], check_timeout: 250ms}
 metrics: {enabled: false, namespace: kas}
 tracing: {enabled: false}
-balance: {enabled: true, interval: 100ms, low_threshold: 300, critical_threshold: 50}
+balance:
+  enabled: true
+  interval: 100ms
+  low_threshold: 300
+  critical_threshold: 50
+  sources:
+    deepseek: {low_threshold: 100}
 `
 
 // waitState 轮询等待余额态达到 want（超时失败）。
@@ -197,8 +203,89 @@ func TestRowBalanceLifecycle(t *testing.T) {
 	}
 	// Health 信息组件
 	h := c.Health(context.Background())
-	bc, ok := h.Components["balance"]
+	bc, ok := h.Components["balance:jev"]
 	if !ok || bc.Status != kas.ComponentNotReady {
 		t.Fatalf("critical 余额应反映到 Health: %+v", h.Components)
 	}
+}
+
+// TestRowMultiSourceBalance 多源余额 + 热更新 API（v1.4）：
+// jev 内置源 + 运行时 Upsert deepseek 源 → 各自快照/Health/gauge 事件分流。
+func TestRowMultiSourceBalance(t *testing.T) {
+	fake := testutil.NewJevFakeServer(testutil.JevScript{Status: 200, Body: testutil.ValidJevBody("answer", "g1", 0.9)})
+	fake.SetBalanceAmount(500)
+	defer fake.Close()
+	t.Setenv("KAS_BAL_JEV", fake.URL())
+	t.Setenv("KAS_BAL_KEY", "k")
+	t.Setenv("KAS_BAL_EP", fake.URL()+"/balance")
+	// deepseek 内置源条件：DEEPSEEK_TOKEN 指向本地 fake
+	dsFake := testutil.NewJevFakeServer(testutil.JevScript{BalanceBody: `{"is_available":true,"balance_infos":[{"currency":"CNY","total_balance":"120.00"}]}`})
+	defer dsFake.Close()
+	t.Setenv("DEEPSEEK_TOKEN", "ds-key")
+	t.Setenv("DEEPSEEK_BALANCE_ENDPOINT", dsFake.URL()+"/balance")
+
+	until := time.Now().Add(time.Hour)
+	ev := &matrixEvidence{items: []domain.Evidence{{ID: "e1", SourceID: "s", ValidUntil: &until}}}
+	cfg, err := kas.LoadConfig(strings.NewReader(balanceYAML))
+	if err != nil {
+		t.Fatal(err)
+	}
+	c, err := kas.New(cfg, kas.Dependencies{EvidenceProvider: ev})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = c.Close() }()
+
+	// 内置源自动注册：jev + deepseek（aliyun 未配 env 不注册）
+	sources := c.BalanceSources()
+	if len(sources) != 2 || sources[0] != "deepseek" || sources[1] != "jev" {
+		t.Fatalf("应自动注册 jev+deepseek: %v", sources)
+	}
+	waitState(t, c, kas.BalanceNormal) // 默认源 jev=500
+	waitSourceState(t, c, "deepseek", kas.BalanceNormal)
+
+	// Health 按源分列
+	h := c.Health(context.Background())
+	if _, ok := h.Components["balance:jev"]; !ok {
+		t.Fatal("Health 应含 balance:jev")
+	}
+	if _, ok := h.Components["balance:deepseek"]; !ok {
+		t.Fatal("Health 应含 balance:deepseek")
+	}
+
+	// 热更新：运行时新增 host 源（模拟宿主管理后台注入自定义计费源）
+	hostSrc := staticBalance{amount: 5}
+	if err := c.UpsertBalanceSource("host", hostSrc, cfg.Balance); err != nil {
+		t.Fatal(err)
+	}
+	if got := c.BalanceSources(); len(got) != 3 {
+		t.Fatalf("热更新后应 3 源: %v", got)
+	}
+	waitSourceState(t, c, "host", kas.BalanceCritical) // 5 ≤ 50
+	// 移除源
+	c.RemoveBalanceSource("host")
+	if got := c.BalanceSources(); len(got) != 2 {
+		t.Fatalf("移除后应 2 源: %v", got)
+	}
+}
+
+// staticBalance 固定金额的宿主注入源。
+type staticBalance struct{ amount float64 }
+
+func (s staticBalance) Balance(ctx context.Context) (kas.BalanceInfo, error) {
+	return kas.BalanceInfo{Source: "host", Amount: s.amount, Unit: "CNY"}, nil
+}
+
+// waitSourceState 等待指定源达到目标态。
+func waitSourceState(t *testing.T, c *kas.Client, name string, want kas.BalanceState) {
+	t.Helper()
+	deadline := time.Now().Add(3 * time.Second)
+	for time.Now().Before(deadline) {
+		if _, st, ok := c.BalanceOf(name); ok && st == want {
+			return
+		}
+		time.Sleep(30 * time.Millisecond)
+	}
+	_, st, _ := c.BalanceOf(name)
+	t.Fatalf("源 %s 未达 %s（当前 %s）", name, want, st)
 }

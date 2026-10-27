@@ -65,20 +65,34 @@ balance:
   interval: 5s
   low_threshold: 300
   critical_threshold: 50
+  sources: # 各源独立阈值（v1.4 多源）
+    deepseek: {low_threshold: 100, critical_threshold: 10}
+    aliyun: {low_threshold: 200}
 `
 
 func main() {
-	// fake Jev（演示用；生产替换为真实 endpoint env 注入）
-	var balance atomic.Int64 // 余额 ×100 存储（演示递减）
+	// fake 组件端点（演示用；生产替换为真实 endpoint env 注入）
+	var balance atomic.Int64 // Jev 余额 ×100 存储（演示递减）
 	balance.Store(50000)     // 500.00 credit
 	fake := fakeJev(&balance)
-	_ = fake // httptest server URL 在闭包内引用
 
-	for k, v := range map[string]string{
-		"KAS_DEMO_JEV_ENDPOINT": fake + "/decide",
-		"KAS_DEMO_JEV_API_KEY":  "demo-key",
-		"KAS_DEMO_JEV_BALANCE":  fake + "/balance",
-	} {
+	var dsBalance atomic.Int64     // DeepSeek 余额 ×100（CNY）
+	dsBalance.Store(12000)         // 120.00 CNY
+	var aliyunBalance atomic.Int64 // 阿里云现金余额 ×100（CNY）
+	aliyunBalance.Store(66666)     // 666.66 CNY
+	fakes := fakeComponentEndpoints(&dsBalance, &aliyunBalance)
+
+	envs := map[string]string{
+		"KAS_DEMO_JEV_ENDPOINT":           fake + "/decide",
+		"KAS_DEMO_JEV_API_KEY":            "demo-key",
+		"KAS_DEMO_JEV_BALANCE":            fake + "/balance",
+		"DEEPSEEK_TOKEN":                  "demo-ds-key",
+		"DEEPSEEK_BALANCE_ENDPOINT":       fakes.ds + "/user/balance",
+		"ALIBABA_CLOUD_ACCESS_KEY_ID":     "demo-ak",
+		"ALIBABA_CLOUD_ACCESS_KEY_SECRET": "demo-sk",
+		"ALIBABA_CLOUD_BSS_ENDPOINT":      fakes.aliyun,
+	}
+	for k, v := range envs {
 		if err := os.Setenv(k, v); err != nil {
 			log.Fatalf("设置演示 env %s 失败: %v", k, err)
 		}
@@ -111,7 +125,9 @@ func main() {
 				Principal: kas.PrincipalScope{TenantKey: "demo", ScopeFingerprint: "fp-demo", AuthorizationEpoch: "e1"},
 				Knowledge: kas.KnowledgeScope{Namespace: "demo", CorpusGeneration: "g1"},
 			})
-			balance.Add(-137) // 每请求扣 1.37 credit（演示余额递减）
+			balance.Add(-137)      // 每请求扣 1.37 credit（Jev 余额递减）
+			dsBalance.Add(-11)     // DeepSeek 缓降
+			aliyunBalance.Add(-23) // 阿里云现金余额缓降
 			time.Sleep(time.Second)
 		}
 	}()
@@ -130,6 +146,7 @@ func main() {
 	srv := &http.Server{Addr: "127.0.0.1:8080", Handler: mux}
 	go func() {
 		log.Println("metrics demo: http://127.0.0.1:8080/metrics（monitoring/prometheus.yml 抓取目标）")
+		log.Println("余额源演示: jev(credit 递减) + deepseek(CNY) + aliyun(CNY)；看板按 source 分列")
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("metrics server: %v", err)
 		}
@@ -142,6 +159,31 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 	_ = srv.Shutdown(ctx)
+}
+
+// fakeEndpoints 聚合两个演示组件端点。
+type fakeEndpoints struct{ ds, aliyun string }
+
+// fakeComponentEndpoints DeepSeek（/user/balance 契约）与阿里云 BSS
+// （QueryAccountBalance 响应形态；签名校验由真实端点负责，fake 忽略）本地端点。
+func fakeComponentEndpoints(dsBalance, aliyunBalance *atomic.Int64) fakeEndpoints {
+	dsMux := http.NewServeMux()
+	dsMux.HandleFunc("/user/balance", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		amount := strconv.FormatFloat(float64(dsBalance.Load())/100, 'f', 2, 64)
+		_, _ = w.Write([]byte(`{"is_available":true,"balance_infos":[` +
+			`{"currency":"CNY","total_balance":"` + amount + `","granted_balance":"0.00","topped_up_balance":"` + amount + `"}]}`))
+	})
+	dsSrv := httptest.NewServer(dsMux)
+
+	aliMux := http.NewServeMux()
+	aliMux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		amount := strconv.FormatFloat(float64(aliyunBalance.Load())/100, 'f', 2, 64)
+		_, _ = w.Write([]byte(`{"Success":true,"Data":{"AvailableCashAmount":"` + amount + `","Currency":"CNY"}}`))
+	})
+	aliSrv := httptest.NewServer(aliMux)
+	return fakeEndpoints{ds: dsSrv.URL, aliyun: aliSrv.URL}
 }
 
 // fakeJev 进程内 decide + balance 端点。

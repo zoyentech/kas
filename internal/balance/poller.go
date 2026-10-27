@@ -38,6 +38,13 @@ func NewPoller(src Source, cfg config.BalanceConfig, bus *obs.Bus) *Poller {
 // SetClock 注入时钟（测试）。
 func (p *Poller) SetClock(now func() time.Time) { p.now = now }
 
+// SetConfig 热更新阈值（下一轮 poll 生效；间隔变更在 nextDelay 即时生效）。
+func (p *Poller) SetConfig(cfg config.BalanceConfig) {
+	p.mu.Lock()
+	p.cfg = cfg
+	p.mu.Unlock()
+}
+
 // Run 阻塞轮询直至 ctx 取消：首查立即执行，随后按 interval（失败退避）循环。
 func (p *Poller) Run(ctx context.Context) {
 	delay := time.Duration(0)
@@ -97,8 +104,8 @@ func (p *Poller) publishLocked() {
 func (p *Poller) nextDelay() time.Duration {
 	p.mu.Lock()
 	streak := p.failStreak
-	p.mu.Unlock()
 	base := p.cfg.Interval.Std()
+	p.mu.Unlock()
 	if streak == 0 {
 		return base
 	}

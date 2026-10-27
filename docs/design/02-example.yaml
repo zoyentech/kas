@@ -75,6 +75,8 @@ answer:
 #   interval: 60s
 #   low_threshold: 300
 #   critical_threshold: 50
+#   sources:            # v1.4 按源独立阈值（jev/deepseek/aliyun）
+#     deepseek: {low_threshold: 100, critical_threshold: 10}
 
 health:
   required_components: [evidence_provider]
